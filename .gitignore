@@ -105,3 +105,6 @@ dist
 
 # typescript build folder
 build-tsc/
+
+# vscode project config
+.vscode/
