@@ -107,4 +107,4 @@ dist
 build-tsc/
 
 # vscode project config
-.vscode/
+.vscode
