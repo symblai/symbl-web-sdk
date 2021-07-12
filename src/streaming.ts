@@ -1,4 +1,4 @@
- const { symblFetch, logger, defaultConfig, uuid } = require('./utils.js');
+const { symblFetch, logger, defaultConfig, uuid } = require('./utils.js');
 
 const webSocketConnectionStatus = {
     notAvailable: 'not_available',
@@ -10,9 +10,9 @@ const webSocketConnectionStatus = {
 };
 
 class RealtimeApi {
-    id: any;
-    token: any;
-    webSocketUrl: any;
+    id: string;
+    token: string;
+    webSocketUrl: string;
     options: any;
 
     handlers: any;
@@ -24,7 +24,8 @@ class RealtimeApi {
     requestStoppedResolve: any;
     requestStartedResolve: any;
     requestErrorReject: any;
-    constructor(token, options: any = {}) {
+
+    constructor(token: string, options: any = {}) {
         let basePath = options.basePath || defaultConfig.basePath;
         if (basePath.startsWith('https')) {
             basePath = basePath.replace('https', 'wss')
@@ -57,7 +58,55 @@ class RealtimeApi {
 
         this.retryCount = 0;
         this.requestStarted = false;
+    }
 
+    start() {
+        const startRequest = (resolve, reject) => {
+            logger.info('Starting request.');
+            this.startRequest().then(() => {
+                logger.info('Realtime request started.');
+                resolve({
+                    stop: () => {
+                        return new Promise((resolve, reject) => {
+                            this.stopRequest().then(() => {
+                                logger.info('Realtime request stopped.');
+                                resolve(null);
+                            }).catch((err) => {
+                                reject(err);
+                            });
+                        });
+                    },
+                    sendAudio: (data) => {
+                        this.sendAudio(data);
+                    }
+                });
+            }).catch((err) => {
+                reject(err);
+            });
+        };
+
+        return new Promise((resolve, reject) => {
+            let retryCount = 0;
+
+            const retry = () => {
+                if (retryCount < 4) {
+                    logger.info('Retry attempt: ', retryCount, this.token);
+                    if (this.token) {
+                        this.connect();
+                        startRequest(resolve, reject);
+                    } else {
+                        logger.info('Active Token not found.');
+                        retryCount++;
+                        window.setTimeout(retry.bind(this), 1000 * retryCount);
+                    }
+                } else {
+                    reject({
+                        message: 'Could not connect to real-time api after 4 retries.'
+                    })
+                }
+            };
+            window.setTimeout(retry.bind(this), 0);
+        });
     }
 
     onErrorWebSocket(err) {
@@ -71,7 +120,11 @@ class RealtimeApi {
         if (result) {
             const data = JSON.parse(result.data);
             if (data.type === 'message') {
-                const {message: {type}} = data;
+                const {
+                    message: {
+                        type
+                    }
+                } = data;
 
                 if (type === 'recognition_started') {
                     this.onRequestStart();
@@ -136,7 +189,11 @@ class RealtimeApi {
     }
 
     sendStart(resolve, reject) {
-        const {insightTypes, config, speaker} = this.options;
+        const {
+            insightTypes,
+            config,
+            speaker
+        } = this.options;
         if (config) {
             const speechRecognition = {};
             if (!config.sampleRateHertz) {
@@ -242,65 +299,4 @@ class RealtimeApi {
 
 }
 
- class Streaming {
-    token: string;
-    options: any;
-
-    constructor(token: string, options: SymblConfig) {
-        options.basePath = options.basePath || defaultConfig.basePath;
-        this.options = options;
-        this.token = token;
-        
-    }
-
-    start() {
-        const realtimeClient = new RealtimeApi(this.token, this.options);
-
-        const startRequest = (resolve, reject) => {
-            logger.info('Starting request.');
-            realtimeClient.startRequest().then(() => {
-                logger.info('Realtime request started.');
-                resolve({
-                    stop: () => {
-                        return new Promise((resolve, reject) => {
-                            realtimeClient.stopRequest().then(() => {
-                                logger.info('Realtime request stopped.');
-                                resolve(null);
-                            }).catch((err) => {
-                                reject(err);
-                            });
-                        });
-                    },
-                    sendAudio: (data) => {
-                        realtimeClient.sendAudio(data);
-                    }
-                });
-            }).catch((err) => {
-                reject(err);
-            });
-        };
-
-        return new Promise((resolve, reject) => {
-            let retryCount = 0;
-
-            const retry = () => {
-                if (retryCount < 4) {
-                    logger.info('Retry attempt: ', retryCount, this.token);
-                    if (this.token) {
-                        realtimeClient.connect();
-                        startRequest(resolve, reject);
-                    } else {
-                        logger.info('Active Token not found.');
-                        retryCount++;
-                        window.setTimeout(retry.bind(this), 1000 * retryCount);
-                    }
-                } else {
-                    reject({message: 'Could not connect to real-time api after 4 retries.'})
-                }
-            };
-            window.setTimeout(retry.bind(this), 0);
-        });
-    }
-}
-
-export = Streaming;
+export = RealtimeApi;
