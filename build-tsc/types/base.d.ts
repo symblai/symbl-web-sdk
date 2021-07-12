@@ -1,3 +1,0 @@
-interface SymblConfig {
-    basePath: any;
-}
