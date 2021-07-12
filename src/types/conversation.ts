@@ -35,5 +35,4 @@ interface Message {
     phrases: ConversationPhrase[];
     sentiment: Sentiment;
     words: MessageWord[];
-
 }

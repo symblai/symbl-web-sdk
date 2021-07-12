@@ -1,3 +1,3 @@
 interface SymblConfig {
-    basePath: any
+    basePath: string
 }
