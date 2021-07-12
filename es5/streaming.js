@@ -44,6 +44,53 @@ var RealtimeApi = function () {
         this.retryCount = 0;
         this.requestStarted = false;
     }
+    RealtimeApi.prototype.start = function () {
+        var _this = this;
+        var startRequest = function startRequest(resolve, reject) {
+            logger.info('Starting request.');
+            _this.startRequest().then(function () {
+                logger.info('Realtime request started.');
+                resolve({
+                    stop: function stop() {
+                        return new Promise(function (resolve, reject) {
+                            _this.stopRequest().then(function () {
+                                logger.info('Realtime request stopped.');
+                                resolve(null);
+                            }).catch(function (err) {
+                                reject(err);
+                            });
+                        });
+                    },
+                    sendAudio: function sendAudio(data) {
+                        _this.sendAudio(data);
+                    }
+                });
+            }).catch(function (err) {
+                reject(err);
+            });
+        };
+        return new Promise(function (resolve, reject) {
+            var retryCount = 0;
+            var retry = function retry() {
+                if (retryCount < 4) {
+                    logger.info('Retry attempt: ', retryCount, _this.token);
+                    if (_this.token) {
+                        _this.connect();
+                        startRequest(resolve, reject);
+                    } else {
+                        logger.info('Active Token not found.');
+                        retryCount++;
+                        window.setTimeout(retry.bind(_this), 1000 * retryCount);
+                    }
+                } else {
+                    reject({
+                        message: 'Could not connect to real-time api after 4 retries.'
+                    });
+                }
+            };
+            window.setTimeout(retry.bind(_this), 0);
+        });
+    };
     RealtimeApi.prototype.onErrorWebSocket = function (err) {
         this.webSocketStatus = webSocketConnectionStatus.error;
         logger.error(err);
@@ -214,59 +261,5 @@ var RealtimeApi = function () {
     };
     return RealtimeApi;
 }();
-var Streaming = function () {
-    function Streaming(token, options) {
-        options.basePath = options.basePath || defaultConfig.basePath;
-        this.options = options;
-        this.token = token;
-    }
-    Streaming.prototype.start = function () {
-        var _this = this;
-        var realtimeClient = new RealtimeApi(this.token, this.options);
-        var startRequest = function startRequest(resolve, reject) {
-            logger.info('Starting request.');
-            realtimeClient.startRequest().then(function () {
-                logger.info('Realtime request started.');
-                resolve({
-                    stop: function stop() {
-                        return new Promise(function (resolve, reject) {
-                            realtimeClient.stopRequest().then(function () {
-                                logger.info('Realtime request stopped.');
-                                resolve(null);
-                            }).catch(function (err) {
-                                reject(err);
-                            });
-                        });
-                    },
-                    sendAudio: function sendAudio(data) {
-                        realtimeClient.sendAudio(data);
-                    }
-                });
-            }).catch(function (err) {
-                reject(err);
-            });
-        };
-        return new Promise(function (resolve, reject) {
-            var retryCount = 0;
-            var retry = function retry() {
-                if (retryCount < 4) {
-                    logger.info('Retry attempt: ', retryCount, _this.token);
-                    if (_this.token) {
-                        realtimeClient.connect();
-                        startRequest(resolve, reject);
-                    } else {
-                        logger.info('Active Token not found.');
-                        retryCount++;
-                        window.setTimeout(retry.bind(_this), 1000 * retryCount);
-                    }
-                } else {
-                    reject({ message: 'Could not connect to real-time api after 4 retries.' });
-                }
-            };
-            window.setTimeout(retry.bind(_this), 0);
-        });
-    };
-    return Streaming;
-}();
-module.exports = Streaming;
+module.exports = RealtimeApi;
 //# sourceMappingURL=streaming.js.map
