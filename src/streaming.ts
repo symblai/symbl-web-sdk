@@ -61,22 +61,6 @@ class RealtimeApi {
     }
 
     start() {
-
-        // over-engineered method:
-        //     start method:
-        //         creates local startRequest function
-        //             local startRequest calls startRequest method on class
-        //                 startRequest method:
-        //                     finally connects to websocket
-        //                     returns promise
-
-        //             local startRequest returns another promise which resolves with weird object that is probably node specific
-        //         start method returns promise that calls startRequest. keeps retrying up to 4 times
-
-        // ideal method:
-        //     start method:
-        //         connects to web socket (look at connect method). retry up to 4 times.
-
         return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
             const retry = async () => {
                 if (this.retryCount < 4) {
