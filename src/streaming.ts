@@ -61,6 +61,27 @@ class RealtimeApi {
     }
 
     start() {
+
+        // over-engineered method:
+        //     start method:
+        //         creates local startRequest function
+        //             local startRequest calls startRequest method on class
+        //                 startRequest method:
+        //                     finally connects to websocket
+        //                     returns promise
+
+        //             local startRequest returns another promise which resolves with weird object that is probably node specific
+        //         start method returns promise that calls startRequest. keeps retrying up to 4 times
+
+        // ideal method:
+        //     start method:
+        //         connects to web socket (look at connect method). retry up to 4 times.
+
+
+
+
+
+
         const startRequest = (resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
             logger.info('Starting request.');
             this.startRequest().then(() => {
@@ -117,6 +138,7 @@ class RealtimeApi {
     onMessageWebSocket(result) {
         // console.log(result);
         // Incoming results for this connection
+        console.log('on message', result);
         if (result) {
             const data = JSON.parse(result.data);
             if (data.type === 'message') {
@@ -167,6 +189,7 @@ class RealtimeApi {
     }
 
     onRequestStart() {
+        console.log('yo');
         if (this.requestStartedResolve) {
             this.requestStartedResolve();
             this.requestStartedResolve = undefined;

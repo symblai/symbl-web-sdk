@@ -3,7 +3,7 @@
 /// <reference path="./types/responses.ts" />
 /// <reference path="./types/realtime.ts" />
 
-const Streaming = require("./streaming.js");
+const RealtimeApi = require("./streaming.js");
 const Job = require("./job.js");
 const Conversation = require("./conversation.js");
 const TextApi = require('./async.js');
@@ -11,7 +11,7 @@ const TextApi = require('./async.js');
 export = class Symbl {
     token: string;
     text: typeof TextApi;
-    realtimeRequest: any;
+    realtimeRequest: typeof RealtimeApi;
 
     constructor(token) {
         if (!token) {
@@ -20,7 +20,7 @@ export = class Symbl {
         this.token = token;
         this.text = new TextApi(token);
         const options: any = {};
-        this.realtimeRequest = new Streaming(token, options);
+        this.realtimeRequest = new RealtimeApi(token, options);
     }
 }
 
