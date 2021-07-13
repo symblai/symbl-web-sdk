@@ -26,19 +26,9 @@ class RealtimeApi {
     requestErrorReject: (err: unknown) => void;
 
     constructor(token: string, options: any = {}) {
-        let basePath = options.basePath || defaultConfig.basePath;
-        if (basePath.startsWith('https')) {
-            basePath = basePath.replace('https', 'wss')
-        } else if (basePath.startsWith('http')) {
-            basePath = basePath.replace('http', 'ws');
-        }
-        const uri = `${basePath}/v1/realtime/insights`;
-
         this.id = options.id ? options.id : uuid();
         this.token = token;
-        this.webSocketUrl = `${uri}/${this.id}?access_token=${this.token}`;
         this.options = options;
-
 
         this.onConnectWebSocket = this.onConnectWebSocket.bind(this);
         this.onErrorWebSocket = this.onErrorWebSocket.bind(this);
@@ -62,6 +52,17 @@ class RealtimeApi {
 
     start() {
         return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
+            
+            let basePath = this.options.basePath || defaultConfig.basePath;
+            if (basePath.startsWith('https')) {
+                basePath = basePath.replace('https', 'wss')
+            } else if (basePath.startsWith('http')) {
+                basePath = basePath.replace('http', 'ws');
+            }
+            const uri = `${basePath}/v1/realtime/insights`;
+
+            this.webSocketUrl = `${uri}/${this.id}?access_token=${this.token}`;
+            
             const retry = async () => {
                 if (this.retryCount < 4) {
                     logger.info('Retry attempt: ', this.retryCount, this.token);
@@ -84,6 +85,10 @@ class RealtimeApi {
             };
             window.setTimeout(retry.bind(this), 0);
         });
+    }
+
+    subscribe() {
+
     }
 
     onErrorWebSocket(err) {
