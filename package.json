@@ -9,13 +9,14 @@
     "browserify": "^17.0.0",
     "npm-run-all": "^4.1.5",
     "ts-loader": "^9.2.3",
+    "tsc-watch": "^4.4.0",
     "typescript": "^4.3.5",
     "vinyl-fs": "^3.0.3",
     "vinyl-source-stream": "^2.0.0",
     "webpack-cli": "^4.7.2"
   },
   "scripts": {
-    "watch": "tsc --watch",
+    "watch": "tsc-watch --onSuccess \"npm run build\"",
     "build:ts": "tsc",
     "build:js": "node ./scripts/build.js ./scripts/symbl.js ./LICENSE.md ./dist/symbl.js",
     "build": "npm-run-all build:ts build:js"
