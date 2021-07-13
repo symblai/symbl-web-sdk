@@ -1,13 +1,12 @@
 /// <reference path="./types/base.ts" />
 /// <reference path="./types/conversation.ts" />
 /// <reference path="./types/responses.ts" />
+/// <reference path="./types/realtime.ts" />
 
 const Streaming = require("./streaming.js");
 const Job = require("./job.js");
 const Conversation = require("./conversation.js");
 const TextApi = require('./async.js');
-
-
 
 export = class Symbl {
     token: string;

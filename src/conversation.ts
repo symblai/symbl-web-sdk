@@ -6,15 +6,15 @@ export = class Conversation {
     token: string;
     job: typeof Job;
 
-    constructor(id: string, jobId: string, token: string) {
+    constructor(id: string, token: string, jobId?: string) {
         this.id = id;
+        this.token = token;
         if (jobId) {
             this.job = new Job(jobId, token);
         }
-        this.token = token;
     }
 
-    async sleep(time = 2000) {
+    async sleep(time: number = 2000) {
         await new Promise(r => setTimeout(r, time));
     }
 

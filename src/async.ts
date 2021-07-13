@@ -4,7 +4,7 @@ const { symblFetch } = require('./utils.js');
 export = class TextApi {
     token: string;
 
-    constructor(token) {
+    constructor(token: string) {
         this.token = token;
     }
     async process(payload): Promise<typeof Conversation> {

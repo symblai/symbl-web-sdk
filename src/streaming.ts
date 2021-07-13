@@ -15,15 +15,15 @@ class RealtimeApi {
     webSocketUrl: string;
     options: any;
 
-    handlers: any;
+    handlers: RealtimeHandlers;
 
-    retryCount: any;
-    requestStarted: any;
-    webSocket: any;
-    webSocketStatus: any;
-    requestStoppedResolve: any;
-    requestStartedResolve: any;
-    requestErrorReject: any;
+    retryCount: number;
+    requestStarted: boolean;
+    webSocket: WebSocket;
+    webSocketStatus: string;
+    requestStoppedResolve: (value?: unknown) => void;
+    requestStartedResolve: (value?: unknown) => void;
+    requestErrorReject: (err: unknown) => void;
 
     constructor(token: string, options: any = {}) {
         let basePath = options.basePath || defaultConfig.basePath;
@@ -61,13 +61,13 @@ class RealtimeApi {
     }
 
     start() {
-        const startRequest = (resolve, reject) => {
+        const startRequest = (resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
             logger.info('Starting request.');
             this.startRequest().then(() => {
                 logger.info('Realtime request started.');
                 resolve({
                     stop: () => {
-                        return new Promise((resolve, reject) => {
+                        return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
                             this.stopRequest().then(() => {
                                 logger.info('Realtime request stopped.');
                                 resolve(null);
@@ -85,7 +85,7 @@ class RealtimeApi {
             });
         };
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
             let retryCount = 0;
 
             const retry = () => {
@@ -178,7 +178,7 @@ class RealtimeApi {
             this.requestStoppedResolve();
             this.requestStoppedResolve = undefined;
         }
-        this.webSocket.disconnect();
+        this.webSocket = null;
     }
 
     onRequestError(err) {
@@ -188,7 +188,7 @@ class RealtimeApi {
         }
     }
 
-    sendStart(resolve, reject) {
+    sendStart(resolve: (value?: unknown) => void, reject: (value?: unknown) => void) {
         const {
             insightTypes,
             config,
@@ -232,7 +232,7 @@ class RealtimeApi {
     }
 
     startRequest() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
             if (this.webSocketStatus === webSocketConnectionStatus.connected) {
                 this.sendStart(resolve, reject);
             } else {
@@ -255,7 +255,7 @@ class RealtimeApi {
     }
 
     stopRequest() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
             if (this.webSocketStatus === webSocketConnectionStatus.connected) {
                 logger.debug('Send stop request.');
                 this.requestStoppedResolve = resolve;
