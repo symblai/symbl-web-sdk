@@ -87,8 +87,43 @@ class RealtimeApi {
         });
     }
 
-    subscribe() {
+    // Need to rethink subscribe connection
+    
+    subscribe(conversationId: string) {
+        return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
+            
+            let basePath = this.options.basePath || defaultConfig.basePath;
+            if (basePath.startsWith('https')) {
+                basePath = basePath.replace('https', 'wss')
+            } else if (basePath.startsWith('http')) {
+                basePath = basePath.replace('http', 'ws');
+            }
+            const uri = `${basePath}/v1/subscribe`;
 
+            this.webSocketUrl = `${uri}/${conversationId}?access_token=${this.token}`;
+            
+            const retry = async () => {
+                if (this.retryCount < 4) {
+                    logger.info('Retry attempt: ', this.retryCount, this.token);
+                    if (this.token) {
+                        await this.connect();
+                        if (this.webSocketStatus === webSocketConnectionStatus.connected) {
+                            //this.sendStart(resolve, reject);
+                        }
+                        
+                    } else {
+                        logger.info('Active Token not found.');
+                        this.retryCount++;
+                        window.setTimeout(retry.bind(this), 1000 * this.retryCount);
+                    }
+                } else {
+                    reject({
+                        message: 'Could not connect to subscribe api after 4 retries.'
+                    })
+                }
+            };
+            window.setTimeout(retry.bind(this), 0);
+        });
     }
 
     onErrorWebSocket(err) {
