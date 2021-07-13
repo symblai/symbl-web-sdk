@@ -77,48 +77,20 @@ class RealtimeApi {
         //     start method:
         //         connects to web socket (look at connect method). retry up to 4 times.
 
-
-
-
-
-
-        const startRequest = (resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
-            logger.info('Starting request.');
-            this.startRequest().then(() => {
-                logger.info('Realtime request started.');
-                resolve({
-                    stop: () => {
-                        return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
-                            this.stopRequest().then(() => {
-                                logger.info('Realtime request stopped.');
-                                resolve(null);
-                            }).catch((err) => {
-                                reject(err);
-                            });
-                        });
-                    },
-                    sendAudio: (data) => {
-                        this.sendAudio(data);
-                    }
-                });
-            }).catch((err) => {
-                reject(err);
-            });
-        };
-
         return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
-            let retryCount = 0;
-
-            const retry = () => {
-                if (retryCount < 4) {
-                    logger.info('Retry attempt: ', retryCount, this.token);
+            const retry = async () => {
+                if (this.retryCount < 4) {
+                    logger.info('Retry attempt: ', this.retryCount, this.token);
                     if (this.token) {
-                        this.connect();
-                        startRequest(resolve, reject);
+                        await this.connect();
+                        if (this.webSocketStatus === webSocketConnectionStatus.connected) {
+                            this.sendStart(resolve, reject);
+                        }
+                        
                     } else {
                         logger.info('Active Token not found.');
-                        retryCount++;
-                        window.setTimeout(retry.bind(this), 1000 * retryCount);
+                        this.retryCount++;
+                        window.setTimeout(retry.bind(this), 1000 * this.retryCount);
                     }
                 } else {
                     reject({
@@ -179,13 +151,18 @@ class RealtimeApi {
     }
 
     connect() {
-        logger.debug('WebSocket Connecting.');
-        this.webSocketStatus = webSocketConnectionStatus.connecting;
-        this.webSocket = new WebSocket(this.webSocketUrl);
-        this.webSocket.onopen = this.onConnectWebSocket;
-        this.webSocket.onmessage = this.onMessageWebSocket;
-        this.webSocket.onerror = this.onErrorWebSocket;
-        this.webSocket.onclose = this.onCloseWebSocket;
+        return new Promise((resolve, reject) => {
+            logger.debug('WebSocket Connecting.');
+            this.webSocketStatus = webSocketConnectionStatus.connecting;
+            this.webSocket = new WebSocket(this.webSocketUrl);
+            this.webSocket.onopen = () => {
+                resolve(null);
+                this.onConnectWebSocket();
+            }
+            this.webSocket.onmessage = this.onMessageWebSocket;
+            this.webSocket.onerror = this.onErrorWebSocket;
+            this.webSocket.onclose = this.onCloseWebSocket;
+        })
     }
 
     onRequestStart() {
@@ -252,29 +229,6 @@ class RealtimeApi {
             config,
             speaker
         }));
-    }
-
-    startRequest() {
-        return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
-            if (this.webSocketStatus === webSocketConnectionStatus.connected) {
-                this.sendStart(resolve, reject);
-            } else {
-                logger.info('WebSocket is connecting. Retry will be attempted.', this.webSocketStatus);
-                const retry = () => {
-                    if (this.retryCount < 3 && !this.requestStarted) {
-                        logger.info('Retry attempt: ', this.retryCount);
-                        if (this.webSocketStatus === webSocketConnectionStatus.connected) {
-                            this.sendStart(resolve, reject);
-                            this.retryCount = 0;
-                        } else {
-                            this.retryCount++;
-                            window.setTimeout(retry.bind(this), 1000 * this.retryCount);
-                        }
-                    }
-                };
-                window.setTimeout(retry.bind(this), 500);
-            }
-        });
     }
 
     stopRequest() {
