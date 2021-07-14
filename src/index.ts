@@ -42,7 +42,7 @@ class SymblWebEngine implements ISymblWebEngine {
     }
 
     startRealtimeRequest(config): void {
-        const handler = new TransactionHandler().startTransaction(config, 'REALTIME');
+        const handler = new TransactionHandler(this, config, FLOW_TYPES.STREAMING_FLOW_TYPE);
     }
 }
 
@@ -135,15 +135,14 @@ interface ITransactionHandler {
     request: RequestHandler;
     initUserSession(): void;
     flowType: string;
-    startTransaction(config, flowType: string): TransactionHandler;
 }
 
-class TransactionHandler extends SymblWebEngine implements ITransactionHandler {
+class TransactionHandler implements ITransactionHandler {
     userSession: UserSession;
     requestOptions: SymblRequest;
     request: RequestHandler;
     flowType: string;
-    startTransaction(config, flowType: string): TransactionHandler {
+    constructor(engine: SymblWebEngine, config, flowType: string) {
         /* if config has mic info
              create device manager
         */
@@ -161,26 +160,34 @@ class TransactionHandler extends SymblWebEngine implements ITransactionHandler {
 
 interface IRequestHandler {
     api: SymblClientAsync | SymblClientStreaming;
+    transaction: TransactionHandler;
 }
 
 class RequestHandler implements IRequestHandler {
     api: SymblClientAsync | SymblClientStreaming;
+    transaction: TransactionHandler;
     constructor(transactionHandler: TransactionHandler) {
         // super(config, flowType);
+        this.transaction = transactionHandler;
         if (transactionHandler.flowType === FLOW_TYPES.STREAMING_FLOW_TYPE) {
-            this.api = new SymblClientStreaming();
+            this.api = new SymblClientStreaming(this);
             this.api.execute();
         }/* else if (transactionHandler.flowType === FLOW_TYPES.ASYNC_FLOW_TYPE) {
-            
+
         }*/
     }
 }
 
 interface ISymblClientAsync {
+    request: RequestHandler;
     execute(): void;
 }
 
 class SymblClientAsync implements ISymblClientAsync {
+    request: RequestHandler;
+    constructor(request) {
+        this.request = request;
+    }
     execute(): void {
         alert('started');
     }
@@ -188,15 +195,18 @@ class SymblClientAsync implements ISymblClientAsync {
 }
 
 interface ISymblClientStreaming {
+    request: RequestHandler;
     execute(): void;
 }
 
 class SymblClientStreaming implements ISymblClientStreaming {
-    // constructor(config) {
-    //     super(config);
-    // }
+    request: RequestHandler;
+    constructor(request) {
+        this.request = request;
+    }
 
     execute(): void { // same function from RealtimeApi
+        const config = this.request.transaction.requestOptions.parameters;
         alert('started');
     }
 
