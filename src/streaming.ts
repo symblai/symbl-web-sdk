@@ -63,7 +63,7 @@ class RealtimeApi {
                         resolve(null);
                     }
                 } catch(err) {
-                    logger.warn('Cannot Connect', err)
+                    logger.warn('Cannot Connect', err);
                     reject(err);
                 }
             })()
@@ -82,7 +82,8 @@ class RealtimeApi {
                         resolve(null);
                     }
                 } catch(err) {
-                    logger.warn('Cannot Connect', err)
+                    logger.warn('Cannot Connect', err);
+                    reject(err);
                 }
             })()
         });
