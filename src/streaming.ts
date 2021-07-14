@@ -55,13 +55,12 @@ class RealtimeApi {
     start() {
         return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
             this.webSocketUrl = `${this.options.basePath}/v1/realtime/insights/${this.id}?access_token=${this.token}`;
-
             (async () => {
                 try {
                     await this.connect();
                     if (this.webSocketStatus === webSocketConnectionStatus.connected) {
                         this.sendStart(resolve, reject);
-                        resolve(null)
+                        resolve(null);
                     }
                 } catch(err) {
                     logger.warn('Cannot Connect', err)
@@ -79,9 +78,9 @@ class RealtimeApi {
             (async () => {
                 try {
                     await this.connect();
-                        if (this.webSocketStatus === webSocketConnectionStatus.connected) {
-                            //this.sendStart(resolve, reject);
-                        }
+                    if (this.webSocketStatus === webSocketConnectionStatus.connected) {
+                        resolve(null);
+                    }
                 } catch(err) {
                     logger.warn('Cannot Connect', err)
                 }
