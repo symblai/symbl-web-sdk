@@ -14,6 +14,7 @@ class RealtimeApi {
     token: string;
     webSocketUrl: string;
     options: any;
+    connectionTimeout: any;
 
     handlers: RealtimeHandlers;
 
@@ -60,7 +61,8 @@ class RealtimeApi {
                     await this.connect();
                     if (this.webSocketStatus === webSocketConnectionStatus.connected) {
                         this.sendStart(resolve, reject);
-                        resolve(null);
+                        resolve("start() Promise resolved");
+                        window.clearTimeout(this.connectionTimeout);
                     }
                 } catch(err) {
                     logger.warn('Cannot Connect', err);
@@ -79,7 +81,8 @@ class RealtimeApi {
                 try {
                     await this.connect();
                     if (this.webSocketStatus === webSocketConnectionStatus.connected) {
-                        resolve(null);
+                        resolve("subscribe() Promise resolved");
+                        window.clearTimeout(this.connectionTimeout);
                     }
                 } catch(err) {
                     logger.warn('Cannot Connect', err);
@@ -150,7 +153,7 @@ class RealtimeApi {
             this.webSocket.onerror = this.onErrorWebSocket;
             this.webSocket.onclose = this.onCloseWebSocket;
 
-            window.setTimeout(reject, 30000);
+            this.connectionTimeout = window.setTimeout(reject, 30000);
         })
     }
 
