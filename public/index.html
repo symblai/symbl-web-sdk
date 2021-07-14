@@ -3,10 +3,11 @@
 	<script src="../dist/symbl.js"></script>
 	<script>
 		const token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlFVUTRNemhDUVVWQk1rTkJNemszUTBNMlFVVTRRekkyUmpWQ056VTJRelUxUTBVeE5EZzFNUSJ9.eyJodHRwczovL3BsYXRmb3JtLnN5bWJsLmFpL3VzZXJJZCI6IjU3NDMyMjEwMjUwMTM3NjAiLCJpc3MiOiJodHRwczovL2RpcmVjdC1wbGF0Zm9ybS5hdXRoMC5jb20vIiwic3ViIjoiR0J3aFJTU1NXZVBPU2lhYW1TWkttdDVWU1pmWFVIb1ZAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vcGxhdGZvcm0ucmFtbWVyLmFpIiwiaWF0IjoxNjI2MTkwMjE4LCJleHAiOjE2MjYyNzY2MTgsImF6cCI6IkdCd2hSU1NTV2VQT1NpYWFtU1pLbXQ1VlNaZlhVSG9WIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIn0.OJBsQoI2xa4r7Q5nIXeLiBZtUKS51gK0N3Y5k6cRDx_F_wTXa3-rBK5mUUJwQqr03Ee6vmWB1JrX4uVRcGHPjdqLj8WkWUOxYzeYG88_aCzHxEVW9BNnE5eCr6bioVUVB4i1zv6SzM4WtJdwTXtmfSFmaa_TeNKMW3pQFq-pdNYzpJxvmmnIxCzyKfWPXuxUkWTLeqkhzLS2JCEh8f8TqClRRbim1HN_NB2cH_D4UTwB9yCPJaH_tLf8lxUb2fdASZORnqoc2nmy9diB3rj_LStpsNCUB_16yY0Hf9eIBS46pin46-LSNEDf7zIkZwaJusdmpnBSh_LOKIeD8H9juQ";
-		const symbl = new sdk.Symbl(token);
-		const connection = symbl.realtimeRequest.start().then(x => {
-			console.log('x', x);
+		const symbl = new sdk.Symbl({
+			appId: '6a6b7a773669724d316147547a586273376a677774446579474e50534a4c514d',
+			appSecret: '6632556e7653324a6d324e5977326b584c4266326557375f50695337764c76394c3531456636437a397a2d5f7059696e5a4831535048554e7a5a785130493357'
 		});
+		const connection = symbl.startRealtimeRequest({});
 
 		console.log('connection', connection);
 	</script>

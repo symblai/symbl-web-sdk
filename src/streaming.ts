@@ -155,7 +155,6 @@ class RealtimeApi {
     }
 
     onRequestStart() {
-        console.log('yo');
         if (this.requestStartedResolve) {
             this.requestStartedResolve();
             this.requestStartedResolve = undefined;
@@ -178,11 +177,7 @@ class RealtimeApi {
     }
 
     sendStart(resolve: (value?: unknown) => void, reject: (value?: unknown) => void) {
-        const {
-            insightTypes,
-            config,
-            speaker
-        } = this.options;
+        const { insightTypes, config, speaker } = this.options;
         if (config) {
             const speechRecognition = {};
             if (!config.sampleRateHertz) {
