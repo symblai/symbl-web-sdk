@@ -14,6 +14,7 @@ class RealtimeApi {
     token: string;
     webSocketUrl: string;
     options: any;
+    basePath: string;
 
     handlers: RealtimeHandlers;
 
@@ -29,6 +30,8 @@ class RealtimeApi {
         this.id = options.id ? options.id : uuid();
         this.token = token;
         this.options = options;
+
+        this.options.basePath = (this.options.basePath || defaultConfig.basePath).replace(/^http/, 'ws');
 
         this.onConnectWebSocket = this.onConnectWebSocket.bind(this);
         this.onErrorWebSocket = this.onErrorWebSocket.bind(this);
@@ -52,38 +55,20 @@ class RealtimeApi {
 
     start() {
         return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
-            
-            let basePath = this.options.basePath || defaultConfig.basePath;
-            if (basePath.startsWith('https')) {
-                basePath = basePath.replace('https', 'wss')
-            } else if (basePath.startsWith('http')) {
-                basePath = basePath.replace('http', 'ws');
-            }
-            const uri = `${basePath}/v1/realtime/insights`;
+            this.webSocketUrl = `${this.options.basePath}/v1/realtime/insights/${this.id}?access_token=${this.token}`;
 
-            this.webSocketUrl = `${uri}/${this.id}?access_token=${this.token}`;
-            
-            const retry = async () => {
-                if (this.retryCount < 4) {
-                    logger.info('Retry attempt: ', this.retryCount, this.token);
-                    if (this.token) {
-                        await this.connect();
-                        if (this.webSocketStatus === webSocketConnectionStatus.connected) {
-                            this.sendStart(resolve, reject);
-                        }
-                        
-                    } else {
-                        logger.info('Active Token not found.');
-                        this.retryCount++;
-                        window.setTimeout(retry.bind(this), 1000 * this.retryCount);
+            (async () => {
+                try {
+                    await this.connect();
+                    if (this.webSocketStatus === webSocketConnectionStatus.connected) {
+                        this.sendStart(resolve, reject);
+                        resolve(null)
                     }
-                } else {
-                    reject({
-                        message: 'Could not connect to real-time api after 4 retries.'
-                    })
+                } catch(err) {
+                    logger.warn('Cannot Connect', err)
+                    reject(err);
                 }
-            };
-            window.setTimeout(retry.bind(this), 0);
+            })()
         });
     }
 
@@ -91,38 +76,17 @@ class RealtimeApi {
     
     subscribe(conversationId: string) {
         return new Promise((resolve: (value?: unknown) => void, reject: (value?: unknown) => void) => {
-            
-            let basePath = this.options.basePath || defaultConfig.basePath;
-            if (basePath.startsWith('https')) {
-                basePath = basePath.replace('https', 'wss')
-            } else if (basePath.startsWith('http')) {
-                basePath = basePath.replace('http', 'ws');
-            }
-            const uri = `${basePath}/v1/subscribe`;
-
-            this.webSocketUrl = `${uri}/${conversationId}?access_token=${this.token}`;
-            
-            const retry = async () => {
-                if (this.retryCount < 4) {
-                    logger.info('Retry attempt: ', this.retryCount, this.token);
-                    if (this.token) {
-                        await this.connect();
+            this.webSocketUrl = `${this.options.basePath}/v1/subscribe/${conversationId}?access_token=${this.token}`;
+            (async () => {
+                try {
+                    await this.connect();
                         if (this.webSocketStatus === webSocketConnectionStatus.connected) {
                             //this.sendStart(resolve, reject);
                         }
-                        
-                    } else {
-                        logger.info('Active Token not found.');
-                        this.retryCount++;
-                        window.setTimeout(retry.bind(this), 1000 * this.retryCount);
-                    }
-                } else {
-                    reject({
-                        message: 'Could not connect to subscribe api after 4 retries.'
-                    })
+                } catch(err) {
+                    logger.warn('Cannot Connect', err)
                 }
-            };
-            window.setTimeout(retry.bind(this), 0);
+            })()
         });
     }
 
@@ -186,6 +150,8 @@ class RealtimeApi {
             this.webSocket.onmessage = this.onMessageWebSocket;
             this.webSocket.onerror = this.onErrorWebSocket;
             this.webSocket.onclose = this.onCloseWebSocket;
+
+            window.setTimeout(reject, 30000);
         })
     }
 
