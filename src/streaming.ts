@@ -14,7 +14,6 @@ class RealtimeApi {
     token: string;
     webSocketUrl: string;
     options: any;
-    basePath: string;
 
     handlers: RealtimeHandlers;
 
