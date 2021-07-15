@@ -131,7 +131,6 @@ class SymblRequest implements ISymblRequest {
 
 interface ITransactionHandler {
     userSession: IUserSession;
-    requestOptions: SymblRequest;
     request: RequestHandler;
     initUserSession(): void;
     flowType: string;
@@ -139,7 +138,6 @@ interface ITransactionHandler {
 
 class TransactionHandler implements ITransactionHandler {
     userSession: UserSession;
-    requestOptions: SymblRequest;
     request: RequestHandler;
     flowType: string;
     constructor(engine: SymblWebEngine, config, flowType: string) {
@@ -148,7 +146,6 @@ class TransactionHandler implements ITransactionHandler {
         */
         this.initUserSession();
         this.flowType = flowType;
-        this.requestOptions = new SymblRequest(config);
         this.request = new RequestHandler(this);
         return this;
     }
@@ -161,13 +158,17 @@ class TransactionHandler implements ITransactionHandler {
 interface IRequestHandler {
     api: SymblClientAsync | SymblClientStreaming;
     transaction: TransactionHandler;
+    requestOptions: SymblRequest;
 }
 
 class RequestHandler implements IRequestHandler {
     api: SymblClientAsync | SymblClientStreaming;
     transaction: TransactionHandler;
+    requestOptions: SymblRequest;
     constructor(transactionHandler: TransactionHandler) {
         // super(config, flowType);
+
+        this.requestOptions = new SymblRequest(transactionHandler.config);
         this.transaction = transactionHandler;
         if (transactionHandler.flowType === FLOW_TYPES.STREAMING_FLOW_TYPE) {
             this.api = new SymblClientStreaming(this);
