@@ -1,11 +1,13 @@
-const LogMonitor = require("./LogMonitor.js");
+const LogMonitor = require("./LogMonitor");
 
-export = class EventsManager {
+interface IEventsManager {
     logger: typeof LogMonitor;
+    notifyEvent(event: Event): void;
+    logEvent(event: Event): void;
+}
 
-    constructor() {
-        this.logger = new LogMonitor();
-    }
+export = class EventsManager implements IEventsManager {
+    logger: typeof LogMonitor = new LogMonitor();
 
     notifyEvent(event: Event) {
         console.warn(`${event.type}: ${event}`);
@@ -13,5 +15,9 @@ export = class EventsManager {
 
     logEvent(event: Event) {
         this.logger.logEvent(event);
+    }
+
+    sum(a: number, b: number): number {
+        return a + b;
     }
 }
