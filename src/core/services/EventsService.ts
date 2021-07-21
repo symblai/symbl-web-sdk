@@ -1,4 +1,4 @@
-const LogMonitor = require("./LogMonitor");
+const LogMonitor = require("./LogMonitorService");
 
 interface IEventsManager {
     logger: typeof LogMonitor;
