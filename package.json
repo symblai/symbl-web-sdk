@@ -1,10 +1,11 @@
 {
   "name": "web-sdk",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
   "devDependencies": {
+    "@rammer/api-client": "^0.0.16",
     "@babel/preset-env": "^7.14.7",
     "@babel/preset-typescript": "^7.14.5",
     "@types/jest": "^26.0.24",
@@ -31,5 +32,8 @@
     "build": "npm-run-all build:ts build:js build:min.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "symbl-node": "^1.0.13"
+  }
 }
