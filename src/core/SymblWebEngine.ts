@@ -1,8 +1,8 @@
 const sdk = require('../../scripts/client.sdk.min.js');
 
 export = class SymblWebEngine {
-    logMonitor: typeof sdk.logger = sdk.logger;
-    errorHandler: typeof sdk.errorHandler = sdk.errorHandler;
+    logger: typeof SymblWebEngine.sdk.logger = SymblWebEngine.sdk.logger;
+    errorHandler: typeof SymblWebEngine.sdk.errorHandler = SymblWebEngine.sdk.errorHandler;
     static sdk: typeof sdk = (window as any).rammerSdk;
     appConfig: any;
 
