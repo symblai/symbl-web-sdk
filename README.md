@@ -33,7 +33,7 @@ As a simple test of the Streaming API you can simply setup a live microphone and
 
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
 
-Will update with live audio example.
+* Will update with live audio example.
 
 <!-- If you'd like to see a more in-depth examples for the Streaming API, please take a look at the extended Streaming examples [here][Streaming-Examples]. -->
 
@@ -41,13 +41,13 @@ Will update with live audio example.
 
 As a simple test of the Telephony API you can call a phone number and see a live transcription of your phone call in the console.
 
-Will update with live telephony example.
+* Will update with live telephony example.
 
 <!-- If you'd like to see a more in-depth examples for the Telephony API, please take a look at the extended Telephony examples [here][Telephony-Examples]. -->
 
 ## Async Example
 
-Will update with async example.
+* Will update with async example.
 
 ## Need support?
 
