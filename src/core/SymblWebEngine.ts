@@ -1,22 +1,26 @@
 const sdk = require('../../scripts/client.sdk.min.js');
 
 export = class SymblWebEngine {
-    logger: typeof SymblWebEngine.sdk.logger = SymblWebEngine.sdk.logger;
-    errorHandler: typeof SymblWebEngine.sdk.errorHandler = SymblWebEngine.sdk.errorHandler;
-    static sdk: typeof sdk = (window as any).rammerSdk;
+    sdk: typeof sdk = (window as any).rammerSdk;
     appConfig: any;
+    
+    constructor() {
+    }
 
-    static init(appConfig: any) {
+    async init(appConfig: any) {
         console.log('appConfig', appConfig);
-        SymblWebEngine.sdk.init({
+        await this.sdk.init({
             appId: appConfig.appId,
             appSecret: appConfig.appSecret,
             basePath: appConfig.basePath || 'https://api.symbl.ai',
             // logLevel: 'debug'
-        });  
+        });
+        console.log(this);
+        return this;
     }
 
-    startRealtimeRequest(realtimeConfig: any) {
-        // this.sdk.startRealtimeRequest(realtimeConfig);
+    randomId(): string {
+        const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+        return uint32.toString(16);
     }
 }
