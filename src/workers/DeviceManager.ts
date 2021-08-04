@@ -22,14 +22,15 @@ export = class DeviceManager {
 		}
 	}
 
-	deviceConnect() {
-		const stream = this.currentStream;
+	deviceConnect(streamSource: any) {
+		const currentStream = streamSource || this.currentStream;
 		const AudioContext = window.AudioContext;
 		const context = new AudioContext();
-		const source = context.createMediaStreamSource(stream);
+		const source = context.createMediaStreamSource(currentStream);
 		const gainNode = context.createGain();
 		source.connect(gainNode);
 
-		console.log(source)
+		const mediaRecorder = new MediaRecorder(currentStream);
+		return mediaRecorder;
 	}
 }
