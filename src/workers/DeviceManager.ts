@@ -10,7 +10,7 @@ export = class DeviceManager {
 	 * Get and return an audio/visual device to access a MediaStream
 	 * @param {object} deviceConfig - options for MediaStream device  
 	 */
-	async getDevice(deviceConfig: DeviceConfig) {
+	async getDefaultDevice(deviceConfig: DeviceConfig) {
 		let stream = null;
 		try {
 			stream = await navigator.mediaDevices.getUserMedia(deviceConfig);
@@ -22,7 +22,8 @@ export = class DeviceManager {
 		}
 	}
 
-	deviceConnect(streamSource: any, connection: any) {
+	async deviceConnect(connection: any) {
+		const streamSource = await this.getDefaultDevice({audio: true, video: false});
 		const AudioContext = window.AudioContext;
 		const context = new AudioContext();
 		const source = context.createMediaStreamSource(streamSource);
@@ -40,7 +41,7 @@ export = class DeviceManager {
 			}
 			// Send audio stream to websocket.
 			// if (connection.readyState === WebSocket.OPEN) {
-			 connection.sendAudio(targetBuffer.buffer);
+			 	connection.sendAudio(targetBuffer.buffer);
 			// }
 		};
 	}

@@ -22,6 +22,17 @@ export = class SymblWebEngine {
         return this;
     }
 
+    async startRealtimeRequest(config, connect) {
+        const connection = await this.sdk.startRealtimeRequest(config);
+        if (connect) {
+            this.connect(connection);
+        }
+    }
+
+    async connect(connection) {
+        await this.deviceManager.deviceConnect(connection);
+    }
+
     randomId(): string {
         const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
         return uint32.toString(16);
