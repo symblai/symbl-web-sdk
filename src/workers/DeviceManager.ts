@@ -13,10 +13,10 @@ export = class DeviceManager {
 	async getDevice(deviceConfig: DeviceConfig) {
 		let stream = null;
 		try {
-			stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+			stream = await navigator.mediaDevices.getUserMedia(deviceConfig);
 			this.currentStream = stream;
 			return stream;
-		} catch(err) {		
+		} catch (err) {
 			console.log(`Error: ${err}`);
 			return stream;
 		}
