@@ -1,10 +1,13 @@
 const sdk = require('../../scripts/client.sdk.min.js');
+const DeviceManager = require('../workers/DeviceManager');
 
 export = class SymblWebEngine {
     sdk: typeof sdk = (window as any).rammerSdk;
     appConfig: any;
+    deviceManager: typeof DeviceManager;
     
     constructor() {
+        this.deviceManager = new DeviceManager();
     }
 
     async init(appConfig: any) {
@@ -13,7 +16,7 @@ export = class SymblWebEngine {
             appId: appConfig.appId,
             appSecret: appConfig.appSecret,
             basePath: appConfig.basePath || 'https://api.symbl.ai',
-            // logLevel: 'debug'
+            logLevel: 'debug'
         });
         console.log(this);
         return this;
