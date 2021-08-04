@@ -4,7 +4,7 @@ type DeviceConfig = {
 }
 
 export = class DeviceManager {
-	currentStream: typeof MediaStream;
+	currentStream: any;
 
 	/**
 	 * Get and return an audio/visual device to access a MediaStream
@@ -20,5 +20,16 @@ export = class DeviceManager {
 			console.log(`Error: ${err}`);
 			return stream;
 		}
+	}
+
+	deviceConnect() {
+		const stream = this.currentStream;
+		const AudioContext = window.AudioContext;
+		const context = new AudioContext();
+		const source = context.createMediaStreamSource(stream);
+		const gainNode = context.createGain();
+		source.connect(gainNode);
+
+		console.log(source)
 	}
 }
