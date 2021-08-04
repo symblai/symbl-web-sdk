@@ -40,9 +40,7 @@ export = class DeviceManager {
 			    targetBuffer[index] = 32767 * Math.min(1, inputData[index]);
 			}
 			// Send audio stream to websocket.
-			// if (connection.readyState === WebSocket.OPEN) {
-			 	connection.sendAudio(targetBuffer.buffer);
-			// }
+			connection.sendAudio(targetBuffer.buffer);
 		};
 	}
 }
