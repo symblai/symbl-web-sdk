@@ -27,6 +27,7 @@ export = class SymblWebEngine {
         if (connect) {
             this.connect(connection);
         }
+        return connection;
     }
 
     async connect(connection) {
