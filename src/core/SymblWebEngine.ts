@@ -5,7 +5,7 @@ export = class SymblWebEngine {
     sdk: typeof sdk = (window as any).rammerSdk;
     appConfig: any;
     deviceManager: typeof DeviceManager;
-    
+
     constructor() {
         this.deviceManager = new DeviceManager();
     }
