@@ -22,15 +22,26 @@ export = class DeviceManager {
 		}
 	}
 
-	deviceConnect(streamSource: any) {
-		const currentStream = streamSource || this.currentStream;
+	deviceConnect(streamSource: any, connection: any) {
 		const AudioContext = window.AudioContext;
 		const context = new AudioContext();
-		const source = context.createMediaStreamSource(currentStream);
+		const source = context.createMediaStreamSource(streamSource);
+		const processor = context.createScriptProcessor(1024, 1, 1);
 		const gainNode = context.createGain();
 		source.connect(gainNode);
-
-		const mediaRecorder = new MediaRecorder(currentStream);
-		return mediaRecorder;
+		gainNode.connect(processor);
+		processor.connect(context.destination);
+		processor.onaudioprocess = (e) => {
+			// convert to 16-bit payload
+			const inputData = e.inputBuffer.getChannelData(0);
+			const targetBuffer = new Int16Array(inputData.length);
+			for (let index = inputData.length; index > 0; index--) {
+			    targetBuffer[index] = 32767 * Math.min(1, inputData[index]);
+			}
+			// Send audio stream to websocket.
+			// if (connection.readyState === WebSocket.OPEN) {
+			 connection.sendAudio(targetBuffer.buffer);
+			// }
+		};
 	}
 }
