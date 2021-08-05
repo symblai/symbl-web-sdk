@@ -10,6 +10,9 @@ export = class SymblWebEngine {
         this.deviceManager = new DeviceManager();
     }
 
+    /**
+     * @param {object} appConfig - MediaStream configuration object  
+     */
     async init(appConfig: any) {
         console.log('appConfig', appConfig);
         await this.sdk.init({
@@ -22,6 +25,10 @@ export = class SymblWebEngine {
         return this;
     }
 
+    /**
+     * @param {object} config - Symbl realtime request config object
+     * @param {boolean} connect - indicate whether connection is immediate
+     */
     async startRealtimeRequest(config, connect) {
         const connection = await this.sdk.startRealtimeRequest(config);
         if (connect) {
@@ -30,12 +37,10 @@ export = class SymblWebEngine {
         return connection;
     }
 
+    /**
+     * @param {object} connection - Symbl realtime WebSocket connection object
+     */
     async connect(connection) {
         await this.deviceManager.deviceConnect(connection);
-    }
-
-    randomId(): string {
-        const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
-        return uint32.toString(16);
     }
 }
