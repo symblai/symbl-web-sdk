@@ -11,10 +11,10 @@ export = class SymblWebEngine {
     }
 
     /**
-     * @param {object} appConfig - MediaStream configuration object  
+     * Initializes SymblWebEngine with application configuration
+     * @param {object} appConfig - Symbl configuration object  
      */
     async init(appConfig: any) {
-        console.log('appConfig', appConfig);
         await this.sdk.init({
             appId: appConfig.appId,
             appSecret: appConfig.appSecret,
@@ -26,6 +26,7 @@ export = class SymblWebEngine {
     }
 
     /**
+     * Starts a request to the WebSocket-based Streaming API
      * @param {object} config - Symbl realtime request config object
      * @param {boolean} connect - indicate whether connection is immediate
      */
@@ -38,6 +39,7 @@ export = class SymblWebEngine {
     }
 
     /**
+     * Manually connects to the Symbl WebSocket endpoint
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
     async connect(connection) {
