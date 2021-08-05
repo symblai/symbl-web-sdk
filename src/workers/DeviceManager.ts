@@ -22,6 +22,10 @@ export = class DeviceManager {
 		}
 	}
 
+	/**
+	 * Connects MediaStream device to Symbl Websocket endpoint
+	 * @param {object} connection - Symbl Streaming API Websocket connection
+	 */
 	async deviceConnect(connection: any) {
 		const streamSource = await this.getDefaultDevice({audio: true, video: false});
 		const AudioContext = window.AudioContext;
@@ -43,4 +47,3 @@ export = class DeviceManager {
 			connection.sendAudio(targetBuffer.buffer);
 		};
 	}
-}
