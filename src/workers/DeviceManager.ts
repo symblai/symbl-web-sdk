@@ -47,3 +47,4 @@ export = class DeviceManager {
 			connection.sendAudio(targetBuffer.buffer);
 		};
 	}
+}
