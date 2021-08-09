@@ -30,7 +30,7 @@ export = class SymblWebEngine {
      * @param {object} config - Symbl realtime request config object
      * @param {boolean} connect - indicate whether connection is immediate
      */
-    async startRealtimeRequest(config: any, connect: any) {
+    async startRealtimeRequest(config: any, connect: boolean) {
         const connection = await this.sdk.startRealtimeRequest(config);
         if (connect) {
             this.connect(connection);
@@ -50,9 +50,10 @@ export = class SymblWebEngine {
      * Subscribe to existing connection in mostly non-interactive way
      * @param {string} connectionId - connection ID created on connection init
      * @param {function} cb - callback function to use data returned
+     * @param {boolean} isStreaming - specify if streaming (else telephony)
      */
-    async subscribe(connectionId: string, cb: any) {
-        const subscription = await this.sdk.subscribeToConnection(connectionId, cb);
+    async subscribe(connectionId: string, cb: any, isStreaming: boolean) {
+        const subscription = await this.sdk.subscribeToConnection(connectionId, cb, isStreaming);
         return subscription;
     }
 }
