@@ -1,6 +1,16 @@
 const sdk = require('../../scripts/client.sdk.min.js');
 const DeviceManager = require('../workers/DeviceManager');
 
+/*
+Classes:
+    ConnectionError
+    HttpError
+    NullError
+    ConfigError
+    All inehrit from Error
+*/
+
+
 export = class SymblWebEngine {
     sdk: typeof sdk = (window as any).rammerSdk;
     appConfig: any;
@@ -31,6 +41,12 @@ export = class SymblWebEngine {
      * @param {boolean} connect - indicate whether connection is immediate
      */
     async startRealtimeRequest(config: any, connect: boolean) {
+         /*
+            if config doesnt have rquired key {
+                throw ConfigError('<key name here> is missing');
+            }
+            if config is null throw NullError('Config is null');
+        */
         const connection = await this.sdk.startRealtimeRequest(config);
         if (connect) {
             this.connect(connection);
