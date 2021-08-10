@@ -2,41 +2,6 @@ const sdk = require("../../scripts/client.sdk.min.js");
 const DeviceManager = require("../workers/DeviceManager");
 const {ConfigError, NullError} = require("./services/ErrorHandler");
 
-interface SymblAppConfig {
-    appId: string;
-    appSecret: string;
-    basePath?: string;
-    logLevel?: string;
-}
-
-interface SymblRealtimeConnection {
-    conversationId: string;
-    sendAudio: unknown;
-    stop: unknown;
-}
-
-interface SymblRealtimeConfig {
-    id: string;
-    insightTypes?: Array<string>;
-    config?: {
-        meetingTitle?: string;
-        confidenceThreshold?: number;
-        timezoneOffset?: number;
-        languageCode?: string;
-        sampleRateHertz?: number;
-    };
-    speaker?: {
-        userId?: string;
-        name?: string;
-    }
-    handlers?: {
-        onSpeechDetected?: unknown;
-        onMessageResponse?: unknown;
-        onInsightResponse?: unknown;
-        onTopicResponse?: unknown;
-    }
-}
-
 export = class SymblWebEngine {
 
     sdk: typeof sdk = (window as any).rammerSdk;
@@ -55,7 +20,7 @@ export = class SymblWebEngine {
      * Initializes SymblWebEngine with application configuration
      * @param {object} appConfig - Symbl configuration object
      */
-    async init (appConfig: SymblAppConfig): Promise<object> {
+    async init (appConfig: SymblConfig): Promise<object> {
 
         if (appConfig === null) {
 
