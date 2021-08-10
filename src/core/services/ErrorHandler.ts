@@ -1,31 +1,43 @@
 export class ConnectionError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = "ConnectionError";
-	}
+
+    constructor (message: string) {
+
+        super(message);
+        this.name = "ConnectionError";
+
+    }
 
 }
 
 export class HttpError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = "HttpError";
-	}
+
+    constructor (message: string) {
+
+        super(message);
+        this.name = "HttpError";
+
+    }
 
 }
 
 export class NullError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = "NullError";
-	}
+
+    constructor (message: string) {
+
+        super(message);
+        this.name = "NullError";
+
+    }
 
 }
 
 export class ConfigError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = "ConfigError";
-	}
+
+    constructor (message: string) {
+
+        super(message);
+        this.name = "ConfigError";
+
+    }
 
 }
