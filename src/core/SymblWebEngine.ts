@@ -1,14 +1,6 @@
 const sdk = require('../../scripts/client.sdk.min.js');
 const DeviceManager = require('../workers/DeviceManager');
-
-/*
-Classes:
-    ConnectionError
-    HttpError
-    NullError
-    ConfigError
-    All inehrit from Error
-*/
+const { ConfigError, NullError } = require('./services/ErrorHandler');
 
 
 export = class SymblWebEngine {
@@ -25,13 +17,17 @@ export = class SymblWebEngine {
      * @param {object} appConfig - Symbl configuration object  
      */
     async init(appConfig: any) {
+        if (appConfig===null) { throw NullError("AppConfig is null"); }
+        if (!appConfig.appId) { throw ConfigError("AppID is missing"); }
+        if (!appConfig.appSecret) { throw ConfigError("AppSecret is missing"); }
+
         await this.sdk.init({
             appId: appConfig.appId,
             appSecret: appConfig.appSecret,
             basePath: appConfig.basePath || 'https://api.symbl.ai',
             logLevel: 'debug'
         });
-        console.log(this);
+        
         return this;
     }
 
@@ -63,13 +59,22 @@ export = class SymblWebEngine {
     }
 
     /**
-     * Subscribe to existing connection in mostly non-interactive way
+     * Subscribe to existing streaming connection in read-only
      * @param {string} connectionId - connection ID created on connection init
      * @param {function} cb - callback function to use data returned
-     * @param {boolean} isStreaming - specify if streaming (else telephony)
      */
-    async subscribe(connectionId: string, cb: any, isStreaming: boolean) {
-        const subscription = await this.sdk.subscribeToConnection(connectionId, cb, isStreaming);
+    async subscribeToStreaming(connectionId: string, cb: any) {
+        const subscription = await this.sdk.subscribeToConnection(connectionId, cb, true);
+        return subscription;
+    }
+
+    /**
+     * Subscribe to existing telephony connection in read-only
+     * @param {string} connectionId - connection ID created on connection init
+     * @param {function} cb - callback function to use data returned
+     */
+    async subscribeToTelephony(connectionId: string, cb: any) {
+        const subscription = await this.sdk.subscribeToConnection(connectionId, cb, false);
         return subscription;
     }
 }
