@@ -1,3 +1,5 @@
+const { ConfigError, NullError, ConnectionError } = require('../core/services/ErrorHandler');
+
 type DeviceConfig = {
 	audio: boolean;
 	video: boolean;
@@ -11,13 +13,16 @@ export = class DeviceManager {
 	 * @param {object} deviceConfig - options for MediaStream device  
 	 */
 	async getDefaultDevice(deviceConfig: DeviceConfig) {
+		if (deviceConfig===null) { throw new NullError("Device config is null"); }
+		if (!deviceConfig.audio) { throw new ConfigError("`audio` from Device Config not specified"); }
+		
 		let stream = null;
 		try {
 			stream = await navigator.mediaDevices.getUserMedia(deviceConfig);
 			this.currentStream = stream;
 			return stream;
 		} catch (err) {
-			console.log(`Error: ${err}`);
+			throw new ConnectionError(err);
 			return stream;
 		}
 	}
@@ -27,6 +32,8 @@ export = class DeviceManager {
 	 * @param {object} connection - Symbl Streaming API Websocket connection
 	 */
 	async deviceConnect(connection: any) {
+		if (connection===null) { throw new NullError("Websocket connection is null"); }
+
 		const streamSource = await this.getDefaultDevice({audio: true, video: false});
 		const AudioContext = window.AudioContext;
 		const context = new AudioContext();
@@ -44,7 +51,12 @@ export = class DeviceManager {
 			    targetBuffer[index] = 32767 * Math.min(1, inputData[index]);
 			}
 			// Send audio stream to websocket.
-			connection.sendAudio(targetBuffer.buffer);
+			try {
+				connection.sendAudio(targetBuffer.buffer);
+
+			} catch(err) {
+				throw new ConnectionError(err);
+			}
 		};
 	}
 }
