@@ -40,6 +40,7 @@ export = class SymblWebEngine {
      */
     async startRealtimeRequest(config: any, connect: boolean) {
         if (config === null) { throw new NullError("Realtime config is null"); }
+        if (!config) { throw new ConfigError("Realtime config is missing"); }
         if (!config.id) { throw new ConfigError("Meeting ID is missing"); }
 
         const connection = await this.sdk.startRealtimeRequest(config);
@@ -55,6 +56,7 @@ export = class SymblWebEngine {
      */
     async connect(connection: any) {
         if (connection === null) { throw new NullError("Realtime config is null"); }
+        if (!connection) { throw new ConfigError("Realtime websocket connection is missing"); }
 
         await this.deviceManager.deviceConnect(connection);
     }
@@ -66,6 +68,7 @@ export = class SymblWebEngine {
      */
     async subscribeToStreaming(connectionId: string, cb: any) {
         if (connectionId === null) { throw new NullError("Connection ID is null"); }
+        if (!connectionId) { throw new ConfigError("Connection ID is missing"); }
 
         const subscription = await this.sdk.subscribeToConnection(connectionId, cb, true);
         return subscription;
@@ -78,6 +81,7 @@ export = class SymblWebEngine {
      */
     async subscribeToTelephony(connectionId: string, cb: any) {
         if (connectionId === null) { throw new NullError("Connection ID is null"); }
+        if (!connectionId) { throw new ConfigError("Connection ID is missing"); }
 
         const subscription = await this.sdk.subscribeToConnection(connectionId, cb, false);
         return subscription;
