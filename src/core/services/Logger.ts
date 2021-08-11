@@ -1,4 +1,8 @@
-const JSLogger = require("../../../scripts/client.sdk.min.js").Logger;
+/* eslint-disable */
+declare const window: any;
+/* eslint-enable */
+
+const JSLogger = window.Logger;
 
 export = class Logger extends JSLogger {
 	constructor() {
