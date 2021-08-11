@@ -4,7 +4,9 @@ const {ConfigError, NullError} = require("./services/ErrorHandler");
 
 export = class SymblWebEngine {
 
+    /* eslint-disable */
     sdk: typeof sdk = (window as any).rammerSdk;
+    /* eslint-enable */
 
     appConfig: unknown;
 
@@ -20,7 +22,7 @@ export = class SymblWebEngine {
      * Initializes SymblWebEngine with application configuration
      * @param {object} appConfig - Symbl configuration object
      */
-    async init (appConfig: SymblConfig): Promise<object> {
+    async init (appConfig: SymblConfig): Promise<void> {
 
         if (appConfig === null) {
 
@@ -44,8 +46,6 @@ export = class SymblWebEngine {
             "basePath": appConfig.basePath || "https://api.symbl.ai",
             "logLevel": "debug"
         });
-
-        return this;
 
     }
 
@@ -110,7 +110,7 @@ export = class SymblWebEngine {
      * @param {function} cb - callback function to use data returned
      */
     async subscribeToStreaming (connectionId: string, cb: unknown):
-        Promise<object> {
+        Promise<void> {
 
         if (connectionId === null) {
 
@@ -123,13 +123,11 @@ export = class SymblWebEngine {
 
         }
 
-        const subscription = await this.sdk.subscribeToConnection(
+        await this.sdk.subscribeToConnection(
             connectionId,
             cb,
             true
         );
-
-        return subscription;
 
     }
 
@@ -139,7 +137,7 @@ export = class SymblWebEngine {
      * @param {function} cb - callback function to use data returned
      */
     async subscribeToTelephony (connectionId: string, cb: unknown):
-        Promise<object> {
+        Promise<void> {
 
         if (connectionId === null) {
 
@@ -152,13 +150,11 @@ export = class SymblWebEngine {
 
         }
 
-        const subscription = await this.sdk.subscribeToConnection(
+        await this.sdk.subscribeToConnection(
             connectionId,
             cb,
             false
         );
-
-        return subscription;
 
     }
 
