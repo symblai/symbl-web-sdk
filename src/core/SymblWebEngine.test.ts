@@ -174,13 +174,3 @@ test(
 
     }
 );
-
-test(
-    "ErrorHandler has methods from JS SDK",
-    () => {
-
-        const engine = new SymblWebEngine();
-        expect(engine.sdk.errorHandler.hasOwnProperty("getError"));
-
-    }
-);
