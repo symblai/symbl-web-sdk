@@ -55,6 +55,11 @@ export = class DeviceManager {
             throw new NullError("Websocket connection is null");
 
         }
+        if (!connection) {
+
+            throw new ConfigError("Websocket connection is missing");
+
+        }
 
         const streamSource = await this.getDefaultDevice({"audio": true,
             "video": false});
