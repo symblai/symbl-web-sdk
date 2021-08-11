@@ -12,9 +12,9 @@ export = class DeviceManager {
      */
     async getDefaultDevice (deviceConfig: DeviceConfig) {
 
-        if (deviceConfig === null) {
+        if (!deviceConfig) {
 
-            throw new NullError("Device config is null");
+            throw new NullError("Device config is missing");
 
         }
         if (!deviceConfig.audio) {
@@ -45,14 +45,9 @@ export = class DeviceManager {
      */
     async deviceConnect (connection: any) {
 
-        if (connection === null) {
-
-            throw new NullError("Websocket connection is null");
-
-        }
         if (!connection) {
 
-            throw new ConfigError("Websocket connection is missing");
+            throw new NullError("Websocket connection is missing");
 
         }
 
