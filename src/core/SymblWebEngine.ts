@@ -1,5 +1,6 @@
 const sdk = require("../../scripts/client.sdk.min.js");
 const DeviceManager = require("../workers/DeviceManager");
+const Logger = require("./services/Logger");
 const {ConfigError, NullError} = require("./services/ErrorHandler");
 
 export = class SymblWebEngine {
@@ -11,10 +12,12 @@ export = class SymblWebEngine {
     appConfig: unknown;
 
     deviceManager: typeof DeviceManager;
+    logger: typeof Logger;
 
     constructor () {
 
         this.deviceManager = new DeviceManager();
+        this.logger = new Logger();
 
     }
 
