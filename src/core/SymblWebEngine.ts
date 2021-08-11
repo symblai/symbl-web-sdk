@@ -91,7 +91,7 @@ export = class SymblWebEngine {
 
         if (connection === null) {
 
-            throw new NullError("Realtime config is null");
+            throw new NullError("Realtime websocket connection is null");
 
         }
         if (!connection) {
