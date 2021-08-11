@@ -7,9 +7,9 @@ test(
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.init(null);
+            await engine.init();
         } catch (err) {
-            expect(err).toEqual(new NullError("AppConfig is null"))
+            expect(err).toEqual(new NullError("AppConfig is missing"))
         }
     }
 );
@@ -46,22 +46,9 @@ test(
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.startRealtimeRequest(null);
-        } catch (err) {
-            expect(err).toEqual(new NullError("Realtime config is null"))
-        }
-    }
-);
-
-test(
-    "startRealtimeRequest(): Error returned on missing realtimeConfig",
-    async () => {
-        const engine = new SymblWebEngine();
-        expect.assertions(1);
-        try {
             await engine.startRealtimeRequest();
         } catch (err) {
-            expect(err).toEqual(new ConfigError("Realtime config is missing"))
+            expect(err).toEqual(new NullError("Realtime config is missing"))
         }
     }
 );
@@ -85,22 +72,9 @@ test(
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.connect(null);
-        } catch (err) {
-            expect(err).toEqual(new NullError("Realtime websocket connection is null"))
-        }
-    }
-);
-
-test(
-    "connect(): Error returned on missing realtime websocket connection",
-    async () => {
-        const engine = new SymblWebEngine();
-        expect.assertions(1);
-        try {
             await engine.connect();
         } catch (err) {
-            expect(err).toEqual(new ConfigError("Realtime websocket connection is missing"))
+            expect(err).toEqual(new NullError("Realtime websocket connection is missing"))
         }
     }
 );
@@ -111,22 +85,9 @@ test(
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.subscribeToStreaming(null);
-        } catch (err) {
-            expect(err).toEqual(new NullError("Connection ID is null"))
-        }
-    }
-);
-
-test(
-    "subscribeToStreaming(): Error returned on missing connection ID",
-    async () => {
-        const engine = new SymblWebEngine();
-        expect.assertions(1);
-        try {
             await engine.subscribeToStreaming();
         } catch (err) {
-            expect(err).toEqual(new ConfigError("Connection ID is missing"))
+            expect(err).toEqual(new NullError("Connection ID is missing"))
         }
     }
 );
@@ -137,22 +98,9 @@ test(
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.subscribeToTelephony(null);
-        } catch (err) {
-            expect(err).toEqual(new NullError("Connection ID is null"))
-        }
-    }
-);
-
-test(
-    "subscribeToTelephony(): Error returned on missing connection ID",
-    async () => {
-        const engine = new SymblWebEngine();
-        expect.assertions(1);
-        try {
             await engine.subscribeToTelephony();
         } catch (err) {
-            expect(err).toEqual(new ConfigError("Connection ID is missing"))
+            expect(err).toEqual(new NullError("Connection ID is missing"))
         }
     }
 );
@@ -162,15 +110,15 @@ test(
     () => {
 
         const engine = new SymblWebEngine();
-        expect(engine.sdk.logger.hasOwnProperty("getLevel"));
-        expect(engine.sdk.logger.hasOwnProperty("setLevel"));
-        expect(engine.sdk.logger.hasOwnProperty("setDefaultLevel"));
-        expect(engine.sdk.logger.hasOwnProperty("trace"));
-        expect(engine.sdk.logger.hasOwnProperty("debug"));
-        expect(engine.sdk.logger.hasOwnProperty("log"));
-        expect(engine.sdk.logger.hasOwnProperty("info"));
-        expect(engine.sdk.logger.hasOwnProperty("warn"));
-        expect(engine.sdk.logger.hasOwnProperty("error"));
+        expect(engine.logger.hasOwnProperty("getLevel"));
+        expect(engine.logger.hasOwnProperty("setLevel"));
+        expect(engine.logger.hasOwnProperty("setDefaultLevel"));
+        expect(engine.logger.hasOwnProperty("trace"));
+        expect(engine.logger.hasOwnProperty("debug"));
+        expect(engine.logger.hasOwnProperty("log"));
+        expect(engine.logger.hasOwnProperty("info"));
+        expect(engine.logger.hasOwnProperty("warn"));
+        expect(engine.logger.hasOwnProperty("error"));
 
     }
 );
