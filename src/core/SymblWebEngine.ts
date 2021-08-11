@@ -27,9 +27,9 @@ export = class SymblWebEngine {
      */
     async init (appConfig: SymblConfig): Promise<void> {
 
-        if (appConfig === null) {
+        if (!appConfig) {
 
-            throw new NullError("AppConfig is null");
+            throw new NullError("AppConfig is missing");
 
         }
         if (!appConfig.appId) {
@@ -60,14 +60,9 @@ export = class SymblWebEngine {
     async startRealtimeRequest (config: SymblRealtimeConfig, connect: boolean):
         Promise<SymblRealtimeConnection> {
 
-        if (config === null) {
-
-            throw new NullError("Realtime config is null");
-
-        }
         if (!config) {
 
-            throw new ConfigError("Realtime config is missing");
+            throw new NullError("Realtime config is missing");
 
         }
         if (!config.id) {
@@ -92,14 +87,9 @@ export = class SymblWebEngine {
      */
     async connect (connection: SymblRealtimeConnection): Promise<void> {
 
-        if (connection === null) {
-
-            throw new NullError("Realtime websocket connection is null");
-
-        }
         if (!connection) {
 
-            throw new ConfigError("Realtime websocket connection is missing");
+            throw new NullError("Realtime websocket connection is missing");
 
         }
 
@@ -115,14 +105,9 @@ export = class SymblWebEngine {
     async subscribeToStreaming (connectionId: string, cb: unknown):
         Promise<void> {
 
-        if (connectionId === null) {
-
-            throw new NullError("Connection ID is null");
-
-        }
         if (!connectionId) {
 
-            throw new ConfigError("Connection ID is missing");
+            throw new NullError("Connection ID is missing");
 
         }
 
@@ -142,11 +127,6 @@ export = class SymblWebEngine {
     async subscribeToTelephony (connectionId: string, cb: unknown):
         Promise<void> {
 
-        if (connectionId === null) {
-
-            throw new NullError("Connection ID is null");
-
-        }
         if (!connectionId) {
 
             throw new ConfigError("Connection ID is missing");
