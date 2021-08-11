@@ -10,8 +10,11 @@
     "@rammer/api-client": "^0.0.16",
     "@types/jest": "^26.0.24",
     "@types/node": "^16.3.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
     "babel-plugin-replace-ts-export-assignment": "0.0.2",
     "browserify": "^17.0.0",
+    "eslint": "^7.32.0",
     "jest": "^27.0.6",
     "jsdom": "^16.6.0",
     "npm-run-all": "^4.1.5",
@@ -25,8 +28,9 @@
     "webpack-cli": "^4.7.2"
   },
   "scripts": {
-    "watch": "tsc-watch --onSuccess \"npm run build\"",
+    "watch": "tsc-watch --onSuccess \"npm-run-all build:js build:min.js\"",
     "test": "jest --silent src --env=jsdom",
+    "build:lint": "eslint ./src/*",
     "build:ts": "tsc",
     "build:js": "node ./scripts/build.js ./scripts/symbl.js ./LICENSE.md ./dist/symbl.js",
     "build:min.js": "uglifyjs ./dist/symbl.js -o ./dist/symbl.min.js --comments \"/^! symbl.js/\" -b beautify=false,ascii_only=true",
