@@ -7,9 +7,9 @@ test(
         const deviceManager = new DeviceManager();
         expect.assertions(1);
         try {
-            await deviceManager.getDefaultDevice(null);
+            await deviceManager.getDefaultDevice();
         } catch (err) {
-            expect(err).toEqual(new NullError("Device config is null"))
+            expect(err).toEqual(new NullError("Device config is missing"))
         }
     }
 );
@@ -33,22 +33,9 @@ test(
         const deviceManager = new DeviceManager();
         expect.assertions(1);
         try {
-            await deviceManager.deviceConnect(null);
-        } catch (err) {
-            expect(err).toEqual(new NullError("Websocket connection is null"))
-        }
-    }
-);
-
-test(
-    "deviceConnect(): Error returned on missing deviceConfig",
-    async () => {
-        const deviceManager = new DeviceManager();
-        expect.assertions(1);
-        try {
             await deviceManager.deviceConnect();
         } catch (err) {
-            expect(err).toEqual(new ConfigError("Websocket connection is missing"))
+            expect(err).toEqual(new NullError("Websocket connection is missing"))
         }
     }
 );
