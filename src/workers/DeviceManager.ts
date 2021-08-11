@@ -2,11 +2,6 @@ const {
     ConfigError, NullError, ConnectionError
 } = require("../core/services/ErrorHandler");
 
-type DeviceConfig = {
-    audio: boolean;
-    video: boolean;
-}
-
 export = class DeviceManager {
 
     currentStream: any;
