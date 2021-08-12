@@ -72,7 +72,7 @@
         "lines-between-class-members": "error",
         "max-classes-per-file": "off",
         "max-depth": "error",
-        "max-len": "error",
+        "max-len": "off",
         "max-lines": "error",
         "max-lines-per-function": "off",
         "max-nested-callbacks": "error",
