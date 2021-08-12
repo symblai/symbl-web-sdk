@@ -12,12 +12,18 @@ export = class SymblWebEngine {
     appConfig: unknown;
 
     deviceManager: typeof DeviceManager;
+
     logger: typeof Logger;
 
-    constructor () {
+    /**
+     * Sets up the basic Symbl connection object
+     * @param {string} loggingLevel - establishes default log level
+     */
+    constructor (logLevel = "warn") {
 
         this.deviceManager = new DeviceManager();
         this.logger = new Logger();
+        this.logger.setDefaultLevel(logLevel);
 
     }
 
@@ -43,12 +49,25 @@ export = class SymblWebEngine {
 
         }
 
-        await this.sdk.init({
-            "appId": appConfig.appId,
-            "appSecret": appConfig.appSecret,
-            "basePath": appConfig.basePath || "https://api.symbl.ai",
-            "logLevel": "debug"
-        });
+        this.logger.info("Symbl: Connecting to Symbl");
+
+        try {
+
+            await this.sdk.init({
+                "appId": appConfig.appId,
+                "appSecret": appConfig.appSecret,
+                "basePath": appConfig.basePath || "https://api.symbl.ai"
+            });
+
+            this.logger.info("Symbl: Successfully connected to Symbl");
+
+        } catch (err) {
+
+            this.logger.error(err);
+            this.logger.trace(err);
+
+        }
+
 
     }
 
@@ -71,7 +90,12 @@ export = class SymblWebEngine {
 
         }
 
+        this.logger.info(`Symbl: Starting Realtime Request for ${config.id}`);
+
         const connection = await this.sdk.startRealtimeRequest(config);
+
+        this.logger.info(`Symbl: Completed Realtime Request for ${config.id}`);
+
         if (connect) {
 
             this.connect(connection);
@@ -93,7 +117,20 @@ export = class SymblWebEngine {
 
         }
 
-        await this.deviceManager.deviceConnect(connection);
+        this.logger.info("Symbl: Establishing Realtime Connection");
+
+        try {
+
+            await this.deviceManager.deviceConnect(connection);
+
+            this.logger.info("Symbl: Established Realtime Connection");
+
+        } catch (err) {
+
+            this.logger.error(err);
+            this.logger.trace(err);
+
+        }
 
     }
 
@@ -111,11 +148,24 @@ export = class SymblWebEngine {
 
         }
 
-        await this.sdk.subscribeToConnection(
-            connectionId,
-            cb,
-            true
-        );
+        this.logger.info(`Symbl: Subscribing to Streaming at ${connectionId}`);
+
+        try {
+
+            await this.sdk.subscribeToConnection(
+                connectionId,
+                cb,
+                true
+            );
+
+            this.logger.info(`Symbl: Subscribed to Streaming at ${connectionId}`);
+
+        } catch (err) {
+
+            this.logger.error(err);
+            this.logger.trace(err);
+
+        }
 
     }
 
@@ -133,11 +183,24 @@ export = class SymblWebEngine {
 
         }
 
-        await this.sdk.subscribeToConnection(
-            connectionId,
-            cb,
-            false
-        );
+        this.logger.info(`Symbl: Subscribing to Telephony at ${connectionId}`);
+
+        try {
+
+            await this.sdk.subscribeToConnection(
+                connectionId,
+                cb,
+                false
+            );
+
+            this.logger.info(`Symbl: Subscribed to Telephony at ${connectionId}`);
+
+        } catch (err) {
+
+            this.logger.error(err);
+            this.logger.trace(err);
+
+        }
 
     }
 
