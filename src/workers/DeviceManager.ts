@@ -1,16 +1,20 @@
 const {
-    ConfigError, NullError, ConnectionError
+    ConfigError, NullError
 } = require("../core/services/ErrorHandler");
+
+const Logger = require("../core/services/Logger");
 
 export = class DeviceManager {
 
-    currentStream: any;
+    currentStream: MediaStream;
+
+    logger: typeof Logger = new Logger();
 
     /**
      * Get and return an audio/visual device to access a MediaStream
      * @param {object} deviceConfig - options for MediaStream device
      */
-    async getDefaultDevice (deviceConfig: DeviceConfig) {
+    async getDefaultDevice (deviceConfig: MediaStreamConstraints): Promise<MediaStream> {
 
         if (!deviceConfig) {
 
@@ -24,15 +28,19 @@ export = class DeviceManager {
         }
 
         let stream = null;
+        this.logger.info("Sybml: Attempting to connect to device");
         try {
 
             stream = await navigator.mediaDevices.getUserMedia(deviceConfig);
             this.currentStream = stream;
+
+            this.logger.info("Symbl: Successfully connected to device");
             return stream;
 
         } catch (err) {
 
-            throw new ConnectionError(err);
+            this.logger.error(err);
+            this.logger.trace(err);
             return stream;
 
         }
@@ -43,7 +51,7 @@ export = class DeviceManager {
      * Connects MediaStream device to Symbl Websocket endpoint
      * @param {object} connection - Symbl Streaming API Websocket connection
      */
-    async deviceConnect (connection: any) {
+    async deviceConnect (connection: SymblRealtimeConnection): Promise<void> {
 
         if (!connection) {
 
@@ -79,13 +87,16 @@ export = class DeviceManager {
 
             }
             // Send audio stream to websocket.
+            this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
             try {
 
                 connection.sendAudio(targetBuffer.buffer);
+                this.logger.info("Symbl: Succesfully sending audio stream to Realtime connection");
 
             } catch (err) {
 
-                throw new ConnectionError(err);
+                this.logger.error(err);
+                this.logger.trace(err);
 
             }
 
