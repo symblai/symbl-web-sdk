@@ -1,6 +1,4 @@
-const {
-    ConfigError, NullError
-} = require("../core/services/ErrorHandler");
+const { ConfigError, NullError } = require("../core/services/ErrorHandler");
 
 const Logger = require("../core/services/Logger");
 
@@ -59,6 +57,9 @@ export = class DeviceManager {
 
         }
 
+
+        this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
+
         const streamSource = await this.getDefaultDevice({"audio": true,
             "video": false});
         const {AudioContext} = window;
@@ -87,11 +88,9 @@ export = class DeviceManager {
 
             }
             // Send audio stream to websocket.
-            this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
             try {
 
                 connection.sendAudio(targetBuffer.buffer);
-                this.logger.info("Symbl: Succesfully sending audio stream to Realtime connection");
 
             } catch (err) {
 
