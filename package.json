@@ -30,8 +30,8 @@
   },
   "scripts": {
     "watch": "tsc-watch --onSuccess \"npm-run-all build:js build:min.js\"",
-    "test": "jest --silent src --env=jsdom",
-    "test-verbose": "jest --verbose src --env=jsdom",
+    "test": "jest --silent tests --env=jsdom",
+    "test-verbose": "jest --verbose tests --env=jsdom",
     "lint": "eslint ./src/*",
     "doc": "jsdoc -r -c ./jsdoc.conf.json",
     "build:ts": "tsc",
