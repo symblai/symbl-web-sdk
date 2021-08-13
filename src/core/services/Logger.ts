@@ -5,7 +5,11 @@ declare const window: any;
 const JSLogger = window.Logger;
 
 export = class Logger extends JSLogger {
-	constructor() {
-		super();
-	}
+
+    constructor () {
+
+        super();
+
+    }
+
 }
