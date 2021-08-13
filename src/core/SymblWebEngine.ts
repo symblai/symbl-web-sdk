@@ -3,16 +3,25 @@ const DeviceManager = require("../workers/DeviceManager");
 const Logger = require("./services/Logger");
 const {ConfigError, NullError} = require("./services/ErrorHandler");
 
+
+/** Main Symbl Web SDK class */
 export = class SymblWebEngine {
 
     /* eslint-disable */
+    /**
+     * @ignore
+     */
     sdk: typeof sdk = (window as any).rammerSdk;
     /* eslint-enable */
 
-    appConfig: unknown;
-
+    /**
+     * @ignore
+     */
     deviceManager: typeof DeviceManager;
 
+    /**
+     * @ignore
+     */
     logger: typeof Logger;
 
     /**
@@ -139,7 +148,7 @@ export = class SymblWebEngine {
      * @param {string} connectionId - connection ID created on connection init
      * @param {function} cb - callback function to use data returned
      */
-    async subscribeToStreaming (connectionId: string, cb: unknown):
+    async subscribeToStreaming (connectionId: string, cb: () => any):
         Promise<void> {
 
         if (!connectionId) {
@@ -174,7 +183,7 @@ export = class SymblWebEngine {
      * @param {string} connectionId - connection ID created on connection init
      * @param {function} cb - callback function to use data returned
      */
-    async subscribeToTelephony (connectionId: string, cb: unknown):
+    async subscribeToTelephony (connectionId: string, cb: () => any):
         Promise<void> {
 
         if (!connectionId) {
