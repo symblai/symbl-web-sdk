@@ -21,9 +21,9 @@ export = class SymblWebEngine {
      */
     constructor (logLevel = "warn") {
 
-        this.deviceManager = new DeviceManager();
         this.logger = new Logger();
         this.logger.setDefaultLevel(logLevel);
+        this.deviceManager = new DeviceManager();
 
     }
 
