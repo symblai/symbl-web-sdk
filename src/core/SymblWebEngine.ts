@@ -1,4 +1,4 @@
-const sdk = require("../../scripts/client.sdk.min.js");
+const sdk = require("@symblai/symbl-js");
 const DeviceManager = require("../workers/DeviceManager");
 const Logger = require("./services/Logger");
 const {ConfigError, NullError} = require("./services/ErrorHandler");
