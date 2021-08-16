@@ -2,14 +2,82 @@
 <head>
 	<script src="../dist/symbl.min.js"></script>
 	<script>
-		const symbl = new sdk.Symbl.init({
-			appId: '6a6b7a773669724d316147547a586273376a677774446579474e50534a4c514d',
-			appSecret: '6632556e7653324a6d324e5977326b584c4266326557375f50695337764c76394c3531456636437a397a2d5f7059696e5a4831535048554e7a5a785130493357',
+		const symbl = new sdk.Symbl();
+		const id = btoa("symbl-ai-is-the-best");
+		symbl.init({
+			appId: '<your App ID>',
+			appSecret: '<your App Secret>',
+			basePath: '<your custom base path (optional)>',
 		});
+
+		async function connect() {
+			const connectionConfig = {
+		      id,
+		      insightTypes: ['action_item', 'question'],
+		      config: {
+		        meetingTitle: 'My Test Meeting',
+		        confidenceThreshold: 0.7,
+		        timezoneOffset: 480, // Offset in minutes from UTC
+		        languageCode: 'en-US',
+		        sampleRateHertz: 44100
+		      },
+		      speaker: {
+		        // Optional, if not specified, will simply not send an email in the end.
+		        userId: '', // Update with valid email
+		        name: ''
+		      },
+		      handlers: {
+		        /**
+		         * This will return live speech-to-text transcription of the call.
+		         */
+		        onSpeechDetected: (data) => {
+		          if (data) {
+		            const {punctuated} = data
+		            console.log('Live: ', punctuated && punctuated.transcript)
+		            console.log('');
+		          }
+		          // console.log('onSpeechDetected ', JSON.stringify(data, null, 2));
+		        },
+		        /**
+		         * When processed messages are available, this callback will be called.
+		         */
+		        onMessageResponse: (data) => {
+		          // console.log('onMessageResponse', JSON.stringify(data, null, 2))
+		        },
+		        /**
+		         * When Symbl detects an insight, this callback will be called.
+		         */
+		        onInsightResponse: (data) => {
+		          // console.log('onInsightResponse', JSON.stringify(data, null, 2))
+		        },
+		        /**
+		         * When Symbl detects a topic, this callback will be called.
+		         */
+		        onTopicResponse: (data) => {
+		          // console.log('onTopicResponse', JSON.stringify(data, null, 2))
+		        }
+		      }
+		    };
+
+			const connection = await symbl.startRealtimeRequest(connectionConfig, true);
+		}
+
+		function subscribe () {
+			symbl.subscribeToStreaming(id, (data) => {
+				console.log('data:', data);
+			})
+		}
+		
+
+		// const connection = await symbl.startRealtimeRequest(connectionConfig);
+		// symbl.connect(connection);
+
 	</script>
 </head>
 
 <body>
 	<p>test</p>
+	<button id="start-connection" onclick="connect()">Connect</button>
+	<button id="start-subscription" onclick="subscribe()">Subscribe</button>
 </body>
 </html>
