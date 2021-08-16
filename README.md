@@ -25,7 +25,14 @@ import { sdk } from "symbl";
 The SDK needs to be initialized with your account's credentials (appId & appSecret) which is
 available in your [Symbl Platform][api-keys].
 
-This section will be expanded.
+```js
+const symbl = new sdk.Symbl();
+symbl.init({
+	appId: '<your App ID>',
+	appSecret: '<your App Secret>',
+	basePath: '<your custom base path (optional)>',
+});
+```
 
 ## Transcribing live audio input through the microphone
 
@@ -33,21 +40,103 @@ As a simple test of the Streaming API you can simply setup a live microphone and
 
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
 
-* Will update with live audio example.
+```js
+const symbl = new sdk.Symbl();
+
+symbl.init({
+	appId: '<your App ID>',
+	appSecret: '<your App Secret>',
+	basePath: '<your custom base path (optional)>',
+});
+
+const id = btoa("symbl-ai-is-the-best");
+
+const connectionConfig = {
+	id,
+	insightTypes: ['action_item', 'question'],
+	config: {
+		meetingTitle: 'My Test Meeting ' + id,
+		confidenceThreshold: 0.7,
+		timezoneOffset: 480, // Offset in minutes from UTC
+		languageCode: 'en-US',
+		sampleRateHertz: 44100
+	},
+	speaker: {
+		// Optional, if not specified, will simply not send an email in the end.
+		userId: '', // Update with valid email
+		name: ''
+	},
+	handlers: {
+		/**
+		 * This will return live speech-to-text transcription of the call.
+		 */
+		onSpeechDetected: (data) => {
+		  if (data) {
+		    const {punctuated} = data
+		    console.log('Live: ', punctuated && punctuated.transcript)
+		    console.log('');
+		  }
+		  // console.log('onSpeechDetected ', JSON.stringify(data, null, 2));
+		},
+		/**
+		 * When processed messages are available, this callback will be called.
+		 */
+		onMessageResponse: (data) => {
+		  // console.log('onMessageResponse', JSON.stringify(data, null, 2))
+		},
+		/**
+		 * When Symbl detects an insight, this callback will be called.
+		 */
+		onInsightResponse: (data) => {
+		  // console.log('onInsightResponse', JSON.stringify(data, null, 2))
+		},
+		/**
+		 * When Symbl detects a topic, this callback will be called.
+		 */
+		onTopicResponse: (data) => {
+		  // console.log('onTopicResponse', JSON.stringify(data, null, 2))
+		}
+	}
+};
+
+(async () => {
+	const connection = await symbl.startRealtimeRequest(connectionConfig, true);
+})();
+```
+
+## Subscribing to an existing realtime connection with Subscribe API
+
+With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a separate tab.
+
+```js
+const symbl = new sdk.Symbl();
+
+symbl.init({
+	appId: '<your App ID>',
+	appSecret: '<your App Secret>',
+	basePath: '<your custom base path (optional)>',
+});
+
+const id = btoa("symbl-ai-is-the-best");
+
+symbl.subscribeToStreaming(id, (data) => {
+	console.log('data:', data);
+})
+```
 
 <!-- If you'd like to see a more in-depth examples for the Streaming API, please take a look at the extended Streaming examples [here][Streaming-Examples]. -->
 
-## Transcribing live audio input through Telephony API
+<!-- ## Transcribing live audio input through Telephony API
 
 As a simple test of the Telephony API you can call a phone number and see a live transcription of your phone call in the console.
 
-* Will update with live telephony example.
+* Will update with live telephony example. -->
 
 <!-- If you'd like to see a more in-depth examples for the Telephony API, please take a look at the extended Telephony examples [here][Telephony-Examples]. -->
 
-## Async Example
+<!-- ## Async Example
 
-* Will update with async example.
+* Will update with async example. -->
 
 ## Need support?
 
