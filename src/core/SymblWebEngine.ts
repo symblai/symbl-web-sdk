@@ -146,7 +146,7 @@ export = class SymblWebEngine {
      * @param {string} connectionId - connection ID created on connection init
      * @param {function} cb - callback function to use data returned
      */
-    async subscribeToStream (connectionId: string, cb: () => any):
+    async subscribeToStream (connectionId: string, cb: () => unknown):
         Promise<void> {
 
         if (!connectionId) {
@@ -180,7 +180,7 @@ export = class SymblWebEngine {
      * @param {string} connectionId - connection ID created on connection init
      * @param {function} cb - callback function to use data returned
      */
-    async subscribeToCall (connectionId: string, cb: () => any):
+    async subscribeToCall (connectionId: string, cb: () => unknown):
         Promise<void> {
 
         if (!connectionId) {

@@ -1,4 +1,4 @@
-const { ConfigError, NullError } = require("../core/services/ErrorHandler");
+const {ConfigError, NullError} = require("../core/services/ErrorHandler");
 
 const Logger = require("../core/services/Logger");
 
