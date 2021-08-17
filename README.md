@@ -119,7 +119,7 @@ symbl.init({
 
 const id = btoa("symbl-ai-is-the-best");
 
-symbl.subscribeToStreaming(id, (data) => {
+symbl.subscribeToStream(id, (data) => {
 	console.log('data:', data);
 })
 ```

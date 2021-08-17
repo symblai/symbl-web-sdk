@@ -148,7 +148,7 @@ export = class SymblWebEngine {
      * @param {string} connectionId - connection ID created on connection init
      * @param {function} cb - callback function to use data returned
      */
-    async subscribeToStreaming (connectionId: string, cb: () => any):
+    async subscribeToStream (connectionId: string, cb: () => any):
         Promise<void> {
 
         if (!connectionId) {
@@ -183,7 +183,7 @@ export = class SymblWebEngine {
      * @param {string} connectionId - connection ID created on connection init
      * @param {function} cb - callback function to use data returned
      */
-    async subscribeToTelephony (connectionId: string, cb: () => any):
+    async subscribeToCall (connectionId: string, cb: () => any):
         Promise<void> {
 
         if (!connectionId) {
@@ -192,7 +192,7 @@ export = class SymblWebEngine {
 
         }
 
-        this.logger.info(`Symbl: Subscribing to Telephony at ${connectionId}`);
+        this.logger.info(`Symbl: Subscribing to Call at ${connectionId}`);
 
         try {
 
@@ -202,7 +202,7 @@ export = class SymblWebEngine {
                 false
             );
 
-            this.logger.info(`Symbl: Subscribed to Telephony at ${connectionId}`);
+            this.logger.info(`Symbl: Subscribed to Call at ${connectionId}`);
 
         } catch (err) {
 
