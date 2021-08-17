@@ -80,12 +80,12 @@ test(
 );
 
 test(
-    "subscribeToStreaming(): Error returned on null connection ID",
+    "subscribeToStream(): Error returned on null connection ID",
     async () => {
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.subscribeToStreaming();
+            await engine.subscribeToStream();
         } catch (err) {
             expect(err).toEqual(new NullError("Connection ID is missing"))
         }
@@ -93,12 +93,12 @@ test(
 );
 
 test(
-    "subscribeToTelephony(): Error returned on null connection ID",
+    "subscribeToCall(): Error returned on null connection ID",
     async () => {
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.subscribeToTelephony();
+            await engine.subscribeToCall();
         } catch (err) {
             expect(err).toEqual(new NullError("Connection ID is missing"))
         }
