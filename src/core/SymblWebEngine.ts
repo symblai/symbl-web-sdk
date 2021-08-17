@@ -1,7 +1,7 @@
 const sdk = require("@symblai/symbl-js");
 const DeviceManager = require("../workers/DeviceManager");
 const Logger = require("./services/Logger");
-const {ConfigError, NullError} = require("./services/ErrorHandler");
+const {ConfigError, NullError, ConnectionError} = require("./services/ErrorHandler");
 
 
 /** Main Symbl Web SDK class */
@@ -72,8 +72,7 @@ export = class SymblWebEngine {
 
         } catch (err) {
 
-            this.logger.error(err);
-            this.logger.trace(err);
+            throw new ConnectionError(err);
 
         }
 
@@ -136,8 +135,7 @@ export = class SymblWebEngine {
 
         } catch (err) {
 
-            this.logger.error(err);
-            this.logger.trace(err);
+            throw new ConnectionError(err);
 
         }
 
@@ -171,8 +169,7 @@ export = class SymblWebEngine {
 
         } catch (err) {
 
-            this.logger.error(err);
-            this.logger.trace(err);
+            throw new ConnectionError(err);
 
         }
 
@@ -206,8 +203,7 @@ export = class SymblWebEngine {
 
         } catch (err) {
 
-            this.logger.error(err);
-            this.logger.trace(err);
+            throw new ConnectionError(err);
 
         }
 
