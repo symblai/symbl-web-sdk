@@ -2,11 +2,17 @@ const {NullError, ConnectionError} = require("../core/services/ErrorHandler");
 
 const Logger = require("../core/services/Logger");
 
+const Store = require("../core/services/Storage");
+
 export = class DeviceManager {
 
-    currentStream: MediaStream;
-
     logger: typeof Logger = new Logger();
+
+    store: typeof Store = new Store();
+
+    constructor () {
+        this.store.init();
+    }
 
     /**
      * Get and return an audio/visual device to access a MediaStream
@@ -18,7 +24,10 @@ export = class DeviceManager {
         try {
 
             stream = await this.getUserDevices();
-            this.currentStream = stream;
+
+            console.log(stream);
+
+            this.store.put("currentMediaStream", stream);
 
             this.logger.info("Symbl: Successfully connected to device");
             return stream;
