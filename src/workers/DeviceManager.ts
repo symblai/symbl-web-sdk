@@ -11,7 +11,9 @@ export = class DeviceManager {
     store: typeof Store = new Store();
 
     constructor () {
+
         this.store.init();
+
     }
 
     /**
@@ -25,9 +27,10 @@ export = class DeviceManager {
 
             stream = await this.getUserDevices();
 
-            console.log(stream);
-
-            this.store.put("currentMediaStream", stream);
+            this.store.put(
+                "currentMediaStream",
+                stream
+            );
 
             this.logger.info("Symbl: Successfully connected to device");
             return stream;

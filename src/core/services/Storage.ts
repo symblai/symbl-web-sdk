@@ -1,21 +1,26 @@
 export = class StorageService {
-	container: Storage;
 
-	init (): void {
+    container: Storage;
 
-		this.container = window.localStorage;
+    init (): void {
 
-	}
+        this.container = window.localStorage;
 
-	put(key: string, value: string): void {
+    }
 
-		this.container.setItem(key, value);
+    put (key: string, value: string): void {
 
-	}
+        this.container.setItem(
+            key,
+            value
+        );
 
-	get(key: string): void {
+    }
 
-		this.container.getItem(key);
+    get (key: string): void {
 
-	}
+        this.container.getItem(key);
+
+    }
+
 }
