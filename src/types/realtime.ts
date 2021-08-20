@@ -4,6 +4,22 @@ interface RealtimeUser {
     id: string;
 }
 
+interface SymblRealtimeConfig {
+    id: string;
+    insightTypes?: Array<string>;
+    config?: RealtimeOptionsConfig;
+    speaker?: RealtimeUser;
+    handlers?: RealtimeHandlers;
+}
+
+interface RealtimeOptionsConfig {
+    meetingTitle?: string;
+    confidenceThreshold?: number;
+    timezoneOffset?: number;
+    languageCode?: string;
+    sampleRateHertz?: number;
+}
+
 interface RawSpeechPayload {
     words: {
         word: string;
@@ -104,8 +120,14 @@ interface RealtimeTopicData {
 }
 
 interface RealtimeHandlers {
-    onSpeechDetected: (speechData: RealtimeSpeechData) => void;
-    onMessageResponse: (messageData: RealtimeMessageData[]) => void;
-    onInsightResponse: (insightData: RealtimeInsightData[]) => void;
-    onTopicResponse: (topicData: RealtimeTopicData[]) => void;
+    onSpeechDetected?: (speechData: RealtimeSpeechData[]) => void;
+    onMessageResponse?: (messageData: RealtimeMessageData[]) => void;
+    onInsightResponse?: (insightData: RealtimeInsightData[]) => void;
+    onTopicResponse?: (topicData: RealtimeTopicData[]) => void;
+}
+
+interface SymblRealtimeConnection {
+    conversationId: string;
+    sendAudio: (audioData: unknown) => void;
+    stop: () => void;
 }

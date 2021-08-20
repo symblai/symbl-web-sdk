@@ -1,3 +1,6 @@
 interface SymblConfig {
-    basePath: string;
+    appId: string;
+    appSecret: string;
+    basePath?: string;
+    logLevel?: string;
 }
