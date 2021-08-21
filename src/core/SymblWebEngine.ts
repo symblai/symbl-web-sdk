@@ -1,4 +1,4 @@
-const sdk = require("@symblai/symbl-js");
+const { sdk } = require("@symblai/symbl-js/build/client.sdk.min.js");
 const DeviceManager = require("../workers/DeviceManager");
 const Logger = require("./services/Logger");
 const {ConfigError, NullError, ConnectionError} = require("./services/ErrorHandler");
@@ -11,7 +11,7 @@ export = class SymblWebEngine {
     /**
      * @ignore
      */
-    sdk: typeof sdk = (window as any).rammerSdk;
+    sdk: typeof sdk = sdk;
     /* eslint-enable */
 
     /**
