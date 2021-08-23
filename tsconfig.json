@@ -2,10 +2,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "outDir": "build-tsc",
+    "outDir": "./build-tsc",
     "lib": [ "dom", "es5", "es6" ],
     "noImplicitAny": false,
     "allowJs": true,
+    "checkJs": false,
     "removeComments": true,
     "preserveConstEnums": true,
     // "outFile": "./build-tsc/web-sdk.js",

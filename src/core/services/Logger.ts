@@ -1,8 +1,4 @@
-/* eslint-disable */
-declare const window: any;
-/* eslint-enable */
-
-const JSLogger = window.Logger;
+const JSLogger = require("@symblai/symbl-js/build/client.sdk.min.js").Logger;
 
 export = class Logger extends JSLogger {
 
