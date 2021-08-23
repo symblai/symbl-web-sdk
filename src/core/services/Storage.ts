@@ -1,14 +1,22 @@
+const Logger = require("./Logger");
+
 export = class StorageService {
 
     container: Storage;
 
+    logger: typeof Logger = new Logger();
+
     init (): void {
+
+        this.logger.info("Started storage service");
 
         this.container = window.localStorage;
 
     }
 
     put (key: string, value: string): void {
+
+        this.logger.info(`Storing ${key} : ${value}`);
 
         this.container.setItem(
             key,
@@ -17,9 +25,9 @@ export = class StorageService {
 
     }
 
-    get (key: string): void {
+    get (key: string): string {
 
-        this.container.getItem(key);
+        return this.container.getItem(key);
 
     }
 

@@ -1,6 +1,7 @@
 const sdk = require("@symblai/symbl-js");
 const DeviceManager = require("../workers/DeviceManager");
 const Logger = require("./services/Logger");
+const Store = require("./services/Storage");
 const {ConfigError, NullError, ConnectionError} = require("./services/ErrorHandler");
 
 
@@ -25,6 +26,11 @@ export = class SymblWebEngine {
     logger: typeof Logger;
 
     /**
+     * @ignore
+     */
+    store: typeof Store;
+
+    /**
      * Sets up the basic Symbl connection object
      * @param {string} loggingLevel - establishes default log level
      */
@@ -33,6 +39,8 @@ export = class SymblWebEngine {
         this.logger = new Logger();
         this.logger.setDefaultLevel(logLevel);
         this.deviceManager = new DeviceManager();
+        this.store = new Store();
+        this.store.init();
 
     }
 

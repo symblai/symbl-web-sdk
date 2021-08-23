@@ -27,11 +27,6 @@ export = class DeviceManager {
 
             stream = await this.getUserDevices();
 
-            this.store.put(
-                "currentMediaStream",
-                stream
-            );
-
             this.logger.info("Symbl: Successfully connected to device");
             return stream;
 
