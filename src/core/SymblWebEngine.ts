@@ -133,7 +133,7 @@ export = class SymblWebEngine {
      * Reconnects to an existing realtime connection using stored connection
      * config with an expiration date.
      */
-    reconnect (): Promise<SymblRealtimeConnection> {
+    async reconnect (): Promise<SymblRealtimeConnection> {
 
         const config = JSON.parse(this.store.get("connectionConfig"));
         const exp = new Date(this.store.get("connectionConfigExpiration"));
@@ -144,10 +144,12 @@ export = class SymblWebEngine {
 
         }
 
-        return this.startRealtimeRequest(
+        const connection = await this.startRealtimeRequest(
             config,
             true
         );
+
+        return connection;
 
     }
 
