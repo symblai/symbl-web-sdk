@@ -138,9 +138,21 @@ export = class SymblWebEngine {
         const config = JSON.parse(this.store.get("connectionConfig"));
         const exp = new Date(this.store.get("connectionConfigExpiration"));
 
+        if (!exp) {
+
+            throw new NullError("There is no expiration set for the realtime configuration");
+
+        }
+
         if (new Date() > new Date(exp)) {
 
             throw new ConnectionError("Connection configuration has expired");
+
+        }
+
+        if (!config) {
+
+            throw new NullError("There is no saved realtime configuration");
 
         }
 
