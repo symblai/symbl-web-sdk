@@ -112,12 +112,6 @@ export = class SymblWebEngine {
 
         const connection = await this.sdk.startRealtimeRequest(config);
 
-        this.store.put(
-            "connectionConfig",
-            JSON.stringify(storedConfig),
-            1
-        );
-
         this.logger.info(`Symbl: Completed Realtime Request for ${config.id}`);
 
         if (connect) {
@@ -125,6 +119,23 @@ export = class SymblWebEngine {
             this.connect(connection);
 
         }
+
+        const storeConfig = () => {
+
+            this.store.put(
+                "connectionConfig",
+                JSON.stringify(storedConfig),
+                1
+            );
+
+        };
+
+        window.onbeforeunload = () => {
+
+            storeConfig();
+
+        };
+
         return connection;
 
     }
