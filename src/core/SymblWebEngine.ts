@@ -1,4 +1,4 @@
-const { sdk } = require("@symblai/symbl-js/build/client.sdk.min.js");
+const {sdk} = require("@symblai/symbl-js/build/client.sdk.min.js");
 const DeviceManager = require("../workers/DeviceManager");
 const Logger = require("./services/Logger");
 const Store = require("./services/Storage");
@@ -110,6 +110,12 @@ export = class SymblWebEngine {
 
         const connection = await this.sdk.startRealtimeRequest(config);
 
+        this.store.put(
+            "connectionConfig",
+            JSON.stringify(config),
+            3
+        );
+
         this.logger.info(`Symbl: Completed Realtime Request for ${config.id}`);
 
         if (connect) {
@@ -118,6 +124,28 @@ export = class SymblWebEngine {
 
         }
         return connection;
+
+    }
+
+    /**
+     * Reconnects to an existing realtime connection using stored connection
+     * config with an expiration date.
+     */
+    reconnect (): Promise<SymblRealtimeConnection> {
+
+        const config = JSON.parse(this.store.get("connectionConfig"));
+        const exp = new Date(this.store.get("connectionConfigExpiration"));
+
+        if (new Date() > new Date(exp)) {
+
+            throw new ConnectionError("Connection configuration has expired");
+
+        }
+
+        return this.startRealtimeRequest(
+            config,
+            true
+        );
 
     }
 
