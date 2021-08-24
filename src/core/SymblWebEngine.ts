@@ -150,10 +150,14 @@ export = class SymblWebEngine {
 
         }
 
+        this.logger.info("Symbl: Attempting to reconnect to Realtime websocket");
+
         const connection = await this.startRealtimeRequest(
             config,
             true
         );
+
+        this.logger.info("Symbl: Successfully reconnected to websocket");
 
         return connection;
 
