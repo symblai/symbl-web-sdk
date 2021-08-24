@@ -108,14 +108,14 @@ export = class SymblWebEngine {
 
         this.logger.info(`Symbl: Starting Realtime Request for ${config.id}`);
 
-        const connection = await this.sdk.startRealtimeRequest(config);
-
         const storedConfig = JSON.parse(JSON.stringify(config));
+
+        const connection = await this.sdk.startRealtimeRequest(config);
 
         this.store.put(
             "connectionConfig",
             JSON.stringify(storedConfig),
-            3
+            1
         );
 
         this.logger.info(`Symbl: Completed Realtime Request for ${config.id}`);
@@ -138,15 +138,9 @@ export = class SymblWebEngine {
         const config = JSON.parse(this.store.get("connectionConfig"));
         const exp = new Date(this.store.get("connectionConfigExpiration"));
 
-        if (!exp) {
-
-            throw new NullError("There is no expiration set for the realtime configuration");
-
-        }
-
         if (new Date() > new Date(exp)) {
 
-            throw new ConnectionError("Connection configuration has expired");
+            throw new ConfigError("Connection configuration has expired");
 
         }
 

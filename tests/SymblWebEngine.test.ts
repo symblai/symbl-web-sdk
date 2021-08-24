@@ -1,5 +1,5 @@
 const SymblWebEngine = require("../src/core/SymblWebEngine");
-const { NullError, ConfigError } = require("../src/core/services/ErrorHandler")
+const { NullError, ConfigError, ConnectionError } = require("../src/core/services/ErrorHandler")
 
 test(
     "init(): Error returned on null appConfig",
@@ -63,6 +63,46 @@ test(
         } catch (err) {
             expect(err).toEqual(new ConfigError("Meeting ID is missing"))
         }
+    }
+);
+
+
+
+test(
+    "reconnect(): Error returned on expired connectionConfig",
+    async () => {
+        const engine = new SymblWebEngine();
+
+        engine.store.delete("connectionConfigExpiration");
+        engine.store.delete("connectionConfig");
+
+        try {
+            await engine.reconnect();
+        } catch(err) {
+            expect(err).toEqual(new ConfigError("Connection configuration has expired"))
+        }
+
+    }
+);
+
+test(
+    "reconnect(): Error returned on no stored configuration",
+    async () => {
+        const engine = new SymblWebEngine();
+
+        engine.store.put(
+            "connectionConfig",
+            JSON.stringify({"id":1234}),
+            1
+        );
+        engine.store.delete("connectionConfig");
+
+        try {
+            await engine.reconnect();
+        } catch(err) {
+            expect(err).toEqual(new NullError("There is no saved realtime configuration"))
+        }
+
     }
 );
 

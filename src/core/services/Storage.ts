@@ -51,4 +51,10 @@ export = class StorageService {
 
     }
 
+    delete (key: string): void {
+
+        this.container.removeItem(key);
+
+    }
+
 }
