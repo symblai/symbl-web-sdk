@@ -106,13 +106,15 @@ export = class SymblWebEngine {
 
         }
 
+        const storedConfig = JSON.parse(JSON.stringify(config));
+
         this.logger.info(`Symbl: Starting Realtime Request for ${config.id}`);
 
         const connection = await this.sdk.startRealtimeRequest(config);
 
         this.store.put(
             "connectionConfig",
-            JSON.stringify(config),
+            JSON.stringify(storedConfig),
             3
         );
 
