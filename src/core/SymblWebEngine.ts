@@ -106,35 +106,54 @@ export = class SymblWebEngine {
 
         }
 
-        this.logger.info(`Symbl: Starting Realtime Request for ${config.id}`);
-
         const storedConfig = JSON.parse(JSON.stringify(config));
+
+        this.store.put(
+            "connectionConfig",
+            JSON.stringify(storedConfig)
+        );
+
+        this.logger.info(`Symbl: Starting Realtime Request for ${config.id}`);
 
         const connection = await this.sdk.startRealtimeRequest(config);
 
         this.logger.info(`Symbl: Completed Realtime Request for ${config.id}`);
+
+        const setExpiration = () => {
+
+            this.store.expiration(
+                "connectionConfig",
+                1
+            );
+
+        };
+
+        if (config.handlers.onDataReceived) {
+
+            const fn = config.handlers.onDataReceived.bind({});
+            config.handlers.onDataReceived = () => {
+
+                setExpiration();
+                fn();
+
+            };
+
+        } else {
+
+            config.handlers.onDataReceived = () => {
+
+                setExpiration();
+
+            };
+
+        }
+
 
         if (connect) {
 
             this.connect(connection);
 
         }
-
-        const storeConfig = () => {
-
-            this.store.put(
-                "connectionConfig",
-                JSON.stringify(storedConfig),
-                1
-            );
-
-        };
-
-        window.onbeforeunload = () => {
-
-            storeConfig();
-
-        };
 
         return connection;
 

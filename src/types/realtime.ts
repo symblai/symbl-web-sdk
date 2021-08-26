@@ -124,6 +124,7 @@ interface RealtimeHandlers {
     onMessageResponse?: (messageData: RealtimeMessageData[]) => void;
     onInsightResponse?: (insightData: RealtimeInsightData[]) => void;
     onTopicResponse?: (topicData: RealtimeTopicData[]) => void;
+    onDataReceived?: (data: unknown) => void;
 }
 
 interface SymblRealtimeConnection {

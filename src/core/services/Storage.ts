@@ -14,7 +14,19 @@ export = class StorageService {
 
     }
 
-    put (key: string, value: string, expiration: number): void {
+    put (key: string, value: string): void {
+
+        this.logger.info(`Storing ${key} : ${value}`);
+
+        this.container.setItem(
+            key,
+            value
+        );
+
+    }
+
+    expiration (key: string, value: string): void {
+
 
         const addMinutes = (dt, minutes) => {
 
@@ -26,17 +38,10 @@ export = class StorageService {
 
         const exp = addMinutes(
             now,
-            expiration
+            value
         ).toString();
 
-        this.logger.info(`Storing ${key} : ${value}`);
-
-        this.container.setItem(
-            key,
-            value
-        );
-
-        this.logger.info(`Storing ${key}Expiration : ${exp}`);
+        this.logger.info(`Setting expiration for ${key}`);
 
         this.container.setItem(
             `${key}Expiration`,
