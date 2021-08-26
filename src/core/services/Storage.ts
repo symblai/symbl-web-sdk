@@ -25,7 +25,7 @@ export = class StorageService {
 
     }
 
-    expiration (key: string, value: string): void {
+    expiration (key: string, value: number): void {
 
 
         const addMinutes = (dt, minutes) => {
