@@ -92,9 +92,10 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_SymblWebEngine.export_.html#connect" class="tsd-kind-icon">connect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_SymblWebEngine.export_.html#init" class="tsd-kind-icon">init</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_SymblWebEngine.export_.html#reconnect" class="tsd-kind-icon">reconnect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_SymblWebEngine.export_.html#startRealtimeRequest" class="tsd-kind-icon">start<wbr>Realtime<wbr>Request</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_SymblWebEngine.export_.html#subscribeToStreaming" class="tsd-kind-icon">subscribe<wbr>ToStreaming</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_SymblWebEngine.export_.html#subscribeToTelephony" class="tsd-kind-icon">subscribe<wbr>ToTelephony</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_SymblWebEngine.export_.html#subscribeToCall" class="tsd-kind-icon">subscribe<wbr>ToCall</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_SymblWebEngine.export_.html#subscribeToStream" class="tsd-kind-icon">subscribe<wbr>ToStream</a></li>
 							</ul>
 						</section>
 					</div>
@@ -112,7 +113,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/17c8cf2/src/core/SymblWebEngine.ts#L121">src/core/SymblWebEngine.ts:121</a></li>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/SymblWebEngine.ts#L181">src/core/SymblWebEngine.ts:181</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -143,7 +144,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/17c8cf2/src/core/SymblWebEngine.ts#L43">src/core/SymblWebEngine.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/SymblWebEngine.ts#L51">src/core/SymblWebEngine.ts:51</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -165,6 +166,29 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="reconnect" class="tsd-anchor"></a>
+					<h3>reconnect</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">reconnect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types_realtime.SymblRealtimeConnection.html" class="tsd-signature-type" data-tsd-kind="Interface">SymblRealtimeConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/SymblWebEngine.ts#L147">src/core/SymblWebEngine.ts:147</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Reconnects to an existing realtime connection using stored connection
+									config with an expiration date.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types_realtime.SymblRealtimeConnection.html" class="tsd-signature-type" data-tsd-kind="Interface">SymblRealtimeConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="startRealtimeRequest" class="tsd-anchor"></a>
 					<h3>start<wbr>Realtime<wbr>Request</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -174,7 +198,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/17c8cf2/src/core/SymblWebEngine.ts#L88">src/core/SymblWebEngine.ts:88</a></li>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/SymblWebEngine.ts#L95">src/core/SymblWebEngine.ts:95</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -202,65 +226,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="subscribeToStreaming" class="tsd-anchor"></a>
-					<h3>subscribe<wbr>ToStreaming</h3>
+					<a name="subscribeToCall" class="tsd-anchor"></a>
+					<h3>subscribe<wbr>ToCall</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">subscribe<wbr>ToStreaming<span class="tsd-signature-symbol">(</span>connectionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">subscribe<wbr>ToCall<span class="tsd-signature-symbol">(</span>connectionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/17c8cf2/src/core/SymblWebEngine.ts#L151">src/core/SymblWebEngine.ts:151</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Subscribe to existing streaming connection in read-only</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>connectionId: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>connection ID created on connection init</p>
-									</div>
-								</li>
-								<li>
-									<h5>cb: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>callback function to use data returned</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="subscribeToTelephony" class="tsd-anchor"></a>
-					<h3>subscribe<wbr>ToTelephony</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">subscribe<wbr>ToTelephony<span class="tsd-signature-symbol">(</span>connectionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/17c8cf2/src/core/SymblWebEngine.ts#L186">src/core/SymblWebEngine.ts:186</a></li>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/SymblWebEngine.ts#L244">src/core/SymblWebEngine.ts:244</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -277,18 +252,67 @@
 									</div>
 								</li>
 								<li>
-									<h5>cb: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
+									<h5>cb: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">unknown</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>callback function to use data returned</p>
 									</div>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">unknown</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="subscribeToStream" class="tsd-anchor"></a>
+					<h3>subscribe<wbr>ToStream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">subscribe<wbr>ToStream<span class="tsd-signature-symbol">(</span>connectionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/SymblWebEngine.ts#L210">src/core/SymblWebEngine.ts:210</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Subscribe to existing streaming connection in read-only</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>connectionId: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>connection ID created on connection init</p>
+									</div>
+								</li>
+								<li>
+									<h5>cb: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">unknown</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>callback function to use data returned</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">unknown</span></h4>
 												</li>
 											</ul>
 										</li>
@@ -315,6 +339,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/core_services_Logger.html">core/services/<wbr>Logger</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/core_services_Storage.html">core/services/<wbr>Storage</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/index.html">index</a>
@@ -353,13 +380,16 @@
 								<a href="core_SymblWebEngine.export_.html#init" class="tsd-kind-icon">init</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="core_SymblWebEngine.export_.html#reconnect" class="tsd-kind-icon">reconnect</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="core_SymblWebEngine.export_.html#startRealtimeRequest" class="tsd-kind-icon">start<wbr>Realtime<wbr>Request</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="core_SymblWebEngine.export_.html#subscribeToStreaming" class="tsd-kind-icon">subscribe<wbr>ToStreaming</a>
+								<a href="core_SymblWebEngine.export_.html#subscribeToCall" class="tsd-kind-icon">subscribe<wbr>ToCall</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="core_SymblWebEngine.export_.html#subscribeToTelephony" class="tsd-kind-icon">subscribe<wbr>ToTelephony</a>
+								<a href="core_SymblWebEngine.export_.html#subscribeToStream" class="tsd-kind-icon">subscribe<wbr>ToStream</a>
 							</li>
 						</ul>
 					</li>

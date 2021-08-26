@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">Error</span>
+						<span class="tsd-signature-type">ErrorHandler</span>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">NullError</span>
@@ -91,9 +91,10 @@
 								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="core_services_ErrorHandler.NullError.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-inherited tsd-is-external">
+						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="core_services_ErrorHandler.NullError.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="core_services_ErrorHandler.NullError.html#message" class="tsd-kind-icon">message</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="core_services_ErrorHandler.NullError.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="core_services_ErrorHandler.NullError.html#stack" class="tsd-kind-icon">stack</a></li>
@@ -121,9 +122,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides Error.constructor</p>
+								<p>Overrides ErrorHandler.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/17c8cf2/src/core/services/ErrorHandler.ts#L25">src/core/services/ErrorHandler.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/services/ErrorHandler.ts#L47">src/core/services/ErrorHandler.ts:47</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -137,14 +138,25 @@
 					</ul>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-external">
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a name="logger" class="tsd-anchor"></a>
+					<h3>logger</h3>
+					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from ErrorHandler.logger</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/services/ErrorHandler.ts#L5">src/core/services/ErrorHandler.ts:5</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="message" class="tsd-anchor"></a>
 					<h3>message</h3>
 					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Error.message</p>
+						<p>Inherited from ErrorHandler.message</p>
 						<ul>
 							<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:974</li>
 						</ul>
@@ -155,7 +167,7 @@
 					<h3>name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Error.name</p>
+						<p>Inherited from ErrorHandler.name</p>
 						<ul>
 							<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:973</li>
 						</ul>
@@ -166,7 +178,7 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> stack</h3>
 					<div class="tsd-signature tsd-kind-icon">stack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Error.stack</p>
+						<p>Inherited from ErrorHandler.stack</p>
 						<ul>
 							<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:975</li>
 						</ul>
@@ -177,7 +189,7 @@
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagOptional">Optional</span> prepare<wbr>Stack<wbr>Trace</h3>
 					<div class="tsd-signature tsd-kind-icon">prepare<wbr>Stack<wbr>Trace<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span>, stackTraces<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CallSite</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Error.prepareStackTrace</p>
+						<p>Inherited from ErrorHandler.prepareStackTrace</p>
 						<ul>
 							<li>Defined in node_modules/@types/node/globals.d.ts:11</li>
 						</ul>
@@ -217,7 +229,7 @@
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> stack<wbr>Trace<wbr>Limit</h3>
 					<div class="tsd-signature tsd-kind-icon">stack<wbr>Trace<wbr>Limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Error.stackTraceLimit</p>
+						<p>Inherited from ErrorHandler.stackTraceLimit</p>
 						<ul>
 							<li>Defined in node_modules/@types/node/globals.d.ts:13</li>
 						</ul>
@@ -235,7 +247,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from Error.captureStackTrace</p>
+								<p>Inherited from ErrorHandler.captureStackTrace</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/globals.d.ts:4</li>
 								</ul>
@@ -274,6 +286,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/core_services_Logger.html">core/services/<wbr>Logger</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/core_services_Storage.html">core/services/<wbr>Storage</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/index.html">index</a>
@@ -317,6 +332,9 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 								<a href="core_services_ErrorHandler.NullError.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="core_services_ErrorHandler.NullError.html#logger" class="tsd-kind-icon">logger</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="core_services_ErrorHandler.NullError.html#message" class="tsd-kind-icon">message</a>
 							</li>
@@ -358,6 +376,9 @@
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 			</ul>
 		</div>
 	</div>

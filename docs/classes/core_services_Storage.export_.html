@@ -55,10 +55,10 @@
 					<a href="../modules.html">web-sdk</a>
 				</li>
 				<li>
-					<a href="../modules/workers_DeviceManager.html">workers/DeviceManager</a>
+					<a href="../modules/core_services_Storage.html">core/services/Storage</a>
 				</li>
 				<li>
-					<a href="workers_DeviceManager.export_.html">export&#x3D;</a>
+					<a href="core_services_Storage.export_.html">export&#x3D;</a>
 				</li>
 			</ul>
 			<h1>Class export&#x3D;</h1>
@@ -83,17 +83,17 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="workers_DeviceManager.export_.html#logger" class="tsd-kind-icon">logger</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="workers_DeviceManager.export_.html#store" class="tsd-kind-icon">store</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="core_services_Storage.export_.html#container" class="tsd-kind-icon">container</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="core_services_Storage.export_.html#logger" class="tsd-kind-icon">logger</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="workers_DeviceManager.export_.html#deviceConnect" class="tsd-kind-icon">device<wbr>Connect</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="workers_DeviceManager.export_.html#getDefaultDevice" class="tsd-kind-icon">get<wbr>Default<wbr>Device</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="workers_DeviceManager.export_.html#getUserDevices" class="tsd-kind-icon">get<wbr>User<wbr>Devices</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="workers_DeviceManager.export_.html#isAppleMicrophone" class="tsd-kind-icon">is<wbr>Apple<wbr>Microphone</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_services_Storage.export_.html#delete" class="tsd-kind-icon">delete</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_services_Storage.export_.html#get" class="tsd-kind-icon">get</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_services_Storage.export_.html#init" class="tsd-kind-icon">init</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core_services_Storage.export_.html#put" class="tsd-kind-icon">put</a></li>
 							</ul>
 						</section>
 					</div>
@@ -102,22 +102,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="container" class="tsd-anchor"></a>
+					<h3>container</h3>
+					<div class="tsd-signature tsd-kind-icon">container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Storage</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/services/Storage.ts#L5">src/core/services/Storage.ts:5</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="logger" class="tsd-anchor"></a>
 					<h3>logger</h3>
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/workers/DeviceManager.ts#L9">src/workers/DeviceManager.ts:9</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="store" class="tsd-anchor"></a>
-					<h3>store</h3>
-					<div class="tsd-signature tsd-kind-icon">store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = ...</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/workers/DeviceManager.ts#L11">src/workers/DeviceManager.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/services/Storage.ts#L7">src/core/services/Storage.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -125,105 +125,94 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="deviceConnect" class="tsd-anchor"></a>
-					<h3>device<wbr>Connect</h3>
+					<a name="delete" class="tsd-anchor"></a>
+					<h3>delete</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">device<wbr>Connect<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="../interfaces/types_realtime.SymblRealtimeConnection.html" class="tsd-signature-type" data-tsd-kind="Interface">SymblRealtimeConnection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/workers/DeviceManager.ts#L127">src/workers/DeviceManager.ts:127</a></li>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/services/Storage.ts#L54">src/core/services/Storage.ts:54</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Connects MediaStream device to Symbl Websocket endpoint</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>connection: <a href="../interfaces/types_realtime.SymblRealtimeConnection.html" class="tsd-signature-type" data-tsd-kind="Interface">SymblRealtimeConnection</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Symbl Streaming API Websocket connection</p>
-									</div>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getDefaultDevice" class="tsd-anchor"></a>
-					<h3>get<wbr>Default<wbr>Device</h3>
+					<a name="get" class="tsd-anchor"></a>
+					<h3>get</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Default<wbr>Device<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types_device.html#MediaStream-1" class="tsd-signature-type" data-tsd-kind="Variable">MediaStream</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/workers/DeviceManager.ts#L22">src/workers/DeviceManager.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/services/Storage.ts#L48">src/core/services/Storage.ts:48</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Get and return an audio/visual device to access a MediaStream</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types_device.html#MediaStream-1" class="tsd-signature-type" data-tsd-kind="Variable">MediaStream</a><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getUserDevices" class="tsd-anchor"></a>
-					<h3>get<wbr>User<wbr>Devices</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>User<wbr>Devices<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types_device.html#MediaStream-1" class="tsd-signature-type" data-tsd-kind="Variable">MediaStream</a><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/workers/DeviceManager.ts#L57">src/workers/DeviceManager.ts:57</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Gets all available user devices and connects to the appropriate one.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types_device.html#MediaStream-1" class="tsd-signature-type" data-tsd-kind="Variable">MediaStream</a><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="isAppleMicrophone" class="tsd-anchor"></a>
-					<h3>is<wbr>Apple<wbr>Microphone</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Apple<wbr>Microphone<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/workers/DeviceManager.ts#L45">src/workers/DeviceManager.ts:45</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Checks if the MediaDeviceInfo includes labels for Apple devices.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>device: <span class="tsd-signature-type">MediaDeviceInfo</span></h5>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="init" class="tsd-anchor"></a>
+					<h3>init</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">init<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/services/Storage.ts#L9">src/core/services/Storage.ts:9</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="put" class="tsd-anchor"></a>
+					<h3>put</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">put<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, expiration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/12fc58c/src/core/services/Storage.ts#L17">src/core/services/Storage.ts:17</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>value: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>expiration: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -244,7 +233,7 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/core_services_Logger.html">core/services/<wbr>Logger</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="../modules/core_services_Storage.html">core/services/<wbr>Storage</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -265,7 +254,7 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/types_responses.html">types/responses</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="../modules/workers_DeviceManager.html">workers/<wbr>Device<wbr>Manager</a>
 					</li>
 				</ul>
@@ -275,25 +264,25 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="workers_DeviceManager.export_.html" class="tsd-kind-icon">export&#61;</a>
+						<a href="core_services_Storage.export_.html" class="tsd-kind-icon">export&#61;</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="workers_DeviceManager.export_.html#logger" class="tsd-kind-icon">logger</a>
+								<a href="core_services_Storage.export_.html#container" class="tsd-kind-icon">container</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="workers_DeviceManager.export_.html#store" class="tsd-kind-icon">store</a>
+								<a href="core_services_Storage.export_.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="workers_DeviceManager.export_.html#deviceConnect" class="tsd-kind-icon">device<wbr>Connect</a>
+								<a href="core_services_Storage.export_.html#delete" class="tsd-kind-icon">delete</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="workers_DeviceManager.export_.html#getDefaultDevice" class="tsd-kind-icon">get<wbr>Default<wbr>Device</a>
+								<a href="core_services_Storage.export_.html#get" class="tsd-kind-icon">get</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="workers_DeviceManager.export_.html#getUserDevices" class="tsd-kind-icon">get<wbr>User<wbr>Devices</a>
+								<a href="core_services_Storage.export_.html#init" class="tsd-kind-icon">init</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="workers_DeviceManager.export_.html#isAppleMicrophone" class="tsd-kind-icon">is<wbr>Apple<wbr>Microphone</a>
+								<a href="core_services_Storage.export_.html#put" class="tsd-kind-icon">put</a>
 							</li>
 						</ul>
 					</li>

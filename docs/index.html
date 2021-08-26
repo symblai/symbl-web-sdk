@@ -81,30 +81,122 @@
 				</a>
 				<p>The SDK needs to be initialized with your account&#39;s credentials (appId &amp; appSecret) which is
 				available in your <a href="https://platform.symbl.ai/#/login">Symbl Platform</a>.</p>
-				<p>This section will be expanded.</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">symbl</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">sdk</span><span style="color: #000000">.</span><span style="color: #795E26">Symbl</span><span style="color: #000000">();</span>
+<span style="color: #001080">symbl</span><span style="color: #000000">.</span><span style="color: #795E26">init</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">appId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your App ID&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">appSecret:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your App Secret&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">basePath:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your custom base path (optional)&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">});</span>
+</code></pre>
 				<a href="#transcribing-live-audio-input-through-the-microphone" id="transcribing-live-audio-input-through-the-microphone" style="color: inherit; text-decoration: none;">
 					<h2>Transcribing live audio input through the microphone</h2>
 				</a>
 				<p>As a simple test of the Streaming API you can simply setup a live microphone and push the audio stream using the browser APIs to access the microphone.</p>
 				<p>Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.</p>
-				<ul>
-					<li>Will update with live audio example.</li>
-				</ul>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">symbl</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">sdk</span><span style="color: #000000">.</span><span style="color: #795E26">Symbl</span><span style="color: #000000">();</span>
+
+<span style="color: #001080">symbl</span><span style="color: #000000">.</span><span style="color: #795E26">init</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">appId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your App ID&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">appSecret:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your App Secret&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">basePath:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your custom base path (optional)&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">id</span><span style="color: #000000"> = </span><span style="color: #795E26">btoa</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;symbl-ai-is-the-best&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connectionConfig</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">    </span><span style="color: #001080">id</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">insightTypes:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;action_item&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;question&#039;</span><span style="color: #000000">],</span>
+<span style="color: #000000">    </span><span style="color: #001080">config:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">meetingTitle:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;My Test Meeting &#039;</span><span style="color: #000000"> + </span><span style="color: #001080">id</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">confidenceThreshold:</span><span style="color: #000000"> </span><span style="color: #098658">0.7</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">timezoneOffset:</span><span style="color: #000000"> </span><span style="color: #098658">480</span><span style="color: #000000">, </span><span style="color: #008000">// Offset in minutes from UTC</span>
+<span style="color: #000000">        </span><span style="color: #001080">languageCode:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;en-US&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">sampleRateHertz:</span><span style="color: #000000"> </span><span style="color: #098658">44100</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">speaker:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Optional, if not specified, will simply not send an email in the end.</span>
+<span style="color: #000000">        </span><span style="color: #001080">userId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&#039;</span><span style="color: #000000">, </span><span style="color: #008000">// Update with valid email</span>
+<span style="color: #000000">        </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&#039;</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">handlers:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #008000">/**</span>
+<span style="color: #008000">         * This will return live speech-to-text transcription of the call.</span>
+<span style="color: #008000">         */</span>
+<span style="color: #000000">        </span><span style="color: #795E26">onSpeechDetected</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">data</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">          </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">data</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #0000FF">const</span><span style="color: #000000"> {</span><span style="color: #0070C1">punctuated</span><span style="color: #000000">} = </span><span style="color: #001080">data</span>
+<span style="color: #000000">            </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Live: &#039;</span><span style="color: #000000">, </span><span style="color: #001080">punctuated</span><span style="color: #000000"> &amp;&amp; </span><span style="color: #001080">punctuated</span><span style="color: #000000">.</span><span style="color: #001080">transcript</span><span style="color: #000000">)</span>
+<span style="color: #000000">            </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">          }</span>
+<span style="color: #000000">          </span><span style="color: #008000">// console.log(&#039;onSpeechDetected &#039;, JSON.stringify(data, null, 2));</span>
+<span style="color: #000000">        },</span>
+<span style="color: #000000">        </span><span style="color: #008000">/**</span>
+<span style="color: #008000">         * When processed messages are available, this callback will be called.</span>
+<span style="color: #008000">         */</span>
+<span style="color: #000000">        </span><span style="color: #795E26">onMessageResponse</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">data</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">          </span><span style="color: #008000">// console.log(&#039;onMessageResponse&#039;, JSON.stringify(data, null, 2))</span>
+<span style="color: #000000">        },</span>
+<span style="color: #000000">        </span><span style="color: #008000">/**</span>
+<span style="color: #008000">         * When Symbl detects an insight, this callback will be called.</span>
+<span style="color: #008000">         */</span>
+<span style="color: #000000">        </span><span style="color: #795E26">onInsightResponse</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">data</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">          </span><span style="color: #008000">// console.log(&#039;onInsightResponse&#039;, JSON.stringify(data, null, 2))</span>
+<span style="color: #000000">        },</span>
+<span style="color: #000000">        </span><span style="color: #008000">/**</span>
+<span style="color: #008000">         * When Symbl detects a topic, this callback will be called.</span>
+<span style="color: #008000">         */</span>
+<span style="color: #000000">        </span><span style="color: #795E26">onTopicResponse</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">data</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">          </span><span style="color: #008000">// console.log(&#039;onTopicResponse&#039;, JSON.stringify(data, null, 2))</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #000000">(</span><span style="color: #0000FF">async</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connection</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">symbl</span><span style="color: #000000">.</span><span style="color: #795E26">startRealtimeRequest</span><span style="color: #000000">(</span><span style="color: #001080">connectionConfig</span><span style="color: #000000">, </span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+<span style="color: #000000">})();</span>
+</code></pre>
+				<a href="#reconnecting-to-an-existing-realtime-connection" id="reconnecting-to-an-existing-realtime-connection" style="color: inherit; text-decoration: none;">
+					<h2>Reconnecting to an existing realtime connection</h2>
+				</a>
+				<p>In the case that a user closes their browser or has an interruption in their connection, you can call a reconnect function to reconnect using configuration details saved from the initial realtime request.</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">symbl</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">sdk</span><span style="color: #000000">.</span><span style="color: #795E26">Symbl</span><span style="color: #000000">();</span>
+
+<span style="color: #001080">symbl</span><span style="color: #000000">.</span><span style="color: #795E26">init</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">appId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your App ID&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">appSecret:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your App Secret&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">basePath:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your custom base path (optional)&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #001080">symbl</span><span style="color: #000000">.</span><span style="color: #795E26">reconnect</span><span style="color: #000000">();</span>
+</code></pre>
+				<a href="#subscribing-to-an-existing-realtime-connection-with-subscribe-api" id="subscribing-to-an-existing-realtime-connection-with-subscribe-api" style="color: inherit; text-decoration: none;">
+					<h2>Subscribing to an existing realtime connection with Subscribe API</h2>
+				</a>
+				<p>With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You&#39;ll want to open this example in a separate tab.</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">symbl</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">sdk</span><span style="color: #000000">.</span><span style="color: #795E26">Symbl</span><span style="color: #000000">();</span>
+
+<span style="color: #001080">symbl</span><span style="color: #000000">.</span><span style="color: #795E26">init</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">appId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your App ID&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">appSecret:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your App Secret&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">basePath:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;&lt;your custom base path (optional)&gt;&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">id</span><span style="color: #000000"> = </span><span style="color: #795E26">btoa</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;symbl-ai-is-the-best&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #001080">symbl</span><span style="color: #000000">.</span><span style="color: #795E26">subscribeToStream</span><span style="color: #000000">(</span><span style="color: #001080">id</span><span style="color: #000000">, (</span><span style="color: #001080">data</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;data:&#039;</span><span style="color: #000000">, </span><span style="color: #001080">data</span><span style="color: #000000">);</span>
+<span style="color: #000000">})</span>
+</code></pre>
 				<!-- If you'd like to see a more in-depth examples for the Streaming API, please take a look at the extended Streaming examples [here][Streaming-Examples]. -->
-				<a href="#transcribing-live-audio-input-through-telephony-api" id="transcribing-live-audio-input-through-telephony-api" style="color: inherit; text-decoration: none;">
-					<h2>Transcribing live audio input through Telephony API</h2>
-				</a>
-				<p>As a simple test of the Telephony API you can call a phone number and see a live transcription of your phone call in the console.</p>
-				<ul>
-					<li>Will update with live telephony example.</li>
-				</ul>
+				<!-- ## Transcribing live audio input through Telephony API
+
+As a simple test of the Telephony API you can call a phone number and see a live transcription of your phone call in the console.
+
+* Will update with live telephony example. -->
 				<!-- If you'd like to see a more in-depth examples for the Telephony API, please take a look at the extended Telephony examples [here][Telephony-Examples]. -->
-				<a href="#async-example" id="async-example" style="color: inherit; text-decoration: none;">
-					<h2>Async Example</h2>
-				</a>
-				<ul>
-					<li>Will update with async example.</li>
-				</ul>
+				<!-- ## Async Example
+
+* Will update with async example. -->
 				<a href="#need-support" id="need-support" style="color: inherit; text-decoration: none;">
 					<h2>Need support?</h2>
 				</a>
@@ -126,6 +218,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/core_services_Logger.html">core/services/<wbr>Logger</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/core_services_Storage.html">core/services/<wbr>Storage</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/index.html">index</a>
