@@ -90,9 +90,8 @@ test(
     async () => {
         const engine = new SymblWebEngine();
 
-        engine.store.put(
+        engine.store.expiration(
             "connectionConfig",
-            JSON.stringify({"id":1234}),
             1
         );
         engine.store.delete("connectionConfig");
