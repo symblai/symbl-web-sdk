@@ -10,6 +10,8 @@ export = class DeviceManager {
 
     store: typeof Store = new Store();
 
+    context: AudioContext;
+
     constructor () {
 
         this.store.init();
@@ -132,12 +134,12 @@ export = class DeviceManager {
 
         }
 
-
         this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
 
         const streamSource = await this.getDefaultDevice();
         const {AudioContext} = window;
         const context = new AudioContext();
+        this.context = context;
         const source = context.createMediaStreamSource(streamSource);
         const processor = context.createScriptProcessor(
             1024,
@@ -174,6 +176,12 @@ export = class DeviceManager {
             }
 
         };
+
+    }
+
+    async deviceDisconnect (): Promise<void> {
+
+        await this.context.close();
 
     }
 
