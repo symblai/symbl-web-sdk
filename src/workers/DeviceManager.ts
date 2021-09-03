@@ -12,6 +12,8 @@ export = class DeviceManager {
 
     context: AudioContext;
 
+    isClosing: boolean = false;
+
     constructor () {
 
         this.store.init();
@@ -168,8 +170,20 @@ export = class DeviceManager {
     }
 
     async deviceDisconnect (): Promise<void> {
-
-        await this.context.close();
+        return new Promise((resolve, reject) => {
+            this.logger.debug("Attempting to close connection.");
+            if (!this.isClosing && this.context.state !== "closed") {
+                this.logger.debug("Closing connection");
+                this.isClosing = true;
+                this.context.close().then(() => {
+                    this.logger.info("Connection closed");
+                    this.isClosing = false;
+                    resolve();
+                });
+            }
+            this.logger.debug("Connection already closed");
+            resolve();
+        });
 
     }
 
