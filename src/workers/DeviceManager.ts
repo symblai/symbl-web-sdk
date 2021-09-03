@@ -35,7 +35,6 @@ export = class DeviceManager {
         } catch (err) {
 
             throw new ConnectionError(err);
-            return stream;
 
         }
 
@@ -174,6 +173,15 @@ export = class DeviceManager {
                 this.logger.trace(err);
 
             }
+
+        };
+
+        navigator.mediaDevices.ondevicechange = async () => {
+
+            this.logger.info("Symbl: Attempting to change device");
+            // Disconnect is required but fires an error in Chrome?
+            await this.deviceDisconnect();
+            await this.deviceConnect(connection);
 
         };
 
