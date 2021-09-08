@@ -183,7 +183,7 @@ export = class DeviceManager {
                 this.isClosing = true;
                 this.currentStream.getTracks().forEach((track) => {
 
-                    if (track.readyState === "live" && track.kind === "audioinput") {
+                    if (track.readyState === "live" && track.kind === "audio") {
 
                         track.stop();
 
