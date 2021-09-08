@@ -8,15 +8,17 @@ export = class DeviceManager {
 
     logger: typeof Logger = new Logger();
 
-    store: typeof Store = new Store();
+    store: typeof Store;
 
     context: AudioContext;
 
-    isClosing: boolean = false;
+    isClosing = false;
 
-    constructor () {
+    currentStream: MediaStream;
 
-        this.store.init();
+    constructor (store: typeof Store) {
+
+        this.store = store || new Store().init();
 
     }
 
@@ -32,6 +34,7 @@ export = class DeviceManager {
             stream = await this.getUserDevices();
 
             this.logger.info("Symbl: Successfully connected to device");
+            this.currentStream = stream;
             return stream;
 
         } catch (err) {
@@ -169,20 +172,36 @@ export = class DeviceManager {
 
     }
 
-    async deviceDisconnect (): Promise<void> {
-        return new Promise((resolve, reject) => {
+    deviceDisconnect (): Promise<void> {
+
+        return new Promise((resolve) => {
+
             this.logger.debug("Attempting to close connection.");
             if (!this.isClosing && this.context.state !== "closed") {
+
                 this.logger.debug("Closing connection");
                 this.isClosing = true;
+                this.currentStream.getTracks().forEach((track) => {
+
+                    if (track.readyState === "live" && track.kind === "audioinput") {
+
+                        track.stop();
+
+                    }
+
+                });
                 this.context.close().then(() => {
+
                     this.logger.info("Connection closed");
                     this.isClosing = false;
                     resolve();
+
                 });
+
             }
             this.logger.debug("Connection already closed");
             resolve();
+
         });
 
     }
