@@ -106,6 +106,13 @@ export = class SymblWebEngine {
 
         }
 
+        if (config.autoReconnect &&
+            new Date() < new Date(this.store.get("connectionConfigExpiration"))) {
+
+            return this.reconnect();
+
+        }
+
         const storedConfig = JSON.parse(JSON.stringify(config));
 
         this.store.put(

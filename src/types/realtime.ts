@@ -10,6 +10,7 @@ interface SymblRealtimeConfig {
     config?: RealtimeOptionsConfig;
     speaker?: RealtimeUser;
     handlers?: RealtimeHandlers;
+    autoReconnect?: boolean;
 }
 
 interface RealtimeOptionsConfig {
