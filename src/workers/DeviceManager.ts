@@ -46,12 +46,47 @@ export = class DeviceManager {
     }
 
     /**
+     * Checks if the MediaDeviceInfo includes labels for Apple devices.
+     */
+    isAppleMicrophone (device: MediaDeviceInfo): boolean {
+
+        return device.label && (
+            device.label.includes("MacBook") ||
+            device.label.includes("iPhone") ||
+            device.label.includes("iPad"));
+
+    }
+
+    /**
      * Gets all available user devices and connects to the appropriate one.
      */
     async getUserDevices (): Promise<MediaStream> {
 
         const devices = await navigator.mediaDevices.enumerateDevices();
         this.logger.log(`All Devices: ${devices}`);
+
+        const appleDevice = devices.filter((dev) => {
+
+            return this.isAppleMicrophone(dev) &&
+                dev.kind === "audioinput";
+
+        });
+
+        if (appleDevice.length > 0) {
+
+            this.logger.info(`Symbl: Detected Safari. Using device: ${appleDevice[0]}`);
+
+            return navigator.mediaDevices.getUserMedia({
+                "audio": {
+                    "deviceId": appleDevice[0].deviceId,
+                    "sampleRate": {
+                        "ideal": 48000
+                    }
+                },
+                "video": false
+            });
+
+        }
 
         try {
 
@@ -183,7 +218,7 @@ export = class DeviceManager {
                 this.isClosing = true;
                 this.currentStream.getTracks().forEach((track) => {
 
-                    if (track.readyState === "live" && track.kind === "audio") {
+                    if (track.readyState === "live" && track.kind === "audioinput") {
 
                         track.stop();
 
