@@ -65,12 +65,7 @@ export = class DeviceManager {
         const devices = await navigator.mediaDevices.enumerateDevices();
         this.logger.log(`All Devices: ${devices}`);
 
-        const appleDevice = devices.filter((dev) => {
-
-            return this.isAppleMicrophone(dev) &&
-                dev.kind === "audioinput";
-
-        });
+        const appleDevice = devices.filter((dev) => this.isAppleMicrophone(dev));
 
         if (appleDevice.length > 0) {
 
@@ -218,7 +213,12 @@ export = class DeviceManager {
                 this.isClosing = true;
                 this.currentStream.getTracks().forEach((track) => {
 
-                    if (track.readyState === "live" && track.kind === "audioinput") {
+                    this.logger.debug(
+                        "Track: ",
+                        track
+                    );
+
+                    if (track.readyState === "live" && track.kind === "audio") {
 
                         track.stop();
 
