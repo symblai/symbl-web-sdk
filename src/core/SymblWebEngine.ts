@@ -40,7 +40,10 @@ export = class SymblWebEngine {
         this.logger.setDefaultLevel(logLevel);
         this.store = new Store();
         this.store.init();
-        this.deviceManager = new DeviceManager(this.store);
+        this.deviceManager = new DeviceManager(
+            this.logger,
+            this.store
+        );
 
     }
 
@@ -167,8 +170,8 @@ export = class SymblWebEngine {
 
         try {
 
-            connection.stop();
             await this.deviceManager.deviceDisconnect();
+            await connection.stop();
 
 
         } catch (err) {
