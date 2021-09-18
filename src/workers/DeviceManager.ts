@@ -6,6 +6,18 @@ const Store = require("../core/services/Storage");
 
 const isBrowser = require("../browser");
 
+/**
+ * Checks if the MediaDeviceInfo includes labels for Apple devices.
+ */
+const isAppleMicrophone = (device: MediaDeviceInfo): boolean => {
+
+    return device.label && (
+        device.label.includes("MacBook") ||
+        device.label.includes("iPhone") ||
+        device.label.includes("iPad"));
+
+};
+
 export = class DeviceManager {
 
     logger: typeof Logger;
@@ -53,18 +65,6 @@ export = class DeviceManager {
     }
 
     /**
-     * Checks if the MediaDeviceInfo includes labels for Apple devices.
-     */
-    isAppleMicrophone (device: MediaDeviceInfo): boolean {
-
-        return device.label && (
-            device.label.includes("MacBook") ||
-            device.label.includes("iPhone") ||
-            device.label.includes("iPad"));
-
-    }
-
-    /**
      * Gets all available user devices and connects to the appropriate one.
      */
     async getUserDevices (): Promise<MediaStream> {
@@ -72,7 +72,7 @@ export = class DeviceManager {
         const devices = await navigator.mediaDevices.enumerateDevices();
         this.logger.log(`All Devices: ${devices}`);
 
-        const appleDevice = devices.filter((dev) => this.isAppleMicrophone(dev));
+        const appleDevice = devices.filter((dev) => isAppleMicrophone(dev));
 
         if (appleDevice.length > 0) {
 
@@ -153,7 +153,16 @@ export = class DeviceManager {
 
             if (!connection) {
 
-                throw new NullError("Websocket connection is missing");
+                throw new NullError("Websocket connection is missing.");
+
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+
+            if (!AudioContext) {
+
+                throw new NullError("AudioContext support is missing in this browser.")
 
             }
 
@@ -162,16 +171,29 @@ export = class DeviceManager {
             this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
 
             const streamSource = await this.getDefaultDevice();
-            const {AudioContext} = window;
             const context = new AudioContext();
             this.context = context;
             const source = context.createMediaStreamSource(streamSource);
-            const processor = context.createScriptProcessor(
-                1024,
-                1,
-                1
-            );
-            const gainNode = context.createGain();
+            let gainNode, processor;
+            if (!window.AudioContext) {
+
+                processor = context.createJavascriptNode(
+                    1024,
+                    1,
+                    1
+                );
+                gainNode = context.createGainNode();
+
+            } else {
+
+                processor = context.createScriptProcessor(
+                    1024,
+                    1,
+                    1
+                );
+                gainNode = context.createGain();
+
+            }
             source.connect(gainNode);
             gainNode.connect(processor);
             processor.connect(context.destination);
