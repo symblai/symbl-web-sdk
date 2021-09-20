@@ -106,9 +106,30 @@ const connectionConfig = {
 
 ## Reconnecting to an existing realtime connection
 
-In the case that a user closes their browser or has an interruption in their connection, you can call a reconnect function to reconnect using configuration details saved from the initial realtime request.
+In the case that a user closes their browser or has an interruption in their connection, you can call a reconnect function to reconnect using configuration details saved from the initial realtime request.  
+
+This can be set to happen automatically if there are saved connection details in the user's browser via a value in the connection config when setting up a realtime request:
 
 ```js
+const connectionConfig = {
+	autoReconnect: true,
+	id: '<Connection ID>',
+	insightTypes: ['action_item', 'question'],
+	config: {
+		meetingTitle: 'My Test Meeting ' + id,
+		confidenceThreshold: 0.7,
+		timezoneOffset: 480, // Offset in minutes from UTC
+		languageCode: 'en-US',
+		sampleRateHertz: 44100
+	},
+	// other connection details as in previous example
+};
+```
+
+You can also programmatically call it manually with the following:
+
+```js
+// Symbl must be initialized before attempting a reconnect
 const symbl = new sdk.Symbl();
 
 symbl.init({
