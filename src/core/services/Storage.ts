@@ -4,7 +4,13 @@ export = class StorageService {
 
     container: Storage;
 
-    logger: typeof Logger = new Logger();
+    logger: typeof Logger;
+
+    constructor (logger: typeof Logger) {
+
+        this.logger = logger || new Logger();
+
+    }
 
     init (): void {
 
