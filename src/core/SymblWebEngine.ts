@@ -39,7 +39,7 @@ export = class SymblWebEngine {
         this.logger = new Logger();
         this.logger.setDefaultLevel(logLevel);
         this.deviceManager = new DeviceManager();
-        this.store = new Store();
+        this.store = new Store(this.logger);
         this.store.init();
 
     }
