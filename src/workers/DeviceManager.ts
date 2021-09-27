@@ -162,7 +162,7 @@ export = class DeviceManager {
 
             if (!AudioContext) {
 
-                throw new NullError("AudioContext support is missing in this browser.")
+                throw new NullError("AudioContext support is missing in this browser.");
 
             }
 
