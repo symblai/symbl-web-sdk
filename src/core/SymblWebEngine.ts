@@ -106,18 +106,24 @@ export = class SymblWebEngine {
 
         }
 
+        const storedConfig = JSON.parse(JSON.stringify(config));
+
+        const expDate = parseInt(
+            this.store.get("connectionConfigExpiration"),
+            10
+        );
+
         if (config.autoReconnect &&
-            new Date() < new Date(this.store.get("connectionConfigExpiration"))) {
+            storedConfigString === this.store.get("connectionConfig") &&
+            Date.now() < expDate) {
 
             return this.reconnect();
 
         }
 
-        const storedConfig = JSON.parse(JSON.stringify(config));
-
         this.store.put(
             "connectionConfig",
-            JSON.stringify(storedConfig)
+            storedConfigString
         );
 
         this.logger.info(`Symbl: Starting Realtime Request for ${config.id}`);
@@ -173,9 +179,13 @@ export = class SymblWebEngine {
     async reconnect (): Promise<SymblRealtimeConnection> {
 
         const config = JSON.parse(this.store.get("connectionConfig"));
-        const exp = new Date(this.store.get("connectionConfigExpiration"));
+        const expDate = parseInt(
+            this.store.get("connectionConfigExpiration"),
+            10
+        );
 
-        if (new Date() > new Date(exp)) {
+        // UTC
+        if (Date.now() > expDate) {
 
             throw new ConfigError("Connection configuration has expired");
 
