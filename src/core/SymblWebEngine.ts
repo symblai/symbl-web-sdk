@@ -107,6 +107,7 @@ export = class SymblWebEngine {
         }
 
         const storedConfig = JSON.parse(JSON.stringify(config));
+        const storedConfigString = JSON.stringify(storedConfig);
 
         const expDate = parseInt(
             this.store.get("connectionConfigExpiration"),
