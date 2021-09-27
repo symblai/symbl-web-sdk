@@ -6,18 +6,6 @@ const Store = require("../core/services/Storage");
 
 const isBrowser = require("../browser");
 
-/**
- * Checks if the MediaDeviceInfo includes labels for Apple devices.
- */
-const isAppleMicrophone = (device: MediaDeviceInfo): boolean => {
-
-    return device.label && (
-        device.label.includes("MacBook") ||
-        device.label.includes("iPhone") ||
-        device.label.includes("iPad"));
-
-};
-
 export = class DeviceManager {
 
     logger: typeof Logger;
@@ -69,26 +57,26 @@ export = class DeviceManager {
      */
     async getUserDevices (): Promise<MediaStream> {
 
+        const localMediaStream = await navigator.mediaDevices.getUserMedia({
+            "audio": {
+                "sampleRate": {
+                    "ideal": 48000
+                }
+            },
+            "video": false
+        });
+
+        this.logger.debug(localMediaStream);
+
+        this.logger.debug(localMediaStream.getTracks());
+
         const devices = await navigator.mediaDevices.enumerateDevices();
-        this.logger.log(`All Devices: ${devices}`);
+        this.logger.debug("All Devices:");
+        devices.forEach((device) => {
 
-        const appleDevice = devices.filter((dev) => isAppleMicrophone(dev));
+            this.logger.debug(`${device.kind}: ${device.label} id = ${device.deviceId}`);
 
-        if (appleDevice.length > 0) {
-
-            this.logger.info(`Symbl: Detected Safari. Using device: ${appleDevice[0]}`);
-
-            return navigator.mediaDevices.getUserMedia({
-                "audio": {
-                    "deviceId": appleDevice[0].deviceId,
-                    "sampleRate": {
-                        "ideal": 48000
-                    }
-                },
-                "video": false
-            });
-
-        }
+        });
 
         try {
 
@@ -126,14 +114,7 @@ export = class DeviceManager {
 
             }
 
-            return navigator.mediaDevices.getUserMedia({
-                "audio": {
-                    "sampleRate": {
-                        "ideal": 48000
-                    }
-                },
-                "video": false
-            });
+            return localMediaStream;
 
         } catch (err) {
 
@@ -162,7 +143,7 @@ export = class DeviceManager {
 
             if (!AudioContext) {
 
-                throw new NullError("AudioContext support is missing in this browser.")
+                throw new NullError("AudioContext support is missing in this browser.");
 
             }
 
