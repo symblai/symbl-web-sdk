@@ -177,6 +177,26 @@ export = class SymblWebEngine {
     }
 
     /**
+     * Stops the realtime request and closes the websocket
+     * @param {object} connection - Symbl websocket connection
+     */
+    async stopRequest (connection: SymblRealtimeConnection): Promise<void> {
+
+        try {
+
+            await this.deviceManager.deviceDisconnect();
+            await connection.stop();
+
+
+        } catch (err) {
+
+            throw new ConnectionError(err);
+
+        }
+
+    }
+
+    /**
      * Reconnects to an existing realtime connection using stored connection
      * config with an expiration date.
      */
