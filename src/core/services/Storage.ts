@@ -25,20 +25,20 @@ export = class StorageService {
 
     }
 
-    expiration (key: string, value: number): void {
+    expiration (key: string, time: number): void {
 
 
         const addMinutes = (dt, minutes) => {
 
-            return new Date(dt.getTime() + (minutes * 60000));
+            return dt + (minutes * 60000);
 
         };
 
-        const now = new Date();
+        const now = Date.now();
 
         const exp = addMinutes(
             now,
-            value
+            time
         ).toString();
 
         this.logger.info(`Setting expiration for ${key}`);
