@@ -92,35 +92,37 @@ export = class SymblWebEngine {
 
     /**
      * Starts a request to the WebSocket-based Streaming API
-     * @param {object} config - Symbl realtime request config object
+     * @param {object} options - Symbl realtime request config object
      * @param {boolean} connect - indicate whether connection is immediate
      */
-    async startRealtimeRequest (config: SymblRealtimeConfig, connect: boolean):
+    async startRealtimeRequest (options: SymblRealtimeConfig, connect: boolean):
         Promise<SymblRealtimeConnection> {
 
-        if (!config) {
+        if (!options) {
 
             throw new NullError("Realtime config is missing");
 
         }
-        if (!config.id) {
+        if (!options.id) {
 
             throw new ConfigError("Meeting ID is missing");
 
         }
 
-        const storedConfig = JSON.parse(JSON.stringify(config));
+        options.config.sampleRateHertz = new AudioContext().sampleRate;
+
+        const storedConfig = JSON.parse(JSON.stringify(options));
 
         this.store.put(
             "connectionConfig",
             JSON.stringify(storedConfig)
         );
 
-        this.logger.info(`Symbl: Starting Realtime Request for ${config.id}`);
+        this.logger.info(`Symbl: Starting Realtime Request for ${options.id}`);
 
-        const connection = await this.sdk.startRealtimeRequest(config);
+        const connection = await this.sdk.startRealtimeRequest(options);
 
-        this.logger.info(`Symbl: Completed Realtime Request for ${config.id}`);
+        this.logger.info(`Symbl: Completed Realtime Request for ${options.id}`);
 
         const setExpiration = () => {
 
@@ -131,10 +133,10 @@ export = class SymblWebEngine {
 
         };
 
-        if (config.handlers.onDataReceived) {
+        if (options.handlers.onDataReceived) {
 
-            const fn = config.handlers.onDataReceived.bind({});
-            config.handlers.onDataReceived = () => {
+            const fn = options.handlers.onDataReceived.bind({});
+            options.handlers.onDataReceived = () => {
 
                 setExpiration();
                 fn();
@@ -143,7 +145,7 @@ export = class SymblWebEngine {
 
         } else {
 
-            config.handlers.onDataReceived = () => {
+            options.handlers.onDataReceived = () => {
 
                 setExpiration();
 
