@@ -58,11 +58,7 @@ export = class DeviceManager {
     async getUserDevices (): Promise<MediaStream> {
 
         const localMediaStream = await navigator.mediaDevices.getUserMedia({
-            "audio": {
-                "sampleRate": {
-                    "ideal": 48000
-                }
-            },
+            "audio": true,
             "video": false
         });
 
@@ -100,19 +96,19 @@ export = class DeviceManager {
 
                     this.logger.info(`The device to be used for stream: ${device[0]}`);
 
-                    return navigator.mediaDevices.getUserMedia({
-                        "audio": {
-                            "deviceId": device[0].deviceId,
-                            "sampleRate": {
-                                "ideal": 48000
-                            }
-                        },
-                        "video": false
+                    await localMediaStream.getAudioTracks()[0].applyConstraints({
+                        "deviceId": device[0].deviceId
                     });
 
                 }
 
             }
+
+            await localMediaStream.getAudioTracks()[0].applyConstraints({
+                "sampleRate": {
+                    "ideal": new AudioContext().sampleRate
+                }
+            });
 
             return localMediaStream;
 
