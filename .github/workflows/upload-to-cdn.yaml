@@ -1,0 +1,39 @@
+name: Upload to CDN
+
+on:
+  push:
+    branches:
+    - 'main'
+    - 'develop'
+    - 'staging'
+    - 'feature/cdn-upload'
+
+# env:
+#   COMPONENT: ${{ github.event.repository.name }}
+#   CONTAINER_REGISTRY: gcr.io
+
+#   DEV_BRANCH: develop
+#   DEV_GCP_PROJECT: self-serve-dev-261801
+
+#   STAGING_BRANCH: staging
+#   STAGING_GCP_PROJECT: self-serve-dev-261801
+
+#   PROD_BRANCH: master
+#   PROD_GCP_PROJECT: prod-temp-265113
+
+#   ENCRYPTION_KEY: ${{ secrets.GIT_CRYPT_ENCRYPTION_KEY }}
+
+#   RAMMER_SNAPSHOT_REPO_USERNAME: ${{ secrets.RAMMER_SNAPSHOT_REPO_USERNAME }}
+#   RAMMER_SNAPSHOT_REPO_PASSWORD: ${{ secrets.RAMMER_SNAPSHOT_REPO_PASSWORD }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: upload-file
+        uses: google-github-actions/upload-cloud-storage@main
+        with:
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          path: ../../dist/symbl.min.js
+          destination: ${{secrets.GCP_BUCKET_NAME}}/0.1.0
