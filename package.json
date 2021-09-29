@@ -36,7 +36,7 @@
     "build:ts": "rimraf ./build-tsc && tsc",
     "build:js": "node ./scripts/build.js ./scripts/symbl.js ./LICENSE.md ./dist/symbl.js",
     "build:min.js": "uglifyjs ./dist/symbl.js -o ./dist/symbl.min.js --comments \"/^! symbl.js/\" -b beautify=false,ascii_only=true",
-    "build": "npm-run-all build:ts build:js build:min.js"
+    "build": "npm run build:ts && npm run build:js && npm run build:min.js"
   },
   "author": "",
   "license": "ISC",
