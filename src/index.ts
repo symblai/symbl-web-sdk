@@ -4,6 +4,6 @@
 // / <reference path="./types/realtime.ts" />
 // / <reference path="./types/device.ts" />
 
-const SymblWebEngine = require("./core/SymblWebEngine.js");
+import SymblWebEngine from "./core/SymblWebEngine.js";
 
-export = SymblWebEngine;
+export = new SymblWebEngine();

@@ -1,12 +1,12 @@
-const {NullError, ConnectionError} = require("../core/services/ErrorHandler");
+import {NullError, ConnectionError} from "../core/services/ErrorHandler";
 
-const Logger = require("../core/services/Logger");
+import Logger from "../core/services/Logger";
 
-export = class DeviceManager {
+export default class DeviceManager {
 
     currentStream: MediaStream;
 
-    logger: typeof Logger = new Logger();
+    logger: Logger = new Logger();
 
     /**
      * Get and return an audio/visual device to access a MediaStream

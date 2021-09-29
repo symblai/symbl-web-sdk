@@ -1,28 +1,28 @@
-const { sdk } = require("@symblai/symbl-js/build/client.sdk.min.js");
-const DeviceManager = require("../workers/DeviceManager");
-const Logger = require("./services/Logger");
-const {ConfigError, NullError, ConnectionError} = require("./services/ErrorHandler");
+import { sdk } from "@symblai/symbl-js/build/client.sdk.min";
+import DeviceManager from "../workers/DeviceManager";
+import Logger from "./services/Logger";
+import {ConfigError, NullError, ConnectionError} from "./services/ErrorHandler";
 
 
 /** Main Symbl Web SDK class */
-export = class SymblWebEngine {
+export default class SymblWebEngine {
 
     /* eslint-disable */
     /**
      * @ignore
      */
-    sdk: typeof sdk = sdk;
+    sdk: sdk = sdk;
     /* eslint-enable */
 
     /**
      * @ignore
      */
-    deviceManager: typeof DeviceManager;
+    deviceManager: DeviceManager;
 
     /**
      * @ignore
      */
-    logger: typeof Logger;
+    logger: Logger;
 
     /**
      * Sets up the basic Symbl connection object
