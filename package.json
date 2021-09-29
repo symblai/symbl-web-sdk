@@ -1,6 +1,6 @@
 {
   "name": "web-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",

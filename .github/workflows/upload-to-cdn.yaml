@@ -44,16 +44,20 @@ jobs:
       - run: npm install
       - run: npm run build
 
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+
       - id: upload_minified_file
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
           path: dist/symbl.min.js
-          destination: ${{ secrets.GCP_BUCKET_NAME }}/0.1.0
+          destination: ${{ secrets.GCP_BUCKET_NAME }}/${{ steps.package-version.outputs.current-version}}
 
       - id: upload_unminified_file
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
           path: dist/symbl.js
-          destination: ${{ secrets.GCP_BUCKET_NAME }}/0.1.0
+          destination: ${{ secrets.GCP_BUCKET_NAME }}/${{ steps.package-version.outputs.current-version}}
