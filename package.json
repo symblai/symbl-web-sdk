@@ -34,7 +34,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "scripts": {
-    "watch": "tsc-watch --onSuccess \"npm-run-all build:js build:min.js\"",
+    "watch": "tsc-watch --onSuccess \"npm run build\"",
     "test": "jest --silent tests --env=jsdom",
     "test-verbose": "jest --verbose tests --env=jsdom",
     "lint": "eslint ./src/*",
