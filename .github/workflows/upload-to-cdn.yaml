@@ -35,5 +35,5 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
-          path: ../../dist/symbl.min.js
+          path: /dist/symbl.min.js
           destination: ${{secrets.GCP_BUCKET_NAME}}/0.1.0
