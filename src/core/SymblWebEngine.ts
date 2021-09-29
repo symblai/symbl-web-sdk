@@ -109,6 +109,8 @@ export = class SymblWebEngine {
 
         }
 
+        this.logger.debug("Original Config: ", config);
+
         const storedConfig = JSON.parse(JSON.stringify(config));
         const storedConfigString = JSON.stringify(storedConfig);
 
@@ -125,7 +127,7 @@ export = class SymblWebEngine {
 
         }
 
-        this.store.put(
+        await this.store.put(
             "connectionConfig",
             storedConfigString
         );
@@ -136,9 +138,9 @@ export = class SymblWebEngine {
 
         this.logger.info(`Symbl: Completed Realtime Request for ${config.id}`);
 
-        const setExpiration = () => {
+        const setExpiration = async () => {
 
-            this.store.expiration(
+            await this.store.expiration(
                 "connectionConfig",
                 1
             );
@@ -148,18 +150,18 @@ export = class SymblWebEngine {
         if (config.handlers.onDataReceived) {
 
             const fn = config.handlers.onDataReceived.bind({});
-            config.handlers.onDataReceived = () => {
+            config.handlers.onDataReceived = async () => {
 
-                setExpiration();
+                await setExpiration();
                 fn();
 
             };
 
         } else {
 
-            config.handlers.onDataReceived = () => {
+            config.handlers.onDataReceived = async () => {
 
-                setExpiration();
+                await setExpiration();
 
             };
 
@@ -202,11 +204,15 @@ export = class SymblWebEngine {
      */
     async reconnect (): Promise<SymblRealtimeConnection> {
 
-        const config = JSON.parse(this.store.get("connectionConfig"));
+        const options = JSON.parse(await this.store.get("connectionConfig"));
         const expDate = parseInt(
-            this.store.get("connectionConfigExpiration"),
+            await this.store.get("connectionConfigExpiration"),
             10
         );
+
+        options.config.sampleRateHertz = options.config.speechRecognition.sampleRateHertz;
+
+        this.logger.debug("Stored config: ", options);
 
         // UTC
         if (Date.now() > expDate) {
@@ -215,7 +221,7 @@ export = class SymblWebEngine {
 
         }
 
-        if (!config) {
+        if (!options) {
 
             throw new NullError("There is no saved realtime configuration");
 
@@ -224,7 +230,7 @@ export = class SymblWebEngine {
         this.logger.info("Symbl: Attempting to reconnect to Realtime websocket");
 
         const connection = await this.startRealtimeRequest(
-            config,
+            options,
             true
         );
 

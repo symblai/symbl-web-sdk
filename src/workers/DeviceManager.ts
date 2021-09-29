@@ -73,6 +73,7 @@ export = class DeviceManager {
         this.logger.log(`All Devices: ${devices}`);
 
         const appleDevice = devices.filter((dev) => isAppleMicrophone(dev));
+        const {sampleRate} = new AudioContext();
 
         if (appleDevice.length > 0) {
 
@@ -82,7 +83,7 @@ export = class DeviceManager {
                 "audio": {
                     "deviceId": appleDevice[0].deviceId,
                     "sampleRate": {
-                        "ideal": 48000
+                        "ideal": sampleRate
                     }
                 },
                 "video": false
@@ -116,7 +117,7 @@ export = class DeviceManager {
                         "audio": {
                             "deviceId": device[0].deviceId,
                             "sampleRate": {
-                                "ideal": 48000
+                                "ideal": sampleRate
                             }
                         },
                         "video": false
@@ -129,7 +130,7 @@ export = class DeviceManager {
             return navigator.mediaDevices.getUserMedia({
                 "audio": {
                     "sampleRate": {
-                        "ideal": 48000
+                        "ideal": sampleRate
                     }
                 },
                 "video": false

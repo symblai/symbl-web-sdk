@@ -20,18 +20,21 @@ export = class StorageService {
 
     }
 
-    put (key: string, value: string): void {
+    async put (key: string, value: string): Promise<void> {
+
 
         this.logger.info(`Storing ${key} : ${value}`);
 
-        this.container.setItem(
+        await null;
+        return this.container.setItem(
             key,
             value
         );
 
+
     }
 
-    expiration (key: string, time: number): void {
+    async expiration (key: string, time: number): Promise<void> {
 
 
         const addMinutes = (dt, minutes) => {
@@ -49,15 +52,17 @@ export = class StorageService {
 
         this.logger.info(`Setting expiration for ${key}`);
 
-        this.container.setItem(
+        await null;
+        return this.container.setItem(
             `${key}Expiration`,
             exp
         );
 
     }
 
-    get (key: string): string {
+    async get (key: string): Promise<string> {
 
+        await null;
         return this.container.getItem(key);
 
     }
