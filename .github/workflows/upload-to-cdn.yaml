@@ -29,14 +29,30 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x]
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
 
-      - id: upload-file
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm run build
+
+      - id: "Upload minified file"
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
           path: dist/symbl.min.js
+          destination: ${{ secrets.GCP_BUCKET_NAME }}/0.1.0
+
+      - id: "Upload unminified file"
+        uses: google-github-actions/upload-cloud-storage@main
+        with:
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          path: dist/symbl.js
           destination: ${{ secrets.GCP_BUCKET_NAME }}/0.1.0
