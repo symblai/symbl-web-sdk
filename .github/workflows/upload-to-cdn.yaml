@@ -43,14 +43,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm run build
 
-      - id: Upload minified file
+      - id: upload_minified_file
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
           path: dist/symbl.min.js
           destination: ${{ secrets.GCP_BUCKET_NAME }}/0.1.0
 
-      - id: Upload unminified file
+      - id: upload_unminified_file
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
