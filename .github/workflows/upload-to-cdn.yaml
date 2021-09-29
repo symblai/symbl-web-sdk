@@ -31,9 +31,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
       - id: upload-file
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
-          path: /dist/symbl.min.js
-          destination: ${{secrets.GCP_BUCKET_NAME}}/0.1.0
+          path: dist
+          destination: ${{ secrets.GCP_BUCKET_NAME }}/0.1.0
