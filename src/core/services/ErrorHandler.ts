@@ -1,8 +1,8 @@
-const Logger = require("./Logger");
+import Logger from "./Logger";
 
 class ErrorHandler extends Error {
 
-    logger: typeof Logger = new Logger();
+    logger: Logger = new Logger();
 
     constructor (message: string, name: string) {
 

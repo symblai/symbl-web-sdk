@@ -1,6 +1,6 @@
-const JSLogger = require("@symblai/symbl-js/build/client.sdk.min.js").Logger;
+import { Logger as LoggerType } from "@symblai/symbl-js/dist/logger/Logger";
 
-export = class Logger extends JSLogger {
+export default class Logger extends LoggerType {
 
     constructor () {
 
