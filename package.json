@@ -41,6 +41,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@symblai/symbl-js": "^1.1.3-a"
+    "@symblai/symbl-js": "^1.1.5-alpha.8"
   }
 }

@@ -1,7 +1,10 @@
-const { sdk } = require("@symblai/symbl-js/build/client.sdk.min.js");
+const {sdk} = require("@symblai/symbl-js/build/client.sdk.min.js");
 const DeviceManager = require("../workers/DeviceManager");
 const Logger = require("./services/Logger");
+const Store = require("./services/Storage");
 const {ConfigError, NullError, ConnectionError} = require("./services/ErrorHandler");
+const isBrowser = require("../browser");
+
 
 
 /** Main Symbl Web SDK class */
@@ -25,6 +28,11 @@ export = class SymblWebEngine {
     logger: typeof Logger;
 
     /**
+     * @ignore
+     */
+    store: typeof Store;
+
+    /**
      * Sets up the basic Symbl connection object
      * @param {string} loggingLevel - establishes default log level
      */
@@ -32,7 +40,12 @@ export = class SymblWebEngine {
 
         this.logger = new Logger();
         this.logger.setDefaultLevel(logLevel);
-        this.deviceManager = new DeviceManager();
+        this.store = new Store();
+        this.store.init();
+        this.deviceManager = new DeviceManager(
+            this.logger,
+            this.store
+        );
 
     }
 
@@ -81,34 +94,136 @@ export = class SymblWebEngine {
 
     /**
      * Starts a request to the WebSocket-based Streaming API
-     * @param {object} config - Symbl realtime request config object
+     * @param {object} options - Symbl realtime request config object
      * @param {boolean} connect - indicate whether connection is immediate
      */
-    async startRealtimeRequest (config: SymblRealtimeConfig, connect: boolean):
+    async startRealtimeRequest (options: SymblRealtimeConfig, connect: boolean):
         Promise<SymblRealtimeConnection> {
 
-        if (!config) {
+        if (!options) {
 
             throw new NullError("Realtime config is missing");
 
         }
-        if (!config.id) {
+        if (!options.id) {
 
             throw new ConfigError("Meeting ID is missing");
 
         }
 
-        this.logger.info(`Symbl: Starting Realtime Request for ${config.id}`);
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
-        const connection = await this.sdk.startRealtimeRequest(config);
+        options.config.sampleRateHertz = new AudioContext().sampleRate;
 
-        this.logger.info(`Symbl: Completed Realtime Request for ${config.id}`);
+        const storedConfig = JSON.parse(JSON.stringify(options));
+
+        await this.store.put(
+            "connectionConfig",
+            JSON.stringify(storedConfig)
+        );
+
+        this.logger.info(`Symbl: Starting Realtime Request for ${options.id}`);
+
+        const connection = await this.sdk.startRealtimeRequest(options);
+
+        this.logger.info(`Symbl: Completed Realtime Request for ${options.id}`);
+
+        const setExpiration = async () => {
+
+            await this.store.expiration(
+                "connectionConfig",
+                1
+            );
+
+        };
+
+        await setExpiration();
+
+        if (options.handlers.onDataReceived) {
+
+            const fn = options.handlers.onDataReceived.bind({});
+            options.handlers.onDataReceived = async () => {
+
+                await setExpiration();
+                fn();
+
+            };
+
+        } else {
+
+            options.handlers.onDataReceived = async () => {
+
+                await setExpiration();
+
+            };
+
+        }
+
 
         if (connect) {
 
-            this.connect(connection);
+            await this.connect(connection);
 
         }
+
+        return connection;
+
+    }
+
+    /**
+     * Stops the realtime request and closes the websocket
+     * @param {object} connection - Symbl websocket connection
+     */
+    async stopRequest (connection: SymblRealtimeConnection): Promise<void> {
+
+        try {
+
+            await this.deviceManager.deviceDisconnect();
+            await connection.stop();
+
+
+        } catch (err) {
+
+            throw new ConnectionError(err);
+
+        }
+
+    }
+
+    /**
+     * Reconnects to an existing realtime connection using stored connection
+     * config with an expiration date.
+     */
+    async reconnect (): Promise<SymblRealtimeConnection> {
+
+        const options = JSON.parse(this.store.get("connectionConfig"));
+        const exp = new Date(this.store.get("connectionConfigExpiration"));
+
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+
+        options.config.sampleRateHertz = new AudioContext().sampleRate;
+
+        if (new Date() > new Date(exp)) {
+
+            throw new ConfigError("Connection configuration has expired");
+
+        }
+
+        if (!options) {
+
+            throw new NullError("There is no saved realtime configuration");
+
+        }
+
+        this.logger.info("Symbl: Attempting to reconnect to Realtime websocket");
+
+        const connection = await this.startRealtimeRequest(
+            options,
+            true
+        );
+
+        this.logger.info("Symbl: Successfully reconnected to websocket");
+
         return connection;
 
     }
@@ -132,6 +247,21 @@ export = class SymblWebEngine {
             await this.deviceManager.deviceConnect(connection);
 
             this.logger.info("Symbl: Established Realtime Connection");
+
+            // Reconnects on device change to update Sample Rate and connect to new device
+            navigator.mediaDevices.ondevicechange = async () => {
+
+                this.logger.info("Symbl: Attempting to change device");
+
+                // Disconnect from previous device first to avoid multiple connections
+                if (!isBrowser.safari) {
+
+                    await this.deviceManager.deviceDisconnect();
+
+                }
+                await this.reconnect();
+
+            };
 
         } catch (err) {
 
