@@ -109,6 +109,8 @@ export = class SymblWebEngine {
 
         }
 
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+
         options.config.sampleRateHertz = new AudioContext().sampleRate;
 
         const storedConfig = JSON.parse(JSON.stringify(options));
@@ -190,8 +192,12 @@ export = class SymblWebEngine {
      */
     async reconnect (): Promise<SymblRealtimeConnection> {
 
-        const config = JSON.parse(this.store.get("connectionConfig"));
+        const options = JSON.parse(this.store.get("connectionConfig"));
         const exp = new Date(this.store.get("connectionConfigExpiration"));
+
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+
+        options.config.sampleRateHertz = new AudioContext().sampleRate;
 
         if (new Date() > new Date(exp)) {
 
@@ -199,7 +205,7 @@ export = class SymblWebEngine {
 
         }
 
-        if (!config) {
+        if (!options) {
 
             throw new NullError("There is no saved realtime configuration");
 
@@ -208,7 +214,7 @@ export = class SymblWebEngine {
         this.logger.info("Symbl: Attempting to reconnect to Realtime websocket");
 
         const connection = await this.startRealtimeRequest(
-            config,
+            options,
             true
         );
 
@@ -237,6 +243,20 @@ export = class SymblWebEngine {
             await this.deviceManager.deviceConnect(connection);
 
             this.logger.info("Symbl: Established Realtime Connection");
+
+            // Reconnects on device change to update Sample Rate and connect to new device
+            navigator.mediaDevices.ondevicechange = () => {
+
+                this.logger.info("Symbl: Attempting to change device");
+
+                // Disconnect from previous device first to avoid multiple connections
+                this.deviceManager.deviceDisconnect().then(async () => {
+
+                    await this.reconnect();
+
+                });
+
+            };
 
         } catch (err) {
 

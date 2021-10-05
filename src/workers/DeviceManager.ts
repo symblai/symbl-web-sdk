@@ -201,20 +201,25 @@ export = class DeviceManager {
 
             };
 
-            navigator.mediaDevices.ondevicechange = () => {
-
-                this.logger.info("Symbl: Attempting to change device");
-
-                this.deviceDisconnect().then(() => {
-
-                    setTimeout(
-                        () => this.deviceConnect(connection),
-                        100
-                    );
-
-                });
-
-            };
+            /*
+             * Device change logic needs to be updated once the
+             * ability to modify requests is added.
+             *
+             *navigator.mediaDevices.ondevicechange = () => {
+             *
+             *    this.logger.info("Symbl: Attempting to change device");
+             *
+             *    this.deviceDisconnect().then(() => {
+             *
+             *        setTimeout(
+             *            () => this.deviceConnect(connection),
+             *            100
+             *        );
+             *
+             *    });
+             *
+             *};
+             */
 
             this.isConnecting = false;
 
