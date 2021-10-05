@@ -3,6 +3,8 @@ const DeviceManager = require("../workers/DeviceManager");
 const Logger = require("./services/Logger");
 const Store = require("./services/Storage");
 const {ConfigError, NullError, ConnectionError} = require("./services/ErrorHandler");
+const isBrowser = require("../browser");
+
 
 
 /** Main Symbl Web SDK class */
@@ -115,7 +117,7 @@ export = class SymblWebEngine {
 
         const storedConfig = JSON.parse(JSON.stringify(options));
 
-        this.store.put(
+        await this.store.put(
             "connectionConfig",
             JSON.stringify(storedConfig)
         );
@@ -126,30 +128,32 @@ export = class SymblWebEngine {
 
         this.logger.info(`Symbl: Completed Realtime Request for ${options.id}`);
 
-        const setExpiration = () => {
+        const setExpiration = async () => {
 
-            this.store.expiration(
+            await this.store.expiration(
                 "connectionConfig",
                 1
             );
 
         };
 
+        await setExpiration();
+
         if (options.handlers.onDataReceived) {
 
             const fn = options.handlers.onDataReceived.bind({});
-            options.handlers.onDataReceived = () => {
+            options.handlers.onDataReceived = async () => {
 
-                setExpiration();
+                await setExpiration();
                 fn();
 
             };
 
         } else {
 
-            options.handlers.onDataReceived = () => {
+            options.handlers.onDataReceived = async () => {
 
-                setExpiration();
+                await setExpiration();
 
             };
 
@@ -158,7 +162,7 @@ export = class SymblWebEngine {
 
         if (connect) {
 
-            this.connect(connection);
+            await this.connect(connection);
 
         }
 
@@ -245,16 +249,17 @@ export = class SymblWebEngine {
             this.logger.info("Symbl: Established Realtime Connection");
 
             // Reconnects on device change to update Sample Rate and connect to new device
-            navigator.mediaDevices.ondevicechange = () => {
+            navigator.mediaDevices.ondevicechange = async () => {
 
                 this.logger.info("Symbl: Attempting to change device");
 
                 // Disconnect from previous device first to avoid multiple connections
-                this.deviceManager.deviceDisconnect().then(async () => {
+                if (!isBrowser.safari) {
 
-                    await this.reconnect();
+                    await this.deviceManager.deviceDisconnect();
 
-                });
+                }
+                await this.reconnect();
 
             };
 
