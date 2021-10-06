@@ -1,6 +1,7 @@
 import { sdk } from "@symblai/symbl-js/build/client.sdk.min";
 import DeviceManager from "../workers/DeviceManager";
 import Logger from "./services/Logger";
+import Store from "./services/Storage";
 import {ConfigError, NullError, ConnectionError} from "./services/ErrorHandler";
 import isBrowser from "../browser";
 
@@ -28,7 +29,7 @@ export default class SymblWebEngine {
     /**
      * @ignore
      */
-    store: typeof Store;
+    store: Store;
 
     /**
      * Sets up the basic Symbl connection object
@@ -252,7 +253,7 @@ export default class SymblWebEngine {
                 this.logger.info("Symbl: Attempting to change device");
 
                 // Disconnect from previous device first to avoid multiple connections
-                if (!isBrowser.safari) {
+                if (!isBrowser().safari) {
 
                     await this.deviceManager.deviceDisconnect();
 

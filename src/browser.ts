@@ -7,7 +7,7 @@ interface Browsers {
 }
 
 /* eslint-disable prefer-const */
-const checkBrowser = ():Browsers => {
+const checkBrowser = (): Browsers => {
 
     // Get the user-agent string
     const userAgentString =
@@ -58,4 +58,4 @@ const checkBrowser = ():Browsers => {
 
 };
 
-export = checkBrowser;
+export default checkBrowser;

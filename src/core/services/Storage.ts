@@ -1,16 +1,18 @@
-const Logger = require("./Logger");
+import Logger from "./Logger";
 
-export = class StorageService {
+export default class StorageService {
 
     container: Storage;
 
-    logger: typeof Logger = new Logger();
+    logger: Logger = new Logger();
 
-    init (): void {
+    init (): StorageService {
 
         this.logger.info("Started storage service");
 
         this.container = window.localStorage;
+
+        return this;
 
     }
 

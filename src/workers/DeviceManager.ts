@@ -9,7 +9,7 @@ export default class DeviceManager {
 
     logger:  Logger;
 
-    store:  Store;
+    store: Store;
 
     context: AudioContext = null;
 
