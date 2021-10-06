@@ -1,17 +1,8 @@
-<<<<<<< HEAD
 import { sdk } from "@symblai/symbl-js/build/client.sdk.min";
 import DeviceManager from "../workers/DeviceManager";
 import Logger from "./services/Logger";
 import {ConfigError, NullError, ConnectionError} from "./services/ErrorHandler";
-=======
-const {sdk} = require("@symblai/symbl-js/build/client.sdk.min.js");
-const DeviceManager = require("../workers/DeviceManager");
-const Logger = require("./services/Logger");
-const Store = require("./services/Storage");
-const {ConfigError, NullError, ConnectionError} = require("./services/ErrorHandler");
-const isBrowser = require("../browser");
-
->>>>>>> origin/develop
+import isBrowser from "../browser";
 
 
 /** Main Symbl Web SDK class */

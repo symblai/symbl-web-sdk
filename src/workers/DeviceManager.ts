@@ -1,33 +1,25 @@
 import {NullError, ConnectionError} from "../core/services/ErrorHandler";
 
 import Logger from "../core/services/Logger";
+import Store from "../core/services/Storage";
+import isBrowser from "../browser";
 
-<<<<<<< HEAD
 export default class DeviceManager {
-=======
-const Store = require("../core/services/Storage");
 
-const isBrowser = require("../browser");
 
-export = class DeviceManager {
->>>>>>> origin/develop
+    logger:  Logger;
 
-    logger: typeof Logger;
-
-    store: typeof Store;
+    store:  Store;
 
     context: AudioContext = null;
 
     currentStream: MediaStream;
 
-<<<<<<< HEAD
-    logger: Logger = new Logger();
-=======
     isClosing = false;
 
     isConnecting = false;
 
-    constructor (logger: typeof Logger, store: typeof Store) {
+    constructor (logger: Logger, store: Store) {
 
         this.logger = logger || new Logger();
         this.store = store || new Store().init();
@@ -35,7 +27,6 @@ export = class DeviceManager {
         this.logger.info(isBrowser());
 
     }
->>>>>>> origin/develop
 
     /**
      * Get and return an audio/visual device to access a MediaStream
