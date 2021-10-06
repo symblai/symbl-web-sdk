@@ -2,11 +2,40 @@ import {NullError, ConnectionError} from "../core/services/ErrorHandler";
 
 import Logger from "../core/services/Logger";
 
+<<<<<<< HEAD
 export default class DeviceManager {
+=======
+const Store = require("../core/services/Storage");
+
+const isBrowser = require("../browser");
+
+export = class DeviceManager {
+>>>>>>> origin/develop
+
+    logger: typeof Logger;
+
+    store: typeof Store;
+
+    context: AudioContext = null;
 
     currentStream: MediaStream;
 
+<<<<<<< HEAD
     logger: Logger = new Logger();
+=======
+    isClosing = false;
+
+    isConnecting = false;
+
+    constructor (logger: typeof Logger, store: typeof Store) {
+
+        this.logger = logger || new Logger();
+        this.store = store || new Store().init();
+
+        this.logger.info(isBrowser());
+
+    }
+>>>>>>> origin/develop
 
     /**
      * Get and return an audio/visual device to access a MediaStream
@@ -18,29 +47,16 @@ export default class DeviceManager {
         try {
 
             stream = await this.getUserDevices();
-            this.currentStream = stream;
 
             this.logger.info("Symbl: Successfully connected to device");
+            this.currentStream = stream;
             return stream;
 
         } catch (err) {
 
             throw new ConnectionError(err);
-            return stream;
 
         }
-
-    }
-
-    /**
-     * Checks if the MediaDeviceInfo includes labels for Apple devices.
-     */
-    isAppleMicrophone (device: MediaDeviceInfo): boolean {
-
-        return device.label && (
-            device.label.includes("MacBook") ||
-            device.label.includes("iPhone") ||
-            device.label.includes("iPad"));
 
     }
 
@@ -49,31 +65,30 @@ export default class DeviceManager {
      */
     async getUserDevices (): Promise<MediaStream> {
 
+        const localMediaStream = await navigator.mediaDevices.getUserMedia({
+            "audio": true,
+            "video": false
+        });
+
+        this.logger.debug(localMediaStream);
+
+        this.logger.debug(localMediaStream.getTracks());
+
         const devices = await navigator.mediaDevices.enumerateDevices();
-        this.logger.log(`All Devices: ${devices}`);
+        this.logger.debug("All Devices:");
+        devices.forEach((device) => {
 
-        const appleDevice = devices.filter((dev) => this.isAppleMicrophone(dev));
+            this.logger.debug(`${device.kind}: ${device.label} id = ${device.deviceId}`);
 
-        if (appleDevice.length > 0) {
-
-            this.logger.info(`Symbl: Detected Safari. Using device: ${appleDevice[0]}`);
-
-            return navigator.mediaDevices.getUserMedia({
-                "audio": {
-                    "deviceId": appleDevice[0].deviceId
-                },
-                "video": false
-            });
-
-        }
+        });
 
         try {
 
-            this.logger.info("Sybml: Safari not detected.");
             const defaultDevice = devices.filter((dev) => dev.deviceId === "default" && dev.kind === "audioinput");
-            this.logger.info(`Symbl: Default device: ${defaultDevice}`);
 
             if (defaultDevice.length > 0) {
+
+                this.logger.info(`Symbl: Default device: ${defaultDevice[0]}`);
 
                 const device = devices.filter((dev) => {
 
@@ -83,27 +98,27 @@ export default class DeviceManager {
 
                 });
 
-                this.logger.info(`Symbl: Default device matches: ${device}`);
+                this.logger.info(`Symbl: Default device matches: ${device[0]}`);
 
                 if (device.length > 0) {
 
-                    this.logger.info(`The device to be used for stream: ${device}`);
+                    this.logger.info(`The device to be used for stream: ${device[0]}`);
 
-                    return navigator.mediaDevices.getUserMedia({
-                        "audio": {
-                            "deviceId": device[0].deviceId
-                        },
-                        "video": false
+                    await localMediaStream.getAudioTracks()[0].applyConstraints({
+                        "deviceId": device[0].deviceId
                     });
 
                 }
 
             }
 
-            return navigator.mediaDevices.getUserMedia({
-                "audio": true,
-                "video": false
+            await localMediaStream.getAudioTracks()[0].applyConstraints({
+                "sampleRate": {
+                    "ideal": new AudioContext().sampleRate
+                }
             });
+
+            return localMediaStream;
 
         } catch (err) {
 
@@ -119,54 +134,144 @@ export default class DeviceManager {
      */
     async deviceConnect (connection: SymblRealtimeConnection): Promise<void> {
 
-        if (!connection) {
+        if (!this.isConnecting) {
 
-            throw new NullError("Websocket connection is missing");
+            if (!connection) {
+
+                throw new NullError("Websocket connection is missing.");
+
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+
+            if (!AudioContext) {
+
+                throw new NullError("AudioContext support is missing in this browser.");
+
+            }
+
+            this.isConnecting = true;
+
+            this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
+
+            const streamSource = await this.getDefaultDevice();
+            const context = new AudioContext();
+            this.context = context;
+            const source = context.createMediaStreamSource(streamSource);
+            let gainNode, processor;
+            if (!window.AudioContext) {
+
+                processor = context.createJavascriptNode(
+                    1024,
+                    1,
+                    1
+                );
+                gainNode = context.createGainNode();
+
+            } else {
+
+                processor = context.createScriptProcessor(
+                    1024,
+                    1,
+                    1
+                );
+                gainNode = context.createGain();
+
+            }
+            source.connect(gainNode);
+            gainNode.connect(processor);
+            processor.connect(context.destination);
+            processor.onaudioprocess = (event) => {
+
+                // Convert to 16-bit payload
+                const inputData = event.inputBuffer.getChannelData(0);
+                const targetBuffer = new Int16Array(inputData.length);
+                for (let index = inputData.length; index > 0; index -= 1) {
+
+                    targetBuffer[index] = 32767 * Math.min(
+                        1,
+                        inputData[index]
+                    );
+
+                }
+                // Send audio stream to websocket.
+                try {
+
+                    connection.sendAudio(targetBuffer.buffer);
+
+                } catch (err) {
+
+                    this.logger.error(err);
+                    this.logger.trace(err);
+
+                }
+
+            };
+
+            /*
+             * Device change logic needs to be updated once the
+             * ability to modify requests is added.
+             *
+             *navigator.mediaDevices.ondevicechange = () => {
+             *
+             *    this.logger.info("Symbl: Attempting to change device");
+             *
+             *    this.deviceDisconnect().then(() => {
+             *
+             *        setTimeout(
+             *            () => this.deviceConnect(connection),
+             *            100
+             *        );
+             *
+             *    });
+             *
+             *};
+             */
+
+            this.isConnecting = false;
 
         }
 
+    }
 
-        this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
+    deviceDisconnect (): Promise<void> {
 
-        const streamSource = await this.getDefaultDevice();
-        const {AudioContext} = window;
-        const context = new AudioContext();
-        const source = context.createMediaStreamSource(streamSource);
-        const processor = context.createScriptProcessor(
-            1024,
-            1,
-            1
-        );
-        const gainNode = context.createGain();
-        source.connect(gainNode);
-        gainNode.connect(processor);
-        processor.connect(context.destination);
-        processor.onaudioprocess = (event) => {
+        return new Promise((resolve) => {
 
-            // Convert to 16-bit payload
-            const inputData = event.inputBuffer.getChannelData(0);
-            const targetBuffer = new Int16Array(inputData.length);
-            for (let index = inputData.length; index > 0; index -= 1) {
+            this.logger.debug("Attempting to close connection.");
+            if (!this.isClosing && this.context.state !== "closed") {
 
-                targetBuffer[index] = 32767 * Math.min(
-                    1,
-                    inputData[index]
-                );
+                this.logger.debug("Closing connection");
+                this.isClosing = true;
+                this.context.close().then(() => {
 
-            }
-            // Send audio stream to websocket.
-            try {
 
-                connection.sendAudio(targetBuffer.buffer);
+                    this.currentStream.getAudioTracks().forEach((track) => {
 
-            } catch (err) {
+                        if (track.readyState === "live") {
 
-                this.logger.error(err);
-                this.logger.trace(err);
+                            if (!isBrowser().safari) {
+
+                                track.stop();
+
+                            }
+                            track.enabled = false;
+
+                        }
+
+                    });
+                    this.logger.debug("Connection closed");
+                    this.isClosing = false;
+                    resolve();
+
+                });
 
             }
+            this.logger.debug("Connection already closed");
+            resolve();
 
-        };
+        });
 
     }
 

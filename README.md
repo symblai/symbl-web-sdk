@@ -104,6 +104,22 @@ const connectionConfig = {
 })();
 ```
 
+## Reconnecting to an existing realtime connection
+
+In the case that a user closes their browser or has an interruption in their connection, you can call a reconnect function to reconnect using configuration details saved from the initial realtime request.
+
+```js
+const symbl = new sdk.Symbl();
+
+symbl.init({
+	appId: '<your App ID>',
+	appSecret: '<your App Secret>',
+	basePath: '<your custom base path (optional)>',
+});
+
+symbl.reconnect();
+```
+
 ## Subscribing to an existing realtime connection with Subscribe API
 
 With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a separate tab.
