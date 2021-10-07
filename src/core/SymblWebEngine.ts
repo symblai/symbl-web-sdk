@@ -233,11 +233,7 @@ export default class SymblWebEngine {
             10
         );
 
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-
-        options.config.sampleRateHertz = new AudioContext().sampleRate;
-
-        if (Date.now() > expDate) {
+        if (Date.now() > expDate || !expDate) {
 
             throw new ConfigError("Connection configuration has expired");
 
@@ -248,6 +244,10 @@ export default class SymblWebEngine {
             throw new NullError("There is no saved realtime configuration");
 
         }
+
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+
+        options.config.sampleRateHertz = new AudioContext().sampleRate;
 
         this.logger.info("Symbl: Attempting to reconnect to Realtime websocket");
 

@@ -1,5 +1,5 @@
-const SymblWebEngine = require("../src/core/SymblWebEngine");
-const { NullError, ConfigError, ConnectionError } = require("../src/core/services/ErrorHandler")
+import SymblWebEngine from "../src/core/SymblWebEngine";
+import { NullError, ConfigError, ConnectionError } from "../src/core/services/ErrorHandler";
 
 test(
     "init(): Error returned on null appConfig",
@@ -15,12 +15,29 @@ test(
 );
 
 test(
+    "init(): Error returned on missing AppID/AppSecret && missing AccessToken",
+    async () => {
+        const engine = new SymblWebEngine();
+        expect.assertions(1);
+        try {
+            await engine.init({
+                basePath: 'example.com'
+            });
+        } catch (err) {
+            expect(err).toEqual(new ConfigError("Please provide an AppID & AppSecret or an AccessToken"))
+        }
+    }
+)
+
+test(
     "init(): Error returned on missing AppID",
     async () => {
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.init({appSecret: "12345"});
+            await engine.init({
+                appSecret: "12345678123456781234567812345678123456781234567812345678123456781234567812345678123456781234567812345678123456781234567812345678"
+            });
         } catch (err) {
             expect(err).toEqual(new ConfigError("AppID is missing"))
         }
@@ -33,9 +50,43 @@ test(
         const engine = new SymblWebEngine();
         expect.assertions(1);
         try {
-            await engine.init({appID: "12345"});
+            await engine.init({
+                appId: "123456781f34567812b4567812345a78123456c8123456781234567812345678"
+            });
         } catch (err) {
-            expect(err).toEqual(new ConfigError("AppID is missing"))
+            expect(err).toEqual(new ConfigError("AppSecret is missing"))
+        }
+    }
+);
+
+test(
+    "init(): Error returned on invalid AppID",
+    async () => {
+        const engine = new SymblWebEngine();
+        expect.assertions(1);
+        try {
+            await engine.init({
+                appId: "12345!abc",
+                appSecret: "12345678123456781234567812345678123456781234567812345678123456781234567812345678123456781234567812345678123456781234567812345678"
+            });
+        } catch (err) {
+            expect(err).toEqual(new ConfigError("AppID is not valid"))
+        }
+    }
+);
+
+test(
+    "init(): Error returned on invalid AppSecret",
+    async () => {
+        const engine = new SymblWebEngine();
+        expect.assertions(1);
+        try {
+            await engine.init({
+                appId: "123456781f34567812b4567812345a78123456c8123456781234567812345678",
+                appSecret: "12345!abc"
+            });
+        } catch (err) {
+            expect(err).toEqual(new ConfigError("AppSecret is not valid"))
         }
     }
 );
@@ -141,23 +192,5 @@ test(
         } catch (err) {
             expect(err).toEqual(new NullError("Connection ID is missing"))
         }
-    }
-);
-
-test(
-    "Logger has methods from JS SDK",
-    () => {
-
-        const engine = new SymblWebEngine();
-        expect(engine.logger.hasOwnProperty("getLevel"));
-        expect(engine.logger.hasOwnProperty("setLevel"));
-        expect(engine.logger.hasOwnProperty("setDefaultLevel"));
-        expect(engine.logger.hasOwnProperty("trace"));
-        expect(engine.logger.hasOwnProperty("debug"));
-        expect(engine.logger.hasOwnProperty("log"));
-        expect(engine.logger.hasOwnProperty("info"));
-        expect(engine.logger.hasOwnProperty("warn"));
-        expect(engine.logger.hasOwnProperty("error"));
-
     }
 );
