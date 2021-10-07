@@ -110,14 +110,6 @@ export default class SymblWebEngine {
 
         }
 
-        if (options.autoReconnect &&
-            storedConfigString === this.store.get("connectionConfig") &&
-            Date.now() < expDate) {
-
-            return this.reconnect();
-
-        }
-          
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
         options.config.sampleRateHertz = new AudioContext().sampleRate;
@@ -126,7 +118,7 @@ export default class SymblWebEngine {
 
         await this.store.put(
             "connectionConfig",
-            storedConfigString
+            JSON.stringify(storedConfig)
         );
 
         this.logger.info(`Symbl: Starting Realtime Request for ${options.id}`);

@@ -3,10 +3,10 @@ import Logger from "./Logger";
 export default class StorageService {
 
     container: Storage;
-  
+
     logger: Logger;
 
-    constructor (logger: Logger) {
+    constructor (logger?: Logger) {
 
         this.logger = logger || new Logger();
 

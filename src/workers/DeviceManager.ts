@@ -6,7 +6,7 @@ import isBrowser from "../browser";
 
 export default class DeviceManager {
 
-    logger:  Logger;
+    logger: Logger;
 
     store: Store;
 
@@ -21,7 +21,7 @@ export default class DeviceManager {
     constructor (logger: Logger, store: Store) {
 
         this.logger = logger || new Logger();
-        this.store = store || new Store().init();
+        this.store = store || new Store(this.logger).init();
 
         this.logger.debug(isBrowser());
 
@@ -134,7 +134,7 @@ export default class DeviceManager {
                 throw new NullError("AudioContext support is missing in this browser.");
 
             }
-          
+
             this.isConnecting = true;
 
             this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
