@@ -1,8 +1,8 @@
-import { sdk } from "@symblai/symbl-js/build/client.sdk.min";
+import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import DeviceManager from "../workers/DeviceManager";
 import Logger from "./services/Logger";
 import Store from "./services/Storage";
-import {ConfigError, NullError, ConnectionError} from "./services/ErrorHandler";
+import {ConfigError, ConnectionError, NullError} from "./services/ErrorHandler";
 import isBrowser from "../browser";
 
 
@@ -110,11 +110,29 @@ export default class SymblWebEngine {
 
         }
 
+        /*  Will add autoreconnect feature
+        if (options.autoReconnect &&
+            Date.now() <= parseInt(
+                await this.store.get("connectionIDExpiration"),
+                10
+            )) {
+
+            // something with just ID
+            options.id = await this.store.get("connectionID");
+
+        }
+        */
+
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
         options.config.sampleRateHertz = new AudioContext().sampleRate;
 
         const storedConfig = JSON.parse(JSON.stringify(options));
+
+        await this.store.put(
+            "connectionID",
+            options.id
+        );
 
         await this.store.put(
             "connectionConfig",
@@ -131,6 +149,11 @@ export default class SymblWebEngine {
 
             await this.store.expiration(
                 "connectionConfig",
+                1
+            );
+
+            await this.store.expiration(
+                "connectionID",
                 1
             );
 
