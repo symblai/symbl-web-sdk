@@ -6,18 +6,26 @@ The Symbl Web SDK provides convenient access to the Symbl API from applications 
 
 See the [API docs](https://docs.symbl.ai/docs/).
 
+## Build
+
+If you'd like to build a local copy of the SDK you will need Node.js installed and you can simply run the following command inside of the repository folder:
+
+`npm install && npm run build`
+
+Your build will be located in the `dist/` folder.
+
 ## Setup
 
 In order to use the Symbl Web SDK you need to include it via script tags in your HTML file or in the case of a front-end web application using a framework such as React, import it in the ES2015 style.
 
 HTML script:
 ```html
-<script src="symbl.min.js"></script>
+<script src="https://storage.googleapis.com/symbl-web-sdk/latest/symbl.min.js"></script>
 ```
 
 Web Application import:
 ```js
-import { sdk } from "symbl";
+import { sdk } from "https://storage.googleapis.com/symbl-web-sdk/latest/symbl.min.js";
 ```
 
 ## Authentication
@@ -26,7 +34,6 @@ The SDK needs to be initialized with your account's credentials (appId & appSecr
 available in your [Symbl Platform][api-keys].
 
 ```js
-const symbl = new sdk.Symbl();
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
@@ -41,8 +48,6 @@ As a simple test of the Streaming API you can simply setup a live microphone and
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
 
 ```js
-const symbl = new sdk.Symbl();
-
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
@@ -109,8 +114,6 @@ const connectionConfig = {
 In the case that a user closes their browser or has an interruption in their connection, you can call a reconnect function to reconnect using configuration details saved from the initial realtime request.
 
 ```js
-const symbl = new sdk.Symbl();
-
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
@@ -122,11 +125,9 @@ symbl.reconnect();
 
 ## Subscribing to an existing realtime connection with Subscribe API
 
-With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a separate tab.
+With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
 
 ```js
-const symbl = new sdk.Symbl();
-
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
