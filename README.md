@@ -37,7 +37,8 @@ available in your [Symbl Platform][api-keys].
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
-	basePath: '<your custom base path (optional)>',
+	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
+	// basePath: '<your custom base path (optional)>',
 });
 ```
 
@@ -51,7 +52,8 @@ Initialize the SDK and connect via the built-in websocket connector. This will o
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
-	basePath: '<your custom base path (optional)>',
+	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
+	// basePath: '<your custom base path (optional)>',
 });
 
 const id = btoa("symbl-ai-is-the-best");
@@ -137,7 +139,8 @@ You can also programmatically call it manually with the following:
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
-	basePath: '<your custom base path (optional)>',
+	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
+	// basePath: '<your custom base path (optional)>',
 });
 
 symbl.reconnect();
@@ -151,7 +154,8 @@ With the Subscribe API you can connect to an existing connection via the connect
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
-	basePath: '<your custom base path (optional)>',
+	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
+	// basePath: '<your custom base path (optional)>',
 });
 
 const id = btoa("symbl-ai-is-the-best");
@@ -160,6 +164,16 @@ symbl.subscribeToStream(id, (data) => {
 	console.log('data:', data);
 })
 ```
+
+## Stopping realtime connection
+
+In order to end the connection to the realtime WebSocket you'll need to use the following command with your `connection` object:
+
+```js
+symbl.stopRequest(connection);
+```
+
+If you do not sever the connection you could use more minutes of time than intended, so it is recommended to always end the connection programmatically.
 
 <!-- If you'd like to see a more in-depth examples for the Streaming API, please take a look at the extended Streaming examples [here][Streaming-Examples]. -->
 
