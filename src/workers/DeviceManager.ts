@@ -6,8 +6,7 @@ import isBrowser from "../browser";
 
 export default class DeviceManager {
 
-
-    logger:  Logger;
+    logger: Logger;
 
     store: Store;
 
@@ -22,9 +21,9 @@ export default class DeviceManager {
     constructor (logger: Logger, store: Store) {
 
         this.logger = logger || new Logger();
-        this.store = store || new Store().init();
+        this.store = store || new Store(this.logger).init();
 
-        this.logger.info(isBrowser());
+        this.logger.debug(isBrowser());
 
     }
 
@@ -66,12 +65,6 @@ export default class DeviceManager {
         this.logger.debug(localMediaStream.getTracks());
 
         const devices = await navigator.mediaDevices.enumerateDevices();
-        this.logger.debug("All Devices:");
-        devices.forEach((device) => {
-
-            this.logger.debug(`${device.kind}: ${device.label} id = ${device.deviceId}`);
-
-        });
 
         try {
 

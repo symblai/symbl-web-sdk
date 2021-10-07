@@ -134,6 +134,12 @@ const connectionConfig = {
 You can also programmatically call it manually with the following:
 
 ```js
+<<<<<<< HEAD
+// Symbl must be initialized before attempting a reconnect
+const symbl = new sdk.Symbl();
+
+=======
+>>>>>>> develop
 symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',

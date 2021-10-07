@@ -4,7 +4,13 @@ export default class StorageService {
 
     container: Storage;
 
-    logger: Logger = new Logger();
+    logger: Logger;
+
+    constructor (logger?: Logger) {
+
+        this.logger = logger || new Logger();
+
+    }
 
     init (): StorageService {
 
@@ -16,44 +22,49 @@ export default class StorageService {
 
     }
 
-    put (key: string, value: string): void {
+    async put (key: string, value: string): Promise<void> {
+
 
         this.logger.info(`Storing ${key} : ${value}`);
 
-        this.container.setItem(
+        await null;
+        return this.container.setItem(
             key,
             value
         );
 
+
     }
 
-    expiration (key: string, value: number): void {
+    async expiration (key: string, time: number): Promise<void> {
 
 
         const addMinutes = (dt, minutes) => {
 
-            return new Date(dt.getTime() + (minutes * 60000));
+            return dt + (minutes * 60000);
 
         };
 
-        const now = new Date();
+        const now = Date.now();
 
         const exp = addMinutes(
             now,
-            value
+            time
         ).toString();
 
         this.logger.info(`Setting expiration for ${key}`);
 
-        this.container.setItem(
+        await null;
+        return this.container.setItem(
             `${key}Expiration`,
             exp
         );
 
     }
 
-    get (key: string): string {
+    async get (key: string): Promise<string> {
 
+        await null;
         return this.container.getItem(key);
 
     }

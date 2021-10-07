@@ -39,7 +39,7 @@ export default class SymblWebEngine {
 
         this.logger = new Logger();
         this.logger.setDefaultLevel(logLevel);
-        this.store = new Store();
+        this.store = new Store(this.logger);
         this.store.init();
         this.deviceManager = new DeviceManager(
             this.logger,
@@ -195,14 +195,17 @@ export default class SymblWebEngine {
      */
     async reconnect (): Promise<SymblRealtimeConnection> {
 
-        const options = JSON.parse(this.store.get("connectionConfig"));
-        const exp = new Date(this.store.get("connectionConfigExpiration"));
+        const options = JSON.parse(await this.store.get("connectionConfig"));
+        const expDate = parseInt(
+            await this.store.get("connectionConfigExpiration"),
+            10
+        );
 
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
         options.config.sampleRateHertz = new AudioContext().sampleRate;
 
-        if (new Date() > new Date(exp)) {
+        if (Date.now() > expDate) {
 
             throw new ConfigError("Connection configuration has expired");
 
