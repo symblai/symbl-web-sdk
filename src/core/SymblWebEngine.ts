@@ -1,8 +1,8 @@
-import { sdk } from "@symblai/symbl-js/build/client.sdk.min";
+import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import DeviceManager from "../workers/DeviceManager";
 import Logger from "./services/Logger";
 import Store from "./services/Storage";
-import {ConfigError, NullError, ConnectionError} from "./services/ErrorHandler";
+import {ConfigError, ConnectionError, NullError} from "./services/ErrorHandler";
 import isBrowser from "../browser";
 
 
@@ -54,19 +54,40 @@ export default class SymblWebEngine {
      */
     async init (appConfig: SymblConfig): Promise<void> {
 
+        const alphaNumericRegex = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i;
+
         if (!appConfig) {
 
             throw new NullError("AppConfig is missing");
 
         }
-        if (!appConfig.appId) {
+        if (!appConfig.appId && !appConfig.appSecret && !appConfig.accessToken) {
+
+            throw new ConfigError("Please provide an AppID & AppSecret or an AccessToken");
+
+        }
+        if (!appConfig.appId && !appConfig.accessToken) {
 
             throw new ConfigError("AppID is missing");
 
         }
-        if (!appConfig.appSecret) {
+        if (appConfig.appId &&
+            (appConfig.appId.length !== 64 || !appConfig.appId.match(alphaNumericRegex))
+        ) {
+
+            throw new ConfigError("AppID is not valid");
+
+        }
+        if (appConfig.appId && !appConfig.appSecret && !appConfig.accessToken) {
 
             throw new ConfigError("AppSecret is missing");
+
+        }
+        if (appConfig.appSecret &&
+            (appConfig.appSecret.length !== 128 || !appConfig.appSecret.match(alphaNumericRegex))
+        ) {
+
+            throw new ConfigError("AppSecret is not valid");
 
         }
 
@@ -74,11 +95,22 @@ export default class SymblWebEngine {
 
         try {
 
-            await this.sdk.init({
-                "appId": appConfig.appId,
-                "appSecret": appConfig.appSecret,
-                "basePath": appConfig.basePath || "https://api.symbl.ai"
-            });
+            const initConfig: SymblConfig = {};
+
+            if (appConfig.accessToken) {
+
+                initConfig.accessToken = appConfig.accessToken;
+
+            } else {
+
+                initConfig.appId = appConfig.appId;
+                initConfig.appSecret = appConfig.appSecret;
+
+            }
+
+            initConfig.basePath = appConfig.basePath || "https://api.symbl.ai";
+
+            await this.sdk.init(initConfig);
 
             this.logger.info("Symbl: Successfully connected to Symbl");
 
