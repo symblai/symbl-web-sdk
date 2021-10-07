@@ -1,28 +1,14 @@
-const {NullError, ConnectionError} = require("../core/services/ErrorHandler");
+import {NullError, ConnectionError} from "../core/services/ErrorHandler";
 
-const Logger = require("../core/services/Logger");
+import Logger from "../core/services/Logger";
+import Store from "../core/services/Storage";
+import isBrowser from "../browser";
 
-const Store = require("../core/services/Storage");
+export default class DeviceManager {
 
-const isBrowser = require("../browser");
+    logger:  Logger;
 
-/**
- * Checks if the MediaDeviceInfo includes labels for Apple devices.
- */
-const isAppleMicrophone = (device: MediaDeviceInfo): boolean => {
-
-    return device.label && (
-        device.label.includes("MacBook") ||
-        device.label.includes("iPhone") ||
-        device.label.includes("iPad"));
-
-};
-
-export = class DeviceManager {
-
-    logger: typeof Logger;
-
-    store: typeof Store;
+    store: Store;
 
     context: AudioContext = null;
 
@@ -32,12 +18,12 @@ export = class DeviceManager {
 
     isConnecting = false;
 
-    constructor (logger: typeof Logger, store: typeof Store) {
+    constructor (logger: Logger, store: Store) {
 
         this.logger = logger || new Logger();
         this.store = store || new Store().init();
 
-        this.logger.info(isBrowser());
+        this.logger.debug(isBrowser());
 
     }
 
@@ -69,27 +55,16 @@ export = class DeviceManager {
      */
     async getUserDevices (): Promise<MediaStream> {
 
+        const localMediaStream = await navigator.mediaDevices.getUserMedia({
+            "audio": true,
+            "video": false
+        });
+
+        this.logger.debug(localMediaStream);
+
+        this.logger.debug(localMediaStream.getTracks());
+
         const devices = await navigator.mediaDevices.enumerateDevices();
-        this.logger.log(`All Devices: ${devices}`);
-
-        const appleDevice = devices.filter((dev) => isAppleMicrophone(dev));
-        const {sampleRate} = new AudioContext();
-
-        if (appleDevice.length > 0) {
-
-            this.logger.info(`Symbl: Detected Safari. Using device: ${appleDevice[0]}`);
-
-            return navigator.mediaDevices.getUserMedia({
-                "audio": {
-                    "deviceId": appleDevice[0].deviceId,
-                    "sampleRate": {
-                        "ideal": sampleRate
-                    }
-                },
-                "video": false
-            });
-
-        }
 
         try {
 
@@ -113,28 +88,21 @@ export = class DeviceManager {
 
                     this.logger.info(`The device to be used for stream: ${device[0]}`);
 
-                    return navigator.mediaDevices.getUserMedia({
-                        "audio": {
-                            "deviceId": device[0].deviceId,
-                            "sampleRate": {
-                                "ideal": sampleRate
-                            }
-                        },
-                        "video": false
+                    await localMediaStream.getAudioTracks()[0].applyConstraints({
+                        "deviceId": device[0].deviceId
                     });
 
                 }
 
             }
 
-            return navigator.mediaDevices.getUserMedia({
-                "audio": {
-                    "sampleRate": {
-                        "ideal": sampleRate
-                    }
-                },
-                "video": false
+            await localMediaStream.getAudioTracks()[0].applyConstraints({
+                "sampleRate": {
+                    "ideal": new AudioContext().sampleRate
+                }
             });
+
+            return localMediaStream;
 
         } catch (err) {
 
@@ -166,7 +134,7 @@ export = class DeviceManager {
                 throw new NullError("AudioContext support is missing in this browser.");
 
             }
-
+          
             this.isConnecting = true;
 
             this.logger.info("Symbl: Attempting to send audio stream to Realtime connection");
@@ -225,20 +193,25 @@ export = class DeviceManager {
 
             };
 
-            navigator.mediaDevices.ondevicechange = () => {
-
-                this.logger.info("Symbl: Attempting to change device");
-
-                this.deviceDisconnect().then(() => {
-
-                    setTimeout(
-                        () => this.deviceConnect(connection),
-                        100
-                    );
-
-                });
-
-            };
+            /*
+             * Device change logic needs to be updated once the
+             * ability to modify requests is added.
+             *
+             *navigator.mediaDevices.ondevicechange = () => {
+             *
+             *    this.logger.info("Symbl: Attempting to change device");
+             *
+             *    this.deviceDisconnect().then(() => {
+             *
+             *        setTimeout(
+             *            () => this.deviceConnect(connection),
+             *            100
+             *        );
+             *
+             *    });
+             *
+             *};
+             */
 
             this.isConnecting = false;
 

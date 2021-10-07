@@ -1,3 +1,5 @@
+/* eslint-disable no-var */
+/* eslint-disable vars-on-top */
 declare namespace W3C {
     type LongRange = NumberRange;
     type DoubleRange = NumberRange;
@@ -48,13 +50,18 @@ interface MediaTrackConstraintSet {
 }
 
 interface MediaStream extends EventTarget {
-    //id: string;
-    //active: boolean;
 
-    //onactive: EventListener;
-    //oninactive: EventListener;
-    //onaddtrack: (event: MediaStreamTrackEvent) => any;
-    //onremovetrack: (event: MediaStreamTrackEvent) => any;
+    /*
+     * Id: string;
+     * active: boolean;
+     */
+
+    /*
+     * Onactive: EventListener;
+     * oninactive: EventListener;
+     * onaddtrack: (event: MediaStreamTrackEvent) => any;
+     * onremovetrack: (event: MediaStreamTrackEvent) => any;
+     */
 
     clone(): MediaStream;
     stop(): void;
@@ -68,3 +75,26 @@ interface MediaStream extends EventTarget {
     addTrack(track: MediaStreamTrack): void;
     removeTrack(track: MediaStreamTrack): void;
 }
+
+interface AudioWorkletProcessor {
+    readonly port: MessagePort;
+    process(
+      inputs: Float32Array[][],
+      outputs: Float32Array[][],
+      parameters: Record<string, Float32Array>
+    ): boolean;
+  }
+
+declare var AudioWorkletProcessor: {
+    prototype: AudioWorkletProcessor;
+    new (options?: AudioWorkletNodeOptions): AudioWorkletProcessor;
+};
+
+// declare function registerProcessor(
+//     name: string,
+//     processorCtor: (new (
+//         options?: AudioWorkletNodeOptions
+//     ) => AudioWorkletProcessor) & {
+//         parameterDescriptors?: AudioParamDescriptor[];
+//     }
+// ): undefined;
