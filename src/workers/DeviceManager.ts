@@ -18,6 +18,8 @@ export default class DeviceManager {
 
     isConnecting = false;
 
+    gainNode: GainNode;
+
     constructor (logger: Logger, store: Store) {
 
         this.logger = logger || new Logger();
@@ -112,6 +114,14 @@ export default class DeviceManager {
 
     }
 
+    setGain(value): void {
+        if (this.context && this.currentStream && this.gainNode) {
+            this.gainNode.gain.value = value;
+        } else {
+            this.logger.warning("No device connected.");
+        }
+    }
+
     /**
      * Connects MediaStream device to Symbl Websocket endpoint
      * @param {object} connection - Symbl Streaming API Websocket connection
@@ -143,7 +153,7 @@ export default class DeviceManager {
             const context = new AudioContext();
             this.context = context;
             const source = context.createMediaStreamSource(streamSource);
-            let gainNode, processor;
+            let processor;
             if (!window.AudioContext) {
 
                 processor = context.createJavascriptNode(
@@ -151,7 +161,7 @@ export default class DeviceManager {
                     1,
                     1
                 );
-                gainNode = context.createGainNode();
+                this.gainNode = context.createGainNode();
 
             } else {
 
@@ -160,11 +170,11 @@ export default class DeviceManager {
                     1,
                     1
                 );
-                gainNode = context.createGain();
+                this.gainNode = context.createGain();
 
             }
-            source.connect(gainNode);
-            gainNode.connect(processor);
+            source.connect(this.gainNode);
+            this.gainNode.connect(processor);
             processor.connect(context.destination);
             processor.onaudioprocess = (event) => {
 

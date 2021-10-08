@@ -66,6 +66,70 @@ const connectionConfig = {
 		confidenceThreshold: 0.7,
 		timezoneOffset: 480, // Offset in minutes from UTC
 		languageCode: 'en-US',
+		sampleRateHertz: new AudioContext().sampleRate
+	},
+	speaker: {
+		// Optional, if not specified, will simply not send an email in the end.
+		userId: '', // Update with valid email
+		name: ''
+	},
+	handlers: {
+		/**
+		 * This will return live speech-to-text transcription of the call.
+		 */
+		onSpeechDetected: (data) => {
+		  if (data) {
+		    const {punctuated} = data
+		    console.log('Live: ', punctuated && punctuated.transcript)
+		    console.log('');
+		  }
+		  // console.log('onSpeechDetected ', JSON.stringify(data, null, 2));
+		},
+		/**
+		 * When processed messages are available, this callback will be called.
+		 */
+		onMessageResponse: (data) => {
+		  // console.log('onMessageResponse', JSON.stringify(data, null, 2))
+		},
+		/**
+		 * When Symbl detects an insight, this callback will be called.
+		 */
+		onInsightResponse: (data) => {
+		  // console.log('onInsightResponse', JSON.stringify(data, null, 2))
+		},
+		/**
+		 * When Symbl detects a topic, this callback will be called.
+		 */
+		onTopicResponse: (data) => {
+		  // console.log('onTopicResponse', JSON.stringify(data, null, 2))
+		}
+	}
+};
+
+(async () => {
+	const connection = await symbl.startRealtimeRequest(connectionConfig, true);
+})();
+```
+
+## Muting and unmuting the connected device
+
+You can mute and unmute the connected device by simply calling `symbl.mute()` or `symbl.unmute()`.
+
+## Reconnecting to an existing realtime connection
+
+In the case that a user closes their browser or has an interruption in their WebSocket connection you can use the `store` object to grab the Connection ID you last used.
+
+```js
+const id = symbl.store.get('connectionID');
+
+const connectionConfig = {
+	id,
+	insightTypes: ['action_item', 'question'],
+	config: {
+		meetingTitle: 'My Test Meeting ' + id,
+		confidenceThreshold: 0.7,
+		timezoneOffset: 480, // Offset in minutes from UTC
+		languageCode: 'en-US',
 		sampleRateHertz: 44100
 	},
 	speaker: {
@@ -111,40 +175,6 @@ const connectionConfig = {
 })();
 ```
 
-## Reconnecting to an existing realtime connection
-
-In the case that a user closes their browser or has an interruption in their connection, you can call a reconnect function to reconnect using configuration details saved from the initial realtime request.  
-
-This can be set to happen automatically if there are saved connection details in the user's browser via a value in the connection config when setting up a realtime request:
-
-```js
-const connectionConfig = {
-	autoReconnect: true,
-	id: '<Connection ID>',
-	insightTypes: ['action_item', 'question'],
-	config: {
-		meetingTitle: 'My Test Meeting ' + id,
-		confidenceThreshold: 0.7,
-		timezoneOffset: 480, // Offset in minutes from UTC
-		languageCode: 'en-US',
-		sampleRateHertz: 44100
-	},
-	// other connection details as in previous example
-};
-```
-
-You can also programmatically call it manually with the following:
-
-```js
-symbl.init({
-	appId: '<your App ID>',
-	appSecret: '<your App Secret>',
-	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
-	// basePath: '<your custom base path (optional)>',
-});
-
-symbl.reconnect();
-```
 
 ## Subscribing to an existing realtime connection with Subscribe API
 
