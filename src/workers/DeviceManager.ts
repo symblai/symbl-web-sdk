@@ -114,12 +114,18 @@ export default class DeviceManager {
 
     }
 
-    setGain(value): void {
+    setGain (value: number): void {
+
         if (this.context && this.currentStream && this.gainNode) {
+
             this.gainNode.gain.value = value;
+
         } else {
-            this.logger.warning("No device connected.");
+
+            this.logger.warn("No device connected.");
+
         }
+
     }
 
     /**
