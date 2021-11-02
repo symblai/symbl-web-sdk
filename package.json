@@ -1,6 +1,6 @@
 {
   "name": "web-sdk",
-  "version": "0.1.1",
+  "version": "0.3.4",
   "description": "",
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
@@ -45,6 +45,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@symblai/symbl-js": "^1.1.5-alpha.9"
+    "@symblai/symbl-js": "^1.1.5-alpha.19"
   }
 }
