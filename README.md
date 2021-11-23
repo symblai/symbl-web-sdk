@@ -88,7 +88,7 @@ const connectionConfig = {
 		confidenceThreshold: 0.7,
 		timezoneOffset: 480, // Offset in minutes from UTC
 		languageCode: 'en-US',
-		sampleRateHertz: new AudioContext().sampleRate
+		// sampleRateHertz: 48000
 	},
 	speaker: {
 		// Optional, if not specified, will simply not send an email in the end.
