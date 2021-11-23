@@ -111,5 +111,4 @@ build-tsc/
 # vscode project config
 .vscode
 symbl-web-sdk.code-workspace
-docs
 .DS_Store
