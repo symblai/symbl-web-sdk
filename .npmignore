@@ -1,0 +1,15 @@
+.github
+dist
+coverage
+public
+scripts
+src
+tests
+.eslint*
+.gitignore
+babel.config.js
+jest.config.ts
+tsconfig.json
+webpack.config.js
+build-tsc/*.map
+build-tsc/*.d.ts

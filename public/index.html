@@ -1,0 +1,126 @@
+<html>
+<head>
+	<!-- <script src="https://storage.googleapis.com/symbl-web-sdk/latest/symbl.js"></script> -->
+	<script src="../dist/symbl.js"></script>
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<button id="start-connection" onclick="connect()" style="background: yellow;">Connect</button>
+	<button id="start-subscription" onclick="subscribe()">Subscribe</button>
+	<button id="reconnect" onclick="symbl.reconnect()">Reconnect</button>
+	<button id="stopRequest" onclick="stopRequest()">Stop Request</button>
+
+	<button id="mute" onclick="mute()">Mute</button>
+
+	<button id="unmute" onclick="unmute()">UnMute</button>
+	<div>
+		<h2>Live transcription: </h2>
+		<p id="transcript"></p>
+	</div>
+
+	<script>
+		const id = btoa("symbl-ai-is-the-best");
+		symbl.logger.setDefaultLevel("debug");
+		symbl.init({
+			appId: '72726156343035576f6c54387267446a437a67696f59374e4844725861633266',
+			appSecret: '4f42625853336437377749616e31434b323846797358356c54307671694a6f6c6f2d3364662d694e786e74674a42566b6c5253657046574c5055555558427870',
+			// accessToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCsdfI6IlFVUTRNemhDUVVWQk1rTkJNemszUTBNMlFVVTRRekkyUmpWQ056VTJRelUxUTBVeE5EZzFNUSJ9.eyJodHRwczovL3BsYXRmb3JtLnN5bWJsLmFpL3VzZXJJZCI6IjU3NDMyMjEwMjUwMTM3NjAiLCJpc3MiOiJodHRwczovL2RpcmVjdC1wbGF0Zm9ybS5hdXRoMC5jb20vIiwic3ViIjoiR0J3aFJTU1NXZVBPU2lhYW1TWkttdDVWU1pmWFVIb1ZAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vcGxhdGZvcm0ucmFtbWVyLmFpIiwiaWF0IjoxNjMzNjQ1MjQ3LCJleHAiOjE2MzM3MzE2NDcsImF6cCI6IkdCd2hSU1NTV2VQT1NpYWFtU1pLbXQ1VlNaZlhVSG9WIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIn0.iCHIfONpYQd_udPgHlCcigzCzmiy6mUuowBCtQffPQVgEK5iFQb0Eokb-h3VhnaMpj6Gu8TtX31mXwjZaR8B3K-oG0gKRi05O1lptP5GF8nhH-0Ou2K4VI1mZ_ctq-_4q_oJEqtFBNUclOgG5i0wigBhsgrwUPEo7AB-VPE52HJpN1CQl3ZcUW2ZLjbMaioXEY8LY9PxtmguO0_AGKc5hPHsQHVusBDtDLwB7SlCngJbZ1rvXP8uqktWCl19F7wCAGBbVHn_SRSVZovlbf6l8oTJFOo5yXlBLP0HsFTpWuwyb77O12BBJUfQZUUjoDuroxMFqOrhVL9WLwM46tmBfA',
+			basePath: 'https://api-labs.symbl.ai'
+		});
+
+		const transcriptDiv = document.getElementById("transcript");
+
+		let stopRequest = () => {return;};
+
+		function mute() {
+			symbl.mute();
+		}
+
+		function unmute() {
+			symbl.unmute();
+		}
+
+		async function connect() {
+			console.log('connecting');
+			const connectionConfig = {
+		      id,
+		      insightTypes: ['action_item', 'question'],
+		      config: {
+		        meetingTitle: 'My Test Meeting',
+		        confidenceThreshold: 0.7,
+		        timezoneOffset: 480, // Offset in minutes from UTC
+		        languageCode: 'en-US',
+				sampleRateHertz: new AudioContext().sampleRate
+		      },
+		      speaker: {
+		        // Optional, if not specified, will simply not send an email in the end.
+		        userId: 'christopherstokes@symbl.ai', // Update with valid email
+		        name: 'Chris Stokes'
+		      },
+		      handlers: {
+		        /**
+		         * This will return live speech-to-text transcription of the call.
+		         */
+		        onSpeechDetected: (data) => {
+		          if (data) {
+		            const {punctuated} = data
+					transcriptDiv.innerText = punctuated && punctuated.transcript;
+					console.log("Live: ", punctuated && punctuated.transcript)
+		          }
+		          // console.log('onSpeechDetected ', JSON.stringify(data, null, 2));
+		        },
+		        /**
+		         * When processed messages are available, this callback will be called.
+		         */
+		        onMessageResponse: (data) => {
+		          // console.log('onMessageResponse', JSON.stringify(data, null, 2))
+		        },
+		        /**
+		         * When Symbl detects an insight, this callback will be called.
+		         */
+		        onInsightResponse: (data) => {
+		          // console.log('onInsightResponse', JSON.stringify(data, null, 2))
+		        },
+		        /**
+		         * When Symbl detects a topic, this callback will be called.
+		         */
+		        onTopicResponse: (data) => {
+		          // console.log('onTopicResponse', JSON.stringify(data, null, 2))
+		        }
+		      }
+		    };
+
+			const connection = await symbl.startRealtimeRequest(connectionConfig, true);
+
+			const connectionButton = document.getElementById("start-connection")
+			connectionButton.innerText = "Connected";
+			connectionButton.style.backgroundColor = "green";
+
+
+			stopRequest = async () => {
+				await symbl.stopRequest(connection);
+				connectionButton.innerText = "Connect";
+				connectionButton.style.backgroundColor = "yellow";
+			}
+
+			setTimeout(()=> {
+				stopRequest()
+			}, 60000)
+		}
+
+		async function subscribe () {
+			await symbl.subscribeToStream(id, (data) => {
+				console.log('data:', data);
+			})
+
+			const subscribeButton = document.getElementById("start-subscription");
+			subscribeButton.innerText = "Subscribed";
+			subscribeButton.style.backgroundColor = "green";
+		}
+
+	</script>
+</body>
+</html>
