@@ -33,7 +33,7 @@ In order to use the Symbl Web SDK you need to include it via script tags in your
 
 HTML script:
 ```html
-<script src="https://storage.googleapis.com/symbl-web-sdk/latest/symbl.min.js"></script>
+<script src="https://storage.googleapis.com/symbl-web-sdk/latest-labs/symbl.min.js"></script>
 ```
 
 Web Application import:
