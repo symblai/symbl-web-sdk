@@ -40,7 +40,8 @@
     "lint": "eslint ./src/*",
     "doc": "typedoc src",
     "build:ts": "rm -rf ./build-tsc && tsc",
-    "build": "npm run build:ts && webpack --config webpack.config.js --mode production"
+    "build": "npm run build:ts && webpack --config webpack.config.js --mode production",
+    "publish-labs": "npm publish --access public --tag labs"
   },
   "author": "",
   "license": "ISC",
