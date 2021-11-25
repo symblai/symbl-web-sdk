@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "0.5.0-labs.1",
+  "version": "0.5.1-labs.1",
   "description": "",
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
@@ -41,12 +41,12 @@
     "doc": "typedoc src",
     "build:ts": "rm -rf ./build-tsc && tsc",
     "build": "npm run build:ts && webpack --config webpack.config.js --mode production",
-    "publish-labs": "npm publish --access public --tag labs"
+    "publish-labs": "npm install && npm run build && npm publish --access public --tag labs"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@symblai/symbl-js": "1.1.6-labs.6",
+    "@symblai/symbl-js": "1.1.8-labs.1",
     "symbl-opus-encdec": "^0.1.2"
   }
 }
