@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "",
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
@@ -40,11 +40,12 @@
     "lint": "eslint ./src/*",
     "doc": "typedoc src",
     "build:ts": "rm -rf ./build-tsc && tsc",
-    "build": "npm run build:ts && webpack --config webpack.config.js --mode production"
+    "build": "npm run build:ts && webpack --config webpack.config.js --mode production",
+    "publish-prod": "npm install && npm run build && npm publish --access public"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@symblai/symbl-js": "^1.1.6"
+    "@symblai/symbl-js": "^1.1.9"
   }
 }
