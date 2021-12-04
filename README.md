@@ -226,6 +226,8 @@ As a simple test of the Streaming API you can simply setup a live microphone and
 
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
 
+NOTE: The `symbl.startRealtimeRequest` function creates a new AudioContext, so the call must be made on user interaction, such as a button click.
+
 ```js
 symbl.init({
 	appId: '<your App ID>',
