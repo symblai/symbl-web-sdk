@@ -131,13 +131,37 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig, true);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
 ## Muting and unmuting the connected device
 
 You can mute and unmute the connected device by simply calling `symbl.mute()` or `symbl.unmute()`.
+
+### Muting
+
+A quick snippet on how to use the mute method.
+
+```js
+(async () => {
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	await symbl.mute(connection);
+})();
+
+```
+
+### Unmuting
+
+A quick snippet on how to use the unmute method.
+
+```js
+(async () => {
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	await symbl.unmute(connection);
+})();
+
+```
 
 ## Reconnecting to an existing realtime connection
 
@@ -195,7 +219,7 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig, true);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
