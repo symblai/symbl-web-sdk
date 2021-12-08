@@ -70,6 +70,8 @@ As a simple test of the Streaming API you can simply setup a live microphone and
 
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
 
+NOTE: The `symbl.startRealtimeRequest` function creates a new AudioContext, so the call must be made on user interaction, such as a button click.
+
 ```js
 symbl.init({
 	appId: '<your App ID>',
@@ -88,7 +90,7 @@ const connectionConfig = {
 		confidenceThreshold: 0.7,
 		timezoneOffset: 480, // Offset in minutes from UTC
 		languageCode: 'en-US',
-		sampleRateHertz: new AudioContext().sampleRate
+		// sampleRateHertz: 48000
 	},
 	speaker: {
 		// Optional, if not specified, will simply not send an email in the end.
@@ -129,13 +131,37 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig, true);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
 ## Muting and unmuting the connected device
 
 You can mute and unmute the connected device by simply calling `symbl.mute()` or `symbl.unmute()`.
+
+### Muting
+
+A quick snippet on how to use the mute method.
+
+```js
+(async () => {
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	await symbl.mute(connection);
+})();
+
+```
+
+### Unmuting
+
+A quick snippet on how to use the unmute method.
+
+```js
+(async () => {
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	await symbl.unmute(connection);
+})();
+
+```
 
 ## Reconnecting to an existing realtime connection
 
@@ -193,7 +219,7 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig, true);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 

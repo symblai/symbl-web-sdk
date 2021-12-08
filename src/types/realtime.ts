@@ -201,11 +201,41 @@ interface RealtimeTopicData {
     type: string;
 }
 
+interface RealtimeTrackerData {
+    id: string;
+    name: string;
+    matches: {
+        messaageRefs: {
+            id: string;
+            text: string;
+            offset: number;
+        }[];
+        type: string;
+        value: string;
+        insightRefs: {
+            id: string;
+            text: string;
+            offset: number;
+        }[];
+    }
+    messageRefereces: {
+        id: string;
+        relation: string;
+    }[];
+    phrases: string;
+    rootWords: {
+        text: string;
+    }[];
+    socre: number;
+    type: string;
+}
+
 interface RealtimeHandlers {
     onSpeechDetected?: (speechData: RealtimeSpeechData[]) => void;
     onMessageResponse?: (messageData: RealtimeMessageData[]) => void;
     onInsightResponse?: (insightData: RealtimeInsightData[]) => void;
     onTopicResponse?: (topicData: RealtimeTopicData[]) => void;
+    onTrackerResponse?: (trackerData: RealtimeTopicData[]) => void;
     onDataReceived?: (data: unknown) => void;
     ondevicechange?: any;
 }
