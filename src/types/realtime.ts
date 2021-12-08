@@ -235,7 +235,7 @@ interface RealtimeHandlers {
     onMessageResponse?: (messageData: RealtimeMessageData[]) => void;
     onInsightResponse?: (insightData: RealtimeInsightData[]) => void;
     onTopicResponse?: (topicData: RealtimeTopicData[]) => void;
-    onTrackerResponse?: (trackerData: RealtimeTopicData[]) => void;
+    onTrackerResponse?: (trackerData: RealtimeTrackerData[]) => void;
     onDataReceived?: (data: unknown) => void;
     ondevicechange?: any;
 }
