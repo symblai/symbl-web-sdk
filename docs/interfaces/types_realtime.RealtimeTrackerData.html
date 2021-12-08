@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RealtimeTopicData | @symblai/symbl-web-sdk</title>
+	<title>RealtimeTrackerData | @symblai/symbl-web-sdk</title>
 	<meta name="description" content="Documentation for @symblai/symbl-web-sdk">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -58,10 +58,10 @@
 					<a href="../modules/types_realtime.html">types/realtime</a>
 				</li>
 				<li>
-					<a href="types_realtime.RealtimeTopicData.html">RealtimeTopicData</a>
+					<a href="types_realtime.RealtimeTrackerData.html">RealtimeTrackerData</a>
 				</li>
 			</ul>
-			<h1>Interface RealtimeTopicData</h1>
+			<h1>Interface RealtimeTrackerData</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">RealtimeTopicData</span>
+						<span class="target">RealtimeTrackerData</span>
 					</li>
 				</ul>
 			</section>
@@ -83,12 +83,14 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTopicData.html#id" class="tsd-kind-icon">id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTopicData.html#messageRefereces" class="tsd-kind-icon">message<wbr>Refereces</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTopicData.html#phrases" class="tsd-kind-icon">phrases</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTopicData.html#rootWords" class="tsd-kind-icon">root<wbr>Words</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTopicData.html#socre" class="tsd-kind-icon">socre</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTopicData.html#type" class="tsd-kind-icon">type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTrackerData.html#id" class="tsd-kind-icon">id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTrackerData.html#matches" class="tsd-kind-icon">matches</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTrackerData.html#messageRefereces" class="tsd-kind-icon">message<wbr>Refereces</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTrackerData.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTrackerData.html#phrases" class="tsd-kind-icon">phrases</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTrackerData.html#rootWords" class="tsd-kind-icon">root<wbr>Words</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTrackerData.html#socre" class="tsd-kind-icon">socre</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types_realtime.RealtimeTrackerData.html#type-1" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 					</div>
@@ -102,9 +104,36 @@
 					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L191">src/types/realtime.ts:191</a></li>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L205">src/types/realtime.ts:205</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="matches" class="tsd-anchor"></a>
+					<h3>matches</h3>
+					<div class="tsd-signature tsd-kind-icon">matches<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>insightRefs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>offset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>messaageRefs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>offset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L207">src/types/realtime.ts:207</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>insight<wbr>Refs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>offset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>messaage<wbr>Refs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>offset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="messageRefereces" class="tsd-anchor"></a>
@@ -112,7 +141,17 @@
 					<div class="tsd-signature tsd-kind-icon">message<wbr>Refereces<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>relation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L192">src/types/realtime.ts:192</a></li>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L221">src/types/realtime.ts:221</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="name" class="tsd-anchor"></a>
+					<h3>name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L206">src/types/realtime.ts:206</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -122,7 +161,7 @@
 					<div class="tsd-signature tsd-kind-icon">phrases<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L196">src/types/realtime.ts:196</a></li>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L225">src/types/realtime.ts:225</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -132,7 +171,7 @@
 					<div class="tsd-signature tsd-kind-icon">root<wbr>Words<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L197">src/types/realtime.ts:197</a></li>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L226">src/types/realtime.ts:226</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -142,17 +181,17 @@
 					<div class="tsd-signature tsd-kind-icon">socre<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L200">src/types/realtime.ts:200</a></li>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L229">src/types/realtime.ts:229</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="type" class="tsd-anchor"></a>
+					<a name="type-1" class="tsd-anchor"></a>
 					<h3>type</h3>
 					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L201">src/types/realtime.ts:201</a></li>
+							<li>Defined in <a href="https://github.com/symblai/symbl-web-sdk/blob/33bd453/src/types/realtime.ts#L230">src/types/realtime.ts:230</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -222,36 +261,42 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="types_realtime.RealtimeSpeechData.html" class="tsd-kind-icon">Realtime<wbr>Speech<wbr>Data</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="types_realtime.RealtimeTopicData.html" class="tsd-kind-icon">Realtime<wbr>Topic<wbr>Data</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="types_realtime.RealtimeTopicData.html" class="tsd-kind-icon">Realtime<wbr>Topic<wbr>Data</a>
+						<a href="types_realtime.RealtimeTrackerData.html" class="tsd-kind-icon">Realtime<wbr>Tracker<wbr>Data</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="types_realtime.RealtimeTopicData.html#id" class="tsd-kind-icon">id</a>
+								<a href="types_realtime.RealtimeTrackerData.html#id" class="tsd-kind-icon">id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="types_realtime.RealtimeTopicData.html#messageRefereces" class="tsd-kind-icon">message<wbr>Refereces</a>
+								<a href="types_realtime.RealtimeTrackerData.html#matches" class="tsd-kind-icon">matches</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="types_realtime.RealtimeTopicData.html#phrases" class="tsd-kind-icon">phrases</a>
+								<a href="types_realtime.RealtimeTrackerData.html#messageRefereces" class="tsd-kind-icon">message<wbr>Refereces</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="types_realtime.RealtimeTopicData.html#rootWords" class="tsd-kind-icon">root<wbr>Words</a>
+								<a href="types_realtime.RealtimeTrackerData.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="types_realtime.RealtimeTopicData.html#socre" class="tsd-kind-icon">socre</a>
+								<a href="types_realtime.RealtimeTrackerData.html#phrases" class="tsd-kind-icon">phrases</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="types_realtime.RealtimeTopicData.html#type" class="tsd-kind-icon">type</a>
+								<a href="types_realtime.RealtimeTrackerData.html#rootWords" class="tsd-kind-icon">root<wbr>Words</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="types_realtime.RealtimeTrackerData.html#socre" class="tsd-kind-icon">socre</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="types_realtime.RealtimeTrackerData.html#type-1" class="tsd-kind-icon">type</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="types_realtime.RealtimeTrackerData.html" class="tsd-kind-icon">Realtime<wbr>Tracker<wbr>Data</a>
-					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="types_realtime.RealtimeUser.html" class="tsd-kind-icon">Realtime<wbr>User</a>
 					</li>
