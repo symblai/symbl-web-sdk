@@ -64,6 +64,185 @@ symbl.init({
 
 The full details of the Streaming API config options can be seen [here](https://docs.symbl.ai/docs/streaming-api/api-reference/#request-parameters).
 
+### Additional Web SDK configs
+
+These are configs that have been added that are specific to the Web SDK.
+
+* `sourceNode` (optional, default: null) - For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option.
+
+* `handlers.ondevicechange` (optional) - By default Symbl Web SDK will provide the ondevicehandler logic, which just takes the new device and sends the sample rate over to our servers. If you wish to override this logic you can do so by passing an `ondevicechange` function into the `handlers` section of the config. You can assign a function to `symbl.deviceChanged` as a callback to when the event is fired.
+
+* `reconnectOnError` (optional, default: true) - If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error.
+
+Usage Example:
+
+```js
+const id = btoa("symbl-ai-is-the-best");
+
+const connectionConfig = {
+	id,
+	insightTypes: ['action_item', 'question'],
+	sourceNode: sourceNode,
+	reconnectOnError: true,
+	handlers: {
+		ondevicechange: () => {
+			alert('device changed!');
+		},
+		...
+	}
+	...
+}
+
+
+...
+
+// Creates the WebSocket in a non-processing state
+const stream = await symbl.createStream(connectionConfig);
+
+// Send the start request
+await symbl.unmute(stream);
+```
+
+### Using `createStream` to start a realtime request
+
+Creating a stream using `symbl.startRealtimeRequest(config)` has been deprecated in favor of `symbl.createStream(config)`. For `createStream`, the WebSocket is started in a non processing state. You must send the start request before processing any audio. 
+
+After the stream is created, you need to call `symbl.start(stream)` to start the stream.
+
+## How to pass in a custom sourceNode
+
+If you wish you can pass in a custom [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object to the Web SDK. By default the Web SDK will create the AudioContext and the MediaStreamAudioSourceNode object automatically but using this will give you more control over those.
+
+Once you create the MediaStreamAudioSourceNode object you can pass it via the connectionConfig as `sourceNode`
+
+```js
+
+// create the MediaStreamAudioSourceNode
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+stream = await navigator.mediaDevices.getUserMedia({
+	audio: true,
+	video: false
+});
+context = new AudioContext();
+const sourceNode = context.createMediaStreamSource(stream);
+
+symbl.init({
+	appId: '<your App ID>',
+	appSecret: '<your App Secret>',
+	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
+	basePath: 'https://api-labs.symbl.ai',
+});
+
+const id = btoa("symbl-ai-is-the-best");
+// pass in the MediaStreamAudioSourceNode as sourceNode
+const connectionConfig = {
+	id,
+	sourceNode,
+	insightTypes: ['action_item', 'question'],
+	config: {
+		meetingTitle: 'My Test Meeting ' + id,
+		confidenceThreshold: 0.7,
+		timezoneOffset: 480, // Offset in minutes from UTC
+		languageCode: 'en-US',
+		sampleRateHertz: 48000
+	},
+	speaker: {
+		// Optional, if not specified, will simply not send an email in the end.
+		userId: '', // Update with valid email
+		name: ''
+	},
+	handlers: {
+		/**
+		 * This will return live speech-to-text transcription of the call.
+		 */
+		onSpeechDetected: (data) => {
+		  if (data) {
+		    const {punctuated} = data
+		    console.log('Live: ', punctuated && punctuated.transcript)
+		    console.log('');
+		  }
+		  // console.log('onSpeechDetected ', JSON.stringify(data, null, 2));
+		},
+		/**
+		 * When processed messages are available, this callback will be called.
+		 */
+		onMessageResponse: (data) => {
+		  // console.log('onMessageResponse', JSON.stringify(data, null, 2))
+		},
+		/**
+		 * When Symbl detects an insight, this callback will be called.
+		 */
+		onInsightResponse: (data) => {
+		  // console.log('onInsightResponse', JSON.stringify(data, null, 2))
+		},
+		/**
+		 * When Symbl detects a topic, this callback will be called.
+		 */
+		onTopicResponse: (data) => {
+		  // console.log('onTopicResponse', JSON.stringify(data, null, 2))
+		}
+	}
+};
+
+(async () => {
+	// Creates the WebSocket in a non-processing state
+	const stream = await symbl.createStream(connectionConfig);
+
+	// Send the start request
+	await stream.start(stream);
+})();
+
+```
+
+## Passing in custom `ondevicechange` handler.
+
+By default the Symbl Web SDK will handle the `ondevicechange` event and send a `modify_request` event to modify the sample rate with the new device's sample rate. If you wish to override this logic you can pass in your own `ondevicechange` handler in the handlers config.
+
+
+```js
+symbl.init({
+	appId: '<your App ID>',
+	appSecret: '<your App Secret>',
+	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
+	basePath: 'https://api-labs.symbl.ai',
+});
+const id = btoa("symbl-ai-is-the-best");
+// pass in the MediaStreamAudioSourceNode as sourceNode
+const connectionConfig = {
+	id,
+	insightTypes: ['action_item', 'question'],
+	config: {
+		languageCode: 'en-US',
+		sampleRateHertz: 48000
+	},
+	handlers: {
+		ondevicechange: () => {
+		  // add your logic here.
+		}
+	}
+};
+
+(async () => {
+	// Creates the WebSocket in a non-processing state
+	const stream = await symbl.createStream(connectionConfig);
+
+	// Send the start request
+	await stream.start(stream);
+})();
+```
+
+### Using the `deviceChanged` callback
+
+You can also make use of our callback using our `deviceChanged` callback:
+
+```js
+symbl.deviceChanged = () => {
+	// Add your logic here
+}
+```
+
+
+
 ## Transcribing live audio input through the microphone
 
 As a simple test of the Streaming API you can simply setup a live microphone and push the audio stream using the browser APIs to access the microphone.

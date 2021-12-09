@@ -132,11 +132,12 @@ export default class SymblWebEngine {
     }
 
     /**
+     * @deprecated
      * Starts a request to the WebSocket-based Streaming API
      * @param {object} options - Symbl realtime request config object
      * @param {boolean} connect - indicate whether connection is immediate
      */
-    async startRealtimeRequest (options: SymblRealtimeConfig, connect: boolean = true):
+     async startRealtimeRequest (options: SymblRealtimeConfig, connect: boolean = true):
         Promise<SymblRealtimeConnection> {
 
         if (!options) {
@@ -149,19 +150,6 @@ export default class SymblWebEngine {
             throw new ConfigError("Meeting ID is missing");
 
         }
-
-        /*  Will add autoreconnect feature
-        if (options.autoReconnect &&
-            Date.now() <= parseInt(
-                await this.store.get("connectionIDExpiration"),
-                10
-            )) {
-
-            // something with just ID
-            options.id = await this.store.get("connectionID");
-
-        }
-        */
 
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
@@ -185,6 +173,72 @@ export default class SymblWebEngine {
         this.realtimeConfig = Object.assign({}, options);
 
         const connection = await this.sdk.startRealtimeRequest(options);
+
+        this.logger.info(`Symbl: Completed Realtime Request for ${options.id}`);
+
+        if (connect) {
+
+            await this.connectDevice(connection);
+
+        }
+
+        return connection;
+
+    }
+
+    /**
+     * Starts the conection the WebSocket in a non-processing state.
+     * @param {object} options - Symbl realtime request config object
+     * @param {boolean} connect - indicate whether connection is immediate
+     */
+    async createStream (options: SymblRealtimeConfig, connect: boolean = true):
+        Promise<SymblRealtimeConnection> {
+
+        if (!options) {
+
+            throw new NullError("Realtime config is missing");
+
+        }
+        if (!options.id) {
+
+            throw new ConfigError("Meeting ID is missing");
+
+        }
+
+        if (options.disconnectOnStopRequestTimeout !== undefined && options.disconnectOnStopRequestTimeout <= 0) {
+
+            throw new ConfigError("disconnectOnStopRequestTimeout must be greater than 0");
+
+        }
+
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+
+        if (!options.config.sampleRateHertz) {
+
+            const tempContext = new AudioContext();
+
+            options.config.sampleRateHertz = tempContext.sampleRate;
+
+            tempContext.close();
+
+        }
+
+        const storedConfig = JSON.parse(JSON.stringify(options));
+
+        await this.store.put(
+            "connectionID",
+            options.id
+        );
+
+        this.logger.info(`Symbl: Starting Realtime Request for ${options.id}`);
+
+        this.realtimeConfig = Object.assign({}, options);
+
+        if (this.realtimeConfig.reconnectOnError === undefined) {
+            this.realtimeConfig.reconnectOnError = true;
+        }
+
+        const connection = await this.sdk.createStream(options);
 
         this.logger.info(`Symbl: Completed Realtime Request for ${options.id}`);
 
@@ -289,26 +343,10 @@ export default class SymblWebEngine {
 
             // Reconnects on device change to update Sample Rate and connect to new device
             if (!this.onDeviceChangeDefined) {
+                this.setOnDeviceHandler(connection);
                 navigator.mediaDevices.ondevicechange = async () => {
-
-                    this.onDeviceChangeDefined = true;
-
-                    this.logger.info("Symbl: Attempting to change device");
-
-                    // Disconnect from previous device first to avoid multiple connections
-                    // if (!isBrowser().safari) {
-
-                    await this.deviceManager.deviceDisconnect();
-
-                    // }
-
-                    await this.startRealtimeRequest(
-                        this.realtimeConfig,
-                        true
-                    );
-
-                    this.logger.info("Symbl: Successfully reconnected to websocket");
-
+                    await this.realtimeConfig.handlers.ondevicechange();
+                    this.deviceChanged();
                 };
             }
 
@@ -320,6 +358,47 @@ export default class SymblWebEngine {
 
         }
 
+    }
+
+    /**
+     * @ignore Sends the stop request and pauses the connection if
+     * the disconnectonStopRequest flag is set.
+     * @param {object} connection - Symbl realtime WebSocket connection object
+     */
+    async stop(connection: SymblRealtimeConnection): Promise<void> {
+        if (connection === undefined) {
+            const err = "Connection is not defined.";
+            this.logger.error(err);
+            throw new NullError(err);
+        }
+        await connection.stop();
+    }
+
+    /**
+     * Sends the start request and resumes the connection if
+     * the disconnectonStopRequest flag is set.
+     * @param {object} connection - Symbl realtime WebSocket connection object
+     */
+    async start (connection: SymblRealtimeConnection): Promise<void> {
+        if (connection === undefined) {
+            const err = "Connection is not defined.";
+            this.logger.error(err);
+            throw new NullError(err);
+        }
+        if (connection.start === undefined) {
+            const err = "You are using a connection object generated using the deprecated `startRealtimeRequest` method. You must use connection generated with newer `createStream` method instead.";
+            this.logger.error(err);
+            throw new NullError(err);
+        }
+        const context = this.deviceManager.getContext();
+        if (context) {
+            context.resume();
+            await connection.start(context.sampleRate);
+        } else {
+            const err = "Audio context is not defined.";
+            this.logger.error(err);
+            throw new NullError(err);
+        }
     }
 
     mute(): void {
