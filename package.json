@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "",
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
@@ -46,6 +46,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@symblai/symbl-js": "^1.1.10"
+    "@symblai/symbl-js": "^1.2.0"
   }
 }
