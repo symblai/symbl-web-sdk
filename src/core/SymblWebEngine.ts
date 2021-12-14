@@ -285,16 +285,20 @@ export default class SymblWebEngine {
                 }
             } else {
 
-                this.logger.info("Symbl: Attempting to change device");
+                this.realtimeConfig.handlers.ondevicechange = async () => {
 
-                await this.deviceManager.deviceDisconnect();
+                    this.logger.info("Symbl: Attempting to change device");
 
-                await this.startRealtimeRequest(
-                    this.realtimeConfig,
-                    true
-                );
+                    await this.deviceManager.deviceDisconnect();
 
-                this.logger.info("Symbl: Successfully reconnected to websocket");
+                    await this.startRealtimeRequest(
+                        this.realtimeConfig,
+                        true
+                    );
+
+                    this.logger.info("Symbl: Successfully reconnected to websocket");
+
+                }
 
             }
         } else {
