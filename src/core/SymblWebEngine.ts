@@ -43,6 +43,11 @@ export default class SymblWebEngine {
      * Assign a function to receive a callback when ondevicechange is fired.
      */
     deviceChanged: any = () => {};
+
+    /**
+     * @ignore
+     */
+    appConfig: SymblConfig;
  
     /**
      * Sets up the basic Symbl connection object
@@ -119,6 +124,8 @@ export default class SymblWebEngine {
 
             initConfig.basePath = appConfig.basePath || "https://api.symbl.ai";
 
+            this.appConfig = Object.assign({}, initConfig);
+
             await this.sdk.init(initConfig);
 
             this.logger.info("Symbl: Successfully connected to Symbl");
@@ -158,10 +165,21 @@ export default class SymblWebEngine {
 
         }
 
+
         if (!options.config.sampleRateHertz) {
 
-            throw new ConfigError("Sample Rate Hertz must be set.");
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
+            const tempContext = new AudioContext();
+
+            options.config.sampleRateHertz = tempContext.sampleRate;
+
+            tempContext.close();
+
+        }
+
+        if (options.config.encoding && options.config.encoding.toLowerCase() === "opus") {
+            options.config.sampleRateHertz = 48000;
         }
 
         const storedConfig = JSON.parse(JSON.stringify(options));
@@ -255,11 +273,26 @@ export default class SymblWebEngine {
     setOnDeviceHandler(connection: SymblRealtimeConnection): void {
         this.onDeviceChangeDefined = true;
         if (!this.realtimeConfig.handlers.ondevicechange) {
-            this.realtimeConfig.handlers.ondevicechange = async () => {
+            if (this.appConfig.basePath === "https://api-labs.symbl.ai" || this.realtimeConfig.disconnectOnStopRequest === false) {
+                this.realtimeConfig.handlers.ondevicechange = async () => {
+
+                    this.logger.info("Symbl: Attempting to change device");
+
+                    await this.modifyRequest(connection);
+
+                    this.logger.info("Symbl: Successfully reconnected to websocket");
+
+                }
+            } else {
 
                 this.logger.info("Symbl: Attempting to change device");
 
-                await this.modifyRequest(connection);
+                await this.deviceManager.deviceDisconnect();
+
+                await this.startRealtimeRequest(
+                    this.realtimeConfig,
+                    true
+                );
 
                 this.logger.info("Symbl: Successfully reconnected to websocket");
 

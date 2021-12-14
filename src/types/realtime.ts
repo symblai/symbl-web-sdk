@@ -29,6 +29,8 @@ interface SymblRealtimeConfig {
     reconnectOnError?: boolean;
 
     /**
+     * Labs only feature
+     * 
      * This parameter allows you to set your Streaming API connection in such a way 
      * that even when the stop_request is sent. The connection does not drop-off, only 
      * the processing is stopped and the conversationId and connection is kept live 
@@ -42,6 +44,8 @@ interface SymblRealtimeConfig {
     disconnectOnStopRequest?: boolean;
 
     /**
+     * Labs only feature
+     * 
      * This parameter allows you to override the idle time out (if a WebSocket connection is idle for 30 minutes). 
      * Set this parameter with a value between 0 to 3600 seconds. If the idle connection 
      * needs to be kept alive beyond 3600 seconds, you have to restart the connection 
@@ -53,6 +57,8 @@ interface SymblRealtimeConfig {
     disconnectOnStopRequestTimeout?: number;
 
     /**
+     * Labs only feature
+     * 
      * When this parameter is set to noConnectionTimeout = 600 secs and if there is no 
      * graceful termination using stop_request message sent explicitly when there just 
      * one WebSocket connection, the connectionId and conversationId are kept valid 
