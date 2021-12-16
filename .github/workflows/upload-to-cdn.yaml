@@ -31,25 +31,25 @@ jobs:
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
           path: dist/symbl.min.js
-          destination: ${{ secrets.GCP_BUCKET_NAME }}/${{ env.RELEASE_VERSION }}
+          destination: ${{ secrets.GCP_BUCKET_NAME }}/js/beta/symbl-web-sdk/${{ env.RELEASE_VERSION }}
 
       - id: upload_unminified_file
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
           path: dist/symbl.js
-          destination: ${{ secrets.GCP_BUCKET_NAME }}/${{ env.RELEASE_VERSION }}
+          destination: ${{ secrets.GCP_BUCKET_NAME }}/js/beta/symbl-web-sdk/${{ env.RELEASE_VERSION }}
 
       - id: upload_minified_file_to_latest
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
           path: dist/symbl.min.js
-          destination: ${{ secrets.GCP_BUCKET_NAME }}/latest
+          destination: ${{ secrets.GCP_BUCKET_NAME }}/js/beta/symbl-web-sdk/latest
 
       - id: upload_unminified_file_to_latest
         uses: google-github-actions/upload-cloud-storage@main
         with:
           credentials: ${{ secrets.GCP_CREDENTIALS }}
           path: dist/symbl.js
-          destination: ${{ secrets.GCP_BUCKET_NAME }}/latest
+          destination: ${{ secrets.GCP_BUCKET_NAME }}/js/beta/symbl-web-sdk/latest
