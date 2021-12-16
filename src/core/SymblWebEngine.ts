@@ -159,10 +159,14 @@ export default class SymblWebEngine {
 
         }
 
-        if (options.disconnectOnStopRequestTimeout !== undefined && options.disconnectOnStopRequestTimeout <= 0) {
+        if (options.disconnectOnStopRequestTimeout !== undefined && options.disconnectOnStopRequestTimeout < 0 || options.disconnectOnStopRequestTimeout > 1800) {
 
-            throw new ConfigError("disconnectOnStopRequestTimeout must be greater than 0");
+            throw new ConfigError("disconnectOnStopRequestTimeout must be greater than -1 and less than 1800.");
 
+        }
+
+        if (options.disconnectOnStopRequest !== undefined && (options.disconnectOnStopRequest !== true && options.disconnectOnStopRequest !== false)) {
+            throw new ConfigError("disconnectOnStopRequest must be a boolean value.");
         }
 
 
@@ -226,16 +230,30 @@ export default class SymblWebEngine {
 
         }
 
-        if (options.disconnectOnStopRequestTimeout !== undefined && options.disconnectOnStopRequestTimeout <= 0) {
+        if (options.disconnectOnStopRequestTimeout !== undefined && options.disconnectOnStopRequestTimeout < 0 || options.disconnectOnStopRequestTimeout > 1800) {
 
-            throw new ConfigError("disconnectOnStopRequestTimeout must be greater than 0");
+            throw new ConfigError("disconnectOnStopRequestTimeout must be greater than -1 and less than 1800.");
 
+        }
+
+        if (options.disconnectOnStopRequest !== undefined && (options.disconnectOnStopRequest !== true && options.disconnectOnStopRequest !== false)) {
+            throw new ConfigError("disconnectOnStopRequest must be a boolean value.");
         }
 
         if (!options.config.sampleRateHertz) {
 
-            throw new ConfigError("Sample Rate Hertz must be set.");
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
+            const tempContext = new AudioContext();
+
+            options.config.sampleRateHertz = tempContext.sampleRate;
+
+            tempContext.close();
+
+        }
+
+        if (options.config.encoding && options.config.encoding.toLowerCase() === "opus") {
+            options.config.sampleRateHertz = 48000;
         }
 
         const storedConfig = JSON.parse(JSON.stringify(options));
@@ -358,7 +376,9 @@ export default class SymblWebEngine {
 
             await this.deviceManager.stopAudioSend();
             await connection.stop();
-            await this.deviceManager.deviceDisconnect();
+            if (!this.realtimeConfig.sourceNode) {
+                await this.deviceManager.deviceDisconnect();
+            }
 
 
         } catch (err) {

@@ -73,7 +73,7 @@ You can use labs features by setting your `basePath` in the above `init` call to
 
 * `noConnectionTimeout` (optional) - Accepts a value of 0 to 1800 seconds. Indicates how long a connection will remain active even when no one is connected. By using the same `connectionId` anyone can reconnect to this WebSocket before it times out completely.
 
-* `sourceNode` (optional, default: null) - For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option.
+* `sourceNode` (optional, default: null) - For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option. Note: If you use this option the `symbl.stopRequest` function will not close the [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) automatically as these events will be handled by you.
 
 * `config.encoding` (optional, default: 'linear16') - Accepts either `'opus'` or `'linear16'`. For `linear16`, you must set the `sampleRateHertz` option. For `opus` the `sampleRateHertz` should always be 48000.
 
@@ -231,6 +231,8 @@ const connectionConfig = {
 If you wish you can pass in a custom [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object to the Web SDK. By default the Web SDK will create the AudioContext and the MediaStreamAudioSourceNode object automatically but using this will give you more control over those.
 
 Once you create the MediaStreamAudioSourceNode object you can pass it via the connectionConfig as `sourceNode`
+
+Note: If you use this option the `symbl.stopRequest` function will not close the [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) automatically as these events will be handled by you.
 
 ```js
 
@@ -527,6 +529,8 @@ symbl.stopRequest(stream);
 ```
 
 If you do not sever the stream you could use more minutes of time than intended, so it is recommended to always end the stream programmatically.
+
+Note: If you use this option the `symbl.stopRequest` function will not close the [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) automatically as these events will be handled by you.
 
 <!-- If you'd like to see a more in-depth examples for the Streaming API, please take a look at the extended Streaming examples [here][Streaming-Examples]. -->
 
