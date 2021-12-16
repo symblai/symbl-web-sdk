@@ -16,7 +16,7 @@ Browser Support
 ## Installation
 
 ```js
-npm install @symblai/symbl-web-sdk@labs
+npm install @symblai/symbl-web-sdk
 ```
 
 ## Build
@@ -33,7 +33,12 @@ In order to use the Symbl Web SDK you need to include it via script tags in your
 
 HTML script:
 ```html
-<script src="https://storage.googleapis.com/symbl-web-sdk/latest-labs/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/latest/symbl.min.js"></script>
+```
+or
+
+```html
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/0.7.0/symbl.min.js"></script>
 ```
 
 Web Application import:
