@@ -2,7 +2,9 @@
 
 The Symbl Web SDK provides convenient access to the Symbl API from applications written in the Javascript language directly in the browser. It includes a pre-defined set of classes for a simple and clear utilization of APIs.
 
-Skip to the [Labs-specific features section](#labs-specific-features) to view the labs-specific features.
+## Documentation
+
+See the [API docs](https://docs.symbl.ai/docs/).
 
 Browser Support
 ---------------
@@ -12,11 +14,13 @@ Browser Support
 | **macOS**   | ✓      | ✓               | ✓       | ✓      |
 | **Windows** | ✓      | ✓               | ✓       | -      |
 | **Linux**   | ✓      | -               | ✓       | -      |
+| **iOS**     | ✓      | -               | ✓       | ✓      |
+| **Android** | ✓      | -               | ✓       | ✓      |
 
 ## Installation
 
 ```js
-npm install @symblai/symbl-web-sdk@labs
+npm install @symblai/symbl-web-sdk
 ```
 
 ## Build
@@ -33,7 +37,11 @@ In order to use the Symbl Web SDK you need to include it via script tags in your
 
 HTML script:
 ```html
-<script src="https://storage.googleapis.com/symbl-web-sdk/latest-labs/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/latest/symbl.min.js"></script>
+```
+or
+```html
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/0.7.0/symbl.min.js"></script>
 ```
 
 Web Application import:
@@ -60,28 +68,17 @@ symbl.init({
 
 The full details of the Streaming API config options can be seen [here](https://docs.symbl.ai/docs/streaming-api/api-reference/#request-parameters).
 
-## Labs-Specific Features
+### Additional Web SDK configs
 
-You can use labs features by setting your `basePath` in the above `init` call to `https://api-labs.symbl.ai`.
+These are configs that have been added that are specific to the Web SDK.
 
-
-### New Config options
-
-* `disconnectonOnStopRequest` (optional, default: true) - If set to `false` the WebSocket will be set to a non-processing state if the stop_request event is set. In this state, the connection can be re-opened if the start_request event is sent. If `true` the WebSocket connection will close as normal.
-
-* `disconnectOnStopRequestTimeout` (optional) - Accepts a value of 0 to 1800 seconds. Indicates how long this connection will remain in a non-processing state before timing out.
-
-* `noConnectionTimeout` (optional) - Accepts a value of 0 to 1800 seconds. Indicates how long a connection will remain active even when no one is connected. By using the same `connectionId` anyone can reconnect to this WebSocket before it times out completely.
-
-* `sourceNode` (optional, default: null) - For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option. Note: If you use this option the `symbl.stopRequest` function will not close the [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) automatically as these events will be handled by you.
-
-* `config.encoding` (optional, default: 'linear16') - Accepts either `'opus'` or `'linear16'`. For `linear16`, you must set the `sampleRateHertz` option. For `opus` the `sampleRateHertz` should always be 48000.
+* `sourceNode` (optional, default: null) - For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option.
 
 * `handlers.ondevicechange` (optional) - By default Symbl Web SDK will provide the ondevicehandler logic, which just takes the new device and sends the sample rate over to our servers. If you wish to override this logic you can do so by passing an `ondevicechange` function into the `handlers` section of the config. You can assign a function to `symbl.deviceChanged` as a callback to when the event is fired.
 
 * `reconnectOnError` (optional, default: true) - If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error.
 
-Example:
+Usage Example:
 
 ```js
 const id = btoa("symbl-ai-is-the-best");
@@ -89,15 +86,8 @@ const id = btoa("symbl-ai-is-the-best");
 const connectionConfig = {
 	id,
 	insightTypes: ['action_item', 'question'],
-	disonnectOnStopRequest: false,
-	disconnectOnStopRequestTimeout: 300,
-	noConnectionTimeout: 300,
 	sourceNode: sourceNode,
 	reconnectOnError: true,
-	config {
-		encoding: 'opus',
-		sampleRateHertz: 48000
-	},
 	handlers: {
 		ondevicechange: () => {
 			alert('device changed!');
@@ -106,6 +96,7 @@ const connectionConfig = {
 	}
 	...
 }
+
 
 ...
 
@@ -118,121 +109,15 @@ await symbl.unmute(stream);
 
 ### Using `createStream` to start a realtime request
 
-Creating a stream using `symbl.startRealtimeRequest(config)` has been deprecated in favor of `symbl.createStream(config)`. For `createStream`,
-the WebSocket is started in a non processing state. You must send the start request before processing any audio. 
+Creating a stream using `symbl.startRealtimeRequest(config)` has been deprecated in favor of `symbl.createStream(config)`. For `createStream`, the WebSocket is started in a non processing state. You must send the start request before processing any audio. 
 
-### Starting the stream
-
-The `createStream` function returns a `stream` object. The way to start the connection is dependant on whether you pass `disconnectOnStopRequest` as `false` or not.
-
-If `disconnectOnStopRequest` is set to false ou can call `symbl.unmute(stream)`. Unmute will send the start request and start the audio streaming. 
-
-If `disconnectOnStopRequest` is not set or set to true, you need to call `symbl.start(stream)` to start the stream.
-
-
-### Using mute/unmute to pause a connection.
-
-If you set the `disconnectOnStopRequest` flag to false you can use `symbl.mute(stream)` and `symbl.unmute(stream)` to suspend and resume the connection.
-Muting the connection makes it so you're not being billed during times of silence.
-
-#### ```unmute(stream)```
-
-Receive the stream received from createStream as argument. Unmutes the audio by setting gain value to 1. If `disconnectOnStopRequest` config is set to `false` the start request will be sent to the Websocket and the [audio context](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) will start.
-
-#### ```mute(stream)```
-
-Receive the stream received from createStream as argument. Mutes the audio by setting gain value to 0. If `disconnectOnStopRequest` config is set to `false` the stop will be sent to the Websocket and the [audio context](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) will be suspended.
-
-## Use `disconnectOnStopRequest` to pause and resume a stream
-
-```js
-symbl.init({
-	appId: '<your App ID>',
-	appSecret: '<your App Secret>',
-	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
-	basePath: 'https://api-labs.symbl.ai',
-});
-
-const id = btoa("symbl-ai-is-the-best");
-
-const connectionConfig = {
-	id,
-	insightTypes: ['action_item', 'question'],
-	disconnectOnStopRequest: false,
-	disconnectOnStopRequestTimeout: 300,
-	noConnectionTimeout: 300,
-	config: {
-		meetingTitle: 'My Test Meeting ' + id,
-		confidenceThreshold: 0.7,
-		timezoneOffset: 480, // Offset in minutes from UTC
-		languageCode: 'en-US',
-		encoding: 'opus',
-		sampleRateHertz: 48000
-	},
-	speaker: {
-		// Optional, if not specified, will simply not send an email in the end.
-		userId: '', // Update with valid email
-		name: ''
-	},
-	handlers: {
-		/**
-		 * This will return live speech-to-text transcription of the call.
-		 */
-		onSpeechDetected: (data) => {
-		  if (data) {
-		    const {punctuated} = data
-		    console.log('Live: ', punctuated && punctuated.transcript)
-		    console.log('');
-		  }
-		  // console.log('onSpeechDetected ', JSON.stringify(data, null, 2));
-		},
-		/**
-		 * When processed messages are available, this callback will be called.
-		 */
-		onMessageResponse: (data) => {
-		  // console.log('onMessageResponse', JSON.stringify(data, null, 2))
-		},
-		/**
-		 * When Symbl detects an insight, this callback will be called.
-		 */
-		onInsightResponse: (data) => {
-		  // console.log('onInsightResponse', JSON.stringify(data, null, 2))
-		},
-		/**
-		 * When Symbl detects a topic, this callback will be called.
-		 */
-		onTopicResponse: (data) => {
-		  // console.log('onTopicResponse', JSON.stringify(data, null, 2))
-		}
-	}
-};
-
-(async () => {
-	// Creates the WebSocket in a non-processing state
-	const stream = await symbl.createStream(connectionConfig);
-
-	// Send the start request
-	await symbl.unmute(stream);
-
-	// Suspend the stream after 10 seconds
-	window.setTimeout(() => {
-		await symbl.mute(stream);
-	}, 10000)
-
-	// Re-send the start request to resume the stream after another 10 seconds
-	window.setTimeout(() => {
-		await symbl.unmute(stream);
-	}, 10000)
-})();
-```
+After the stream is created, you need to call `symbl.start(stream)` to start the stream.
 
 ## How to pass in a custom sourceNode
 
 If you wish you can pass in a custom [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object to the Web SDK. By default the Web SDK will create the AudioContext and the MediaStreamAudioSourceNode object automatically but using this will give you more control over those.
 
 Once you create the MediaStreamAudioSourceNode object you can pass it via the connectionConfig as `sourceNode`
-
-Note: If you use this option the `symbl.stopRequest` function will not close the [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) automatically as these events will be handled by you.
 
 ```js
 
@@ -361,7 +246,8 @@ symbl.deviceChanged = () => {
 ```
 
 
-## Transcribing live audio input through your device
+
+## Transcribing live audio input through the microphone
 
 As a simple test of the Streaming API you can simply setup a live microphone and push the audio stream using the browser APIs to access the microphone.
 
@@ -374,7 +260,7 @@ symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
 	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
-	basePath: 'https://api-labs.symbl.ai',
+	// basePath: '<your custom base path (optional)>',
 });
 
 const id = btoa("symbl-ai-is-the-best");
@@ -387,7 +273,7 @@ const connectionConfig = {
 		confidenceThreshold: 0.7,
 		timezoneOffset: 480, // Offset in minutes from UTC
 		languageCode: 'en-US',
-		sampleRateHertz: 48000
+		// sampleRateHertz: 48000
 	},
 	speaker: {
 		// Optional, if not specified, will simply not send an email in the end.
@@ -428,15 +314,39 @@ const connectionConfig = {
 };
 
 (async () => {
-	// Creates the WebSocket in a non-processing state
-	const stream = await symbl.createStream(connectionConfig);
-
-	// Send the start request
-	await stream.start(stream);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
-## Reconnecting to an existing realtime stream
+## Muting and unmuting the connected device
+
+You can mute and unmute the connected device by simply calling `symbl.mute()` or `symbl.unmute()`.
+
+### Muting
+
+A quick snippet on how to use the mute method.
+
+```js
+(async () => {
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	await symbl.mute(connection);
+})();
+
+```
+
+### Unmuting
+
+A quick snippet on how to use the unmute method.
+
+```js
+(async () => {
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	await symbl.unmute(connection);
+})();
+
+```
+
+## Reconnecting to an existing realtime connection
 
 In the case that a user closes their browser or has an interruption in their WebSocket connection you can use the `store` object to grab the Connection ID you last used.
 
@@ -492,18 +402,14 @@ const connectionConfig = {
 };
 
 (async () => {
-	// Creates the WebSocket in a non-processing state
-	const stream = await symbl.createStream(connectionConfig);
-
-	// Send the start request
-	await stream.start(stream);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
 
-## Subscribing to an existing realtime stream with Subscribe API
+## Subscribing to an existing realtime connection with Subscribe API
 
-With the Subscribe API you can connect to an existing stream via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
+With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
 
 ```js
 symbl.init({
@@ -520,17 +426,15 @@ symbl.subscribeToStream(id, (data) => {
 })
 ```
 
-## Stopping realtime stream
+## Stopping realtime connection
 
-In order to end the stream to the realtime WebSocket you'll need to use the following command with your `stream` object:
+In order to end the connection to the realtime WebSocket you'll need to use the following command with your `connection` object:
 
 ```js
-symbl.stopRequest(stream);
+symbl.stopRequest(connection);
 ```
 
-If you do not sever the stream you could use more minutes of time than intended, so it is recommended to always end the stream programmatically.
-
-Note: If you use this option the `symbl.stopRequest` function will not close the [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) automatically as these events will be handled by you.
+If you do not sever the connection you could use more minutes of time than intended, so it is recommended to always end the connection programmatically.
 
 <!-- If you'd like to see a more in-depth examples for the Streaming API, please take a look at the extended Streaming examples [here][Streaming-Examples]. -->
 
