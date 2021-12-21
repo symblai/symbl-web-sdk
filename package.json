@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "0.7.0",
+  "version": "0.7.1-alpha.3",
   "description": "",
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
@@ -41,7 +41,8 @@
     "doc": "typedoc src",
     "build:ts": "rm -rf ./build-tsc && tsc",
     "build": "npm run build:ts && webpack --config webpack.config.js --mode production",
-    "publish-labs": "npm install && npm run build && npm publish --access public --tag labs"
+    "publish-next": "npm install && npm run build && npm publish --access public --tag next",
+    "publish-prod": "npm install && npm run build && npm publish --access public"
   },
   "author": "",
   "license": "ISC",

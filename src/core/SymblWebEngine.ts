@@ -48,6 +48,11 @@ export default class SymblWebEngine {
      * @ignore
      */
     appConfig: SymblConfig;
+
+    /**
+     * @ignore
+     */
+    deviceManagerMap: any = {};
  
     /**
      * Sets up the basic Symbl connection object
@@ -201,6 +206,8 @@ export default class SymblWebEngine {
 
         this.logger.info(`Symbl: Completed Realtime Request for ${options.id}`);
 
+        connection.id = btoa(Math.random().toString());
+
         if (connect) {
 
             await this.connectDevice(connection);
@@ -275,6 +282,8 @@ export default class SymblWebEngine {
 
         this.logger.info(`Symbl: Completed Realtime Request for ${options.id}`);
 
+        connection.id = btoa(Math.random().toString());
+
         if (connect) {
 
             await this.connectDevice(connection);
@@ -307,7 +316,7 @@ export default class SymblWebEngine {
 
                     this.logger.info("Symbl: Attempting to change device");
 
-                    await this.deviceManager.deviceDisconnect();
+                    await this.getDeviceManager(connection).deviceDisconnect();
 
                     await this.startRealtimeRequest(
                         this.realtimeConfig,
@@ -325,6 +334,14 @@ export default class SymblWebEngine {
     }
 
     /**
+     * Grabs the context from the current connection.
+     * @param {object} connection - Symbl WebSocket Connection
+     */
+    getContext(connection: SymblRealtimeConnection): AudioContext {
+        return this.deviceManagerMap[connection.id].getContext();
+    }
+
+    /**
      * Allows you to modify the sampleRate of a connection.
      * Automatically reads the sample rate of the currently active device.
      * @param {object} connection - Symbl websocket connection
@@ -332,13 +349,13 @@ export default class SymblWebEngine {
     async modifyRequest (connection: SymblRealtimeConnection): Promise<void> {
         
         this.logger.debug('Symbl: Modifying request.');
+        const deviceManager = this.getDeviceManager(connection);
+        await deviceManager.stopAudioSend();    
+        await deviceManager.deviceDisconnect();
 
-        await this.deviceManager.stopAudioSend();    
-        await this.deviceManager.deviceDisconnect();
+        await deviceManager.deviceConnect(connection);
 
-        await this.deviceManager.deviceConnect(connection);
-
-        const sampleRateHertz = this.realtimeConfig.config.encoding === "opus" ? 48000 : this.deviceManager.getContext().sampleRate;
+        const sampleRateHertz = this.realtimeConfig.config.encoding === "opus" ? 48000 : this.getContext(connection).sampleRate;
         // sendAudio should be renamed to sendData. It's not just for sending audio.
         connection.sendAudio(JSON.stringify({
           type: 'modify_request',
@@ -356,7 +373,7 @@ export default class SymblWebEngine {
      * @param {object} connection - Symbl websocket connection
      */
     async reconnect(connection: SymblRealtimeConnection): Promise<void> {
-        await this.deviceManager.deviceConnect(connection);
+        await this.getDeviceManager(connection).deviceConnect(connection);
         await this.unmute(connection);
     }
 
@@ -373,11 +390,11 @@ export default class SymblWebEngine {
         }
 
         try {
-
-            await this.deviceManager.stopAudioSend();
+            const deviceManager = this.getDeviceManager(connection);
+            await deviceManager.stopAudioSend();
             await connection.stop();
             if (!this.realtimeConfig.sourceNode) {
-                await this.deviceManager.deviceDisconnect();
+                await deviceManager.deviceDisconnect();
             }
 
 
@@ -392,7 +409,8 @@ export default class SymblWebEngine {
     /** 
      * @ignore Sets which device manager to use based on encoding.
      */
-     async setDeviceManager (encoding: string) {
+     async setDeviceManager (encoding: string): Promise<DeviceManager | OpusDeviceManager> {
+        let deviceManager: DeviceManager | OpusDeviceManager;
         if (encoding === "opus") {
             const opusConfig: any = {
                 numberOfChannels: 1,
@@ -406,13 +424,21 @@ export default class SymblWebEngine {
             if (this.realtimeConfig.sourceNode) {
                 opusConfig.sourceNode = this.realtimeConfig.sourceNode;
             }
-            this.deviceManager = new OpusDeviceManager(opusConfig, this.logger);
+            deviceManager = new OpusDeviceManager(opusConfig, this.logger);
         } else {
             this.logger.debug('this.reatimeConfig', JSON.stringify(this.realtimeConfig));
-            this.deviceManager = new DeviceManager(this.logger, this.realtimeConfig.sourceNode);
-
+            deviceManager = new DeviceManager(this.logger, this.realtimeConfig.sourceNode);
         }
+
+        return deviceManager;
      }
+
+     /**
+      * @ignore
+      */
+      getDeviceManager(connection: SymblRealtimeConnection): DeviceManager | OpusDeviceManager  {
+        return this.deviceManagerMap[connection.id];
+      }
 
     /**
      * Manually connects a device to the Symbl WebSocket endpoint
@@ -430,8 +456,8 @@ export default class SymblWebEngine {
 
         try {
             this.logger.info(`Symbl: encoding is ${this.realtimeConfig.config.encoding}`);
-            this.setDeviceManager(this.realtimeConfig.config.encoding);
-            const context = await this.deviceManager.deviceConnect(connection);
+            const deviceManager = await this.setDeviceManager(this.realtimeConfig.config.encoding);
+            const context = await deviceManager.deviceConnect(connection);
 
             this.logger.info("Symbl: Established Realtime Connection");
 
@@ -443,6 +469,8 @@ export default class SymblWebEngine {
                     this.deviceChanged();
                 }
             }
+
+            this.deviceManagerMap[connection.id] = deviceManager;
 
             return context;
 
@@ -466,7 +494,7 @@ export default class SymblWebEngine {
             throw new NullError(err);
         }
         if (this.realtimeConfig.disconnectOnStopRequest === false) {
-            const context = this.deviceManager.getContext();
+            const context = this.getContext(connection);
             if (context) {
                 if (context.state === "running") {
                     context.suspend();
@@ -507,7 +535,7 @@ export default class SymblWebEngine {
             this.logger.error(err);
             throw new NullError(err);
         }
-        const context = this.deviceManager.getContext();
+        const context = this.getContext(connection);
         if (context) {
             context.resume();
             await connection.start(context.sampleRate);
@@ -525,7 +553,7 @@ export default class SymblWebEngine {
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
     async mute(connection?: SymblRealtimeConnection): Promise<void> {
-        this.deviceManager.setGain(0);
+        this.getDeviceManager(connection).setGain(0);
         if (this.realtimeConfig.disconnectOnStopRequest === false && connection) {
             await this.suspend(connection);
         }
@@ -537,7 +565,7 @@ export default class SymblWebEngine {
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
     async unmute(connection?: SymblRealtimeConnection): Promise<void> {
-        this.deviceManager.setGain(1);
+        this.getDeviceManager(connection).setGain(1);
         if (this.realtimeConfig.disconnectOnStopRequest === false && connection) {
             await this.start(connection);
         }

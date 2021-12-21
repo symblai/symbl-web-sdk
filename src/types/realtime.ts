@@ -217,6 +217,7 @@ interface RealtimeHandlers {
 }
 
 interface SymblRealtimeConnection {
+    id: string;
     conversationId: string;
     sendAudio: (audioData: unknown) => void;
     stop: () => void;
