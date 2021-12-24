@@ -41,7 +41,7 @@ HTML script:
 ```
 or
 ```html
-<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.7.0/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.8.0/symbl.min.js"></script>
 ```
 
 Web Application import:
@@ -196,6 +196,14 @@ const connectionConfig = {
 	await stream.start(stream);
 })();
 
+```
+
+### Updating your external source node
+
+If you wish to update your external source node you can do se by using the `symbl.updateSourceNode` function:
+
+```
+symbl.updateSourceNode(stream, sourceNode);
 ```
 
 ## Passing in custom `ondevicechange` handler.

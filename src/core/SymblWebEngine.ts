@@ -53,6 +53,11 @@ export default class SymblWebEngine {
      * @ignore
      */
     deviceManagerMap: any = {};
+
+    /**
+     * @ignore
+     */
+    realtimeConfigMap: any = {};
  
     /**
      * Sets up the basic Symbl connection object
@@ -294,6 +299,30 @@ export default class SymblWebEngine {
 
     }
 
+    async updateSourceNode(connection: SymblRealtimeConnection, sourceNode: MediaStreamAudioSourceNode) {
+        console.log('update source node', sourceNode);
+        console.log('connection', connection);
+        const deviceManager = this.getDeviceManager(connection);
+        const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
+        // await deviceManager.pauseStream();
+        await deviceManager.stopAudioSend();
+        if (encoding == "opus") {
+            await deviceManager.deviceDisconnect();
+        }
+        this.realtimeConfig.sourceNode = sourceNode;
+        await this.connectDevice(connection);
+        // await deviceManager.resumeStream();
+        const sampleRateHertz = encoding === "opus" ? 48000 : this.getContext(connection).sampleRate;
+        // sendAudio should be renamed to sendData. It's not just for sending audio.
+        connection.sendAudio(JSON.stringify({
+          type: 'modify_request',
+          speechRecognition: {
+            sampleRateHertz,
+          },
+        }));
+
+    }
+
     /** 
      * @ignore Applies the users' ondevicechange hanlder if present.
      */
@@ -354,7 +383,7 @@ export default class SymblWebEngine {
         await deviceManager.deviceDisconnect();
 
         await deviceManager.deviceConnect(connection);
-
+        const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
         const sampleRateHertz = this.realtimeConfig.config.encoding === "opus" ? 48000 : this.getContext(connection).sampleRate;
         // sendAudio should be renamed to sendData. It's not just for sending audio.
         connection.sendAudio(JSON.stringify({
@@ -412,6 +441,7 @@ export default class SymblWebEngine {
      async setDeviceManager (encoding: string): Promise<DeviceManager | OpusDeviceManager> {
         let deviceManager: DeviceManager | OpusDeviceManager;
         if (encoding === "opus") {
+            console.log('doing opus');
             const opusConfig: any = {
                 numberOfChannels: 1,
                 encoderSampleRate: 48000,
@@ -455,8 +485,10 @@ export default class SymblWebEngine {
         this.logger.info("Symbl: Establishing Realtime Connection");
 
         try {
-            this.logger.info(`Symbl: encoding is ${this.realtimeConfig.config.encoding}`);
-            const deviceManager = await this.setDeviceManager(this.realtimeConfig.config.encoding);
+            const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
+            this.logger.info(`Symbl: encoding is ${encoding}`);
+            const deviceManager = await this.setDeviceManager(encoding);
+            console.log('connecting deivce');
             const context = await deviceManager.deviceConnect(connection);
 
             this.logger.info("Symbl: Established Realtime Connection");

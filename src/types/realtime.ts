@@ -106,6 +106,11 @@ interface RealtimeOptionsConfig {
      * Audio Encoding in which the audio will be sent over the WebSocket.
      */
     encoding?: string;
+
+    speechRecognition?: {
+        encoding?: string;
+        sampleRateHertz?: number;
+    }
 }
 
 interface RawSpeechPayload {
