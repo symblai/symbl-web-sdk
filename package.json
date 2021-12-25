@@ -1,7 +1,20 @@
 {
   "name": "@symblai/symbl-web-sdk",
   "version": "0.8.0",
-  "description": "",
+  "description": "Symbl.ai Web SDK for accessing Symbl.ai APIs directly from the web browser.",
+  "homepage": "https://github.com/symblai/symbl-web-sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/symblai/symbl-web-sdk.git"
+  },
+  "keywords": [
+    "symbl.ai",
+    "symbl",
+    "javascript",
+    "api",
+    "web",
+    "sdk"
+  ],
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
   "devDependencies": {
