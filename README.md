@@ -41,7 +41,7 @@ HTML script:
 ```
 or
 ```html
-<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.8.0/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.8.1/symbl.min.js"></script>
 ```
 
 Web Application import:
@@ -81,7 +81,7 @@ These are configs that have been added that are specific to the Web SDK.
 Usage Example:
 
 ```js
-const id = btoa("symbl-ai-is-the-best");
+const id = btoa("my-first-symbl-ai-code");
 
 const connectionConfig = {
 	id,
@@ -137,7 +137,7 @@ symbl.init({
 	basePath: 'https://api-labs.symbl.ai',
 });
 
-const id = btoa("symbl-ai-is-the-best");
+const id = btoa("my-first-symbl-ai-code");
 // pass in the MediaStreamAudioSourceNode as sourceNode
 const connectionConfig = {
 	id,
@@ -218,7 +218,7 @@ symbl.init({
 	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
 	basePath: 'https://api-labs.symbl.ai',
 });
-const id = btoa("symbl-ai-is-the-best");
+const id = btoa("my-first-symbl-ai-code");
 // pass in the MediaStreamAudioSourceNode as sourceNode
 const connectionConfig = {
 	id,
@@ -271,7 +271,7 @@ symbl.init({
 	// basePath: '<your custom base path (optional)>',
 });
 
-const id = btoa("symbl-ai-is-the-best");
+const id = btoa("my-first-symbl-ai-code");
 
 const connectionConfig = {
 	id,
@@ -427,7 +427,7 @@ symbl.init({
 	// basePath: '<your custom base path (optional)>',
 });
 
-const id = btoa("symbl-ai-is-the-best");
+const id = btoa("my-first-symbl-ai-code");
 
 symbl.subscribeToStream(id, (data) => {
 	console.log('data:', data);
