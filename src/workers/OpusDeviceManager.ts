@@ -64,9 +64,7 @@ export default class OpusDeviceManager {
             this.currentStream = new Recorder(this.config);
 
             await this.currentStream.start();
-            console.log('aboutg to send data');
             this.currentStream.ondataavailable = arrayBuffer => {
-                console.log('sending audio');
                 connection.sendAudio(arrayBuffer);
             };
         }
@@ -74,10 +72,8 @@ export default class OpusDeviceManager {
     }
 
     async stopAudioSend(): Promise<void> {
-        console.log('stopping audio send0');
         if (this.currentStream) {
             this.pauseStream();
-            console.log('stopping audio send');
             this.currentStream.ondataavailable = () => {};
         }
     }

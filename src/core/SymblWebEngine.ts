@@ -300,8 +300,6 @@ export default class SymblWebEngine {
     }
 
     async updateSourceNode(connection: SymblRealtimeConnection, sourceNode: MediaStreamAudioSourceNode) {
-        console.log('update source node', sourceNode);
-        console.log('connection', connection);
         const deviceManager = this.getDeviceManager(connection);
         const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
         // await deviceManager.pauseStream();
@@ -441,7 +439,6 @@ export default class SymblWebEngine {
      async setDeviceManager (encoding: string): Promise<DeviceManager | OpusDeviceManager> {
         let deviceManager: DeviceManager | OpusDeviceManager;
         if (encoding === "opus") {
-            console.log('doing opus');
             const opusConfig: any = {
                 numberOfChannels: 1,
                 encoderSampleRate: 48000,
@@ -488,7 +485,6 @@ export default class SymblWebEngine {
             const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
             this.logger.info(`Symbl: encoding is ${encoding}`);
             const deviceManager = await this.setDeviceManager(encoding);
-            console.log('connecting deivce');
             const context = await deviceManager.deviceConnect(connection);
 
             this.logger.info("Symbl: Established Realtime Connection");
