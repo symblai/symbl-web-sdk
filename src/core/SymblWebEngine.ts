@@ -602,9 +602,9 @@ export default class SymblWebEngine {
     /**
      * Subscribe to existing streaming connection in read-only
      * @param {string} connectionId - connection ID created on connection init
-     * @param {function} cb - callback function to use data returned
+     * @param {obj} options - provide handlers and options
      */
-    async subscribeToStream (connectionId: string, cb: () => unknown):
+    async subscribeToStream (connectionId: string, options: any):
         Promise<void> {
 
         if (!connectionId) {
@@ -619,7 +619,7 @@ export default class SymblWebEngine {
 
             await this.sdk.subscribeToStream(
                 connectionId,
-                cb
+                options
             );
 
             this.logger.info(`Symbl: Subscribed to Streaming at ${connectionId}`);
@@ -635,9 +635,9 @@ export default class SymblWebEngine {
     /**
      * Subscribe to existing telephony connection in read-only
      * @param {string} connectionId - connection ID created on connection init
-     * @param {function} cb - callback function to use data returned
+     * @param {obj} options - provide handlers and options
      */
-    async subscribeToCall (connectionId: string, cb: () => unknown):
+    async subscribeToCall (connectionId: string, options: any):
         Promise<void> {
 
         if (!connectionId) {
@@ -652,7 +652,7 @@ export default class SymblWebEngine {
 
             await this.sdk.subscribeToConnection(
                 connectionId,
-                cb
+                options
             );
 
             this.logger.info(`Symbl: Subscribed to Call at ${connectionId}`);
