@@ -68,15 +68,17 @@ symbl.init({
 
 The full details of the Streaming API config options can be seen [here](https://docs.symbl.ai/docs/streaming-api/api-reference/#request-parameters).
 
+
 ### Additional Web SDK configs
 
 These are configs that have been added that are specific to the Web SDK.
 
-* `sourceNode` (optional, default: null) - For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option.
 
-* `handlers.ondevicechange` (optional) - By default Symbl Web SDK will provide the ondevicehandler logic, which just takes the new device and sends the sample rate over to our servers. If you wish to override this logic you can do so by passing an `ondevicechange` function into the `handlers` section of the config. You can assign a function to `symbl.deviceChanged` as a callback to when the event is fired.
+| Name         | Default | Description |
+|--------------|---------|-------|
+| `sourceNode` | `null`  | For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option. |
+| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
 
-* `reconnectOnError` (optional, default: true) - If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error.
 
 Usage Example:
 
@@ -88,7 +90,7 @@ const connectionConfig = {
 	insightTypes: ['action_item', 'question'],
 	sourceNode: sourceNode,
 	reconnectOnError: true,
-	handlers: {
+	handlers: { // Read the handlers section for more
 		ondevicechange: () => {
 			alert('device changed!');
 		},
@@ -106,6 +108,25 @@ const stream = await symbl.createStream(connectionConfig);
 // Send the start request
 await symbl.unmute(stream);
 ```
+
+### Handlers / Callbacks
+
+Web SDK provides a suite of callbacks for you to utilize in your application.
+
+| Name | Description |
+|------|-------------|
+| `onClose(event)` |  Fires when the WebSocket connection closes for any reason.
+| `onSpeechDetected(data)` | To retrieve the real-time transcription results as soon as they are detected. You can use this callback to render live transcription which is specific to the speaker of this audio stream. [View an example of the response here](https://docs.symbl.ai/docs/javascript-sdk/reference/#onspeechdetected) |
+| `onMessageResponse(messages)` | This callback function contains the "finalized" transcription data for this speaker and if used with multiple streams with other speakers this callback would also provide their messages. [View an example of the response here](https://docs.symbl.ai/docs/javascript-sdk/reference/#onmessageresponse) |
+| `onInsightResponse(insights)` | This callback provides you with any of the detected insights in real-time as they are detected. As with the `onMessageCallback` this would also return every speaker's insights in case of multiple streams. [View an example of the response here](https://docs.symbl.ai/docs/javascript-sdk/reference/#oninsightresponse) |
+| `onTrackerResponse(trackers)` | This callback provides you with any of the detected trackers in real-time as they are detected. As with the `onMessageCallback` this would also return every tracker in case of multiple streams. [View an example of the response here](https://docs.symbl.ai/docs/javascript-sdk/reference/#ontrackerresponse) |
+| `onTopicResponse(topics)` | This callback provides you with any of the detected topics in real-time as they are detected. As with the onMessageCallback this would also return every topic in case of multiple streams. [View an example of the response here](https://docs.symbl.ai/docs/javascript-sdk/reference/#ontopicresponse) |
+| `onRequestError(err)` | Fires when the WebSocket has an error. |
+| `onConversationCompleted(message)` | Fires when the `conversation_completed` event is recieved from the WebSocket. |
+| `onReconnectFail(err)` | Fires when the reconnection attempt fails. Related to the `reconnectOnError` config. |
+| `onStartedListening(message)` | Fires when the `started_listening` event is received from the WebSocket. |
+| `onRequestStart(message)` | Fires when the `recognition_started` event is received from the WebSocket |
+| `onRequestStop(message)` | Fires when the `recognition_stopped` event is received from the WebSocket |
 
 ### Using `createStream` to start a realtime request
 
@@ -202,7 +223,7 @@ const connectionConfig = {
 
 If you wish to update your external source node you can do se by using the `symbl.updateSourceNode` function:
 
-```
+```js
 symbl.updateSourceNode(stream, sourceNode);
 ```
 
@@ -419,20 +440,44 @@ const connectionConfig = {
 
 With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
 
+### Current call signature
+
 ```js
-symbl.init({
-	appId: '<your App ID>',
-	appSecret: '<your App Secret>',
-	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
-	// basePath: '<your custom base path (optional)>',
+symbl.subscribeToStream(id, {
+	reconnectOnError: true,
+	handlers: {
+		onMessage: (message) => { ... },
+		onSubscribe: () => { ... },
+		onClose: () => { ... },
+		onReconnectFail: (err) => { ... },
+	}
 });
+```
 
-const id = btoa("my-first-symbl-ai-code");
+### Deprecated call signature
 
+This way of using the subscribeToSream function has been deprecated. It will still work but might not in future versions. Please convert to the current call signature above. The function passed is equivalent to the `onMessage` handler in the new call signature.
+
+```js
 symbl.subscribeToStream(id, (data) => {
 	console.log('data:', data);
 })
 ```
+
+### Subscribe API Options
+
+| Name         | Default | Description |
+|--------------|---------|-------|
+| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
+
+### Subscribe API Handlers
+
+| Name | Description |
+|------|-------------|
+| `onMessage(message)` | Fired any time a message is received. |
+| `onSubscribe()` | Fired when the connection intially subscribes |
+| `onClose()` | Fired when the connection is closed |
+| `onReconnectFail(err)` | Fires when the reconnection attempt fails. Related to the `reconnectOnError` config. |
 
 ## Stopping realtime connection
 
