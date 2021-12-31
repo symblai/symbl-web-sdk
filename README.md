@@ -41,7 +41,7 @@ HTML script:
 ```
 or
 ```html
-<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.8.2/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.8.3/symbl.min.js"></script>
 ```
 
 Web Application import:
@@ -106,7 +106,7 @@ const connectionConfig = {
 const stream = await symbl.createStream(connectionConfig);
 
 // Send the start request
-await symbl.unmute(stream);
+await symbl.start(stream);
 ```
 
 ### Handlers / Callbacks

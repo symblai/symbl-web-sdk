@@ -302,22 +302,23 @@ export default class SymblWebEngine {
     async updateSourceNode(connection: SymblRealtimeConnection, sourceNode: MediaStreamAudioSourceNode) {
         const deviceManager = this.getDeviceManager(connection);
         const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
-        // await deviceManager.pauseStream();
         await deviceManager.stopAudioSend();
         if (encoding == "opus") {
             await deviceManager.deviceDisconnect();
         }
         this.realtimeConfig.sourceNode = sourceNode;
         await this.connectDevice(connection);
-        // await deviceManager.resumeStream();
-        const sampleRateHertz = encoding === "opus" ? 48000 : this.getContext(connection).sampleRate;
-        // sendAudio should be renamed to sendData. It's not just for sending audio.
-        connection.sendAudio(JSON.stringify({
-          type: 'modify_request',
-          speechRecognition: {
-            sampleRateHertz,
-          },
-        }));
+
+        if (this.appConfig.basePath === "https://api-labs.symbl.ai" || this.realtimeConfig.disconnectOnStopRequest === false) {
+            const sampleRateHertz = encoding === "opus" ? 48000 : this.getContext(connection).sampleRate;
+            // sendAudio should be renamed to sendData. It's not just for sending audio.
+            connection.sendAudio(JSON.stringify({
+              type: 'modify_request',
+              speechRecognition: {
+                sampleRateHertz,
+              },
+            }));
+        }
 
     }
 
@@ -343,12 +344,15 @@ export default class SymblWebEngine {
 
                     this.logger.info("Symbl: Attempting to change device");
 
-                    await this.getDeviceManager(connection).deviceDisconnect();
+                    const deviceManager = this.getDeviceManager(connection);
 
-                    await this.startRealtimeRequest(
-                        this.realtimeConfig,
-                        true
-                    );
+                    const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
+
+                    await deviceManager.stopAudioSend();
+
+                    await deviceManager.deviceDisconnect();
+
+                    await this.connectDevice(connection);
 
                     this.logger.info("Symbl: Successfully reconnected to websocket");
 
@@ -377,12 +381,17 @@ export default class SymblWebEngine {
         
         this.logger.debug('Symbl: Modifying request.');
         const deviceManager = this.getDeviceManager(connection);
-        await deviceManager.stopAudioSend();    
+
+        const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
+
+        await deviceManager.stopAudioSend();
+
         await deviceManager.deviceDisconnect();
 
-        await deviceManager.deviceConnect(connection);
-        const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
-        const sampleRateHertz = this.realtimeConfig.config.encoding === "opus" ? 48000 : this.getContext(connection).sampleRate;
+        await this.connectDevice(connection);
+
+        const sampleRateHertz = encoding === "opus" ? 48000 : this.getContext(connection).sampleRate;
+
         // sendAudio should be renamed to sendData. It's not just for sending audio.
         connection.sendAudio(JSON.stringify({
           type: 'modify_request',
@@ -390,8 +399,6 @@ export default class SymblWebEngine {
             sampleRateHertz,
           },
         }));
-
-        // await this.mute(connection);
     }
 
 

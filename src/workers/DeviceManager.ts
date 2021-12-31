@@ -307,8 +307,11 @@ export default class DeviceManager {
 
                 });
 
+            } else if (this.context.state === "closed") {
+                this.logger.debug("Connection already closed");
+            } else if (this.isClosing) {
+                this.logger.debug("Connection close in progress");
             }
-            this.logger.debug("Connection already closed");
 
         });
 
