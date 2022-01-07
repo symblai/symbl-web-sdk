@@ -155,7 +155,7 @@ symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
 	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
-	basePath: 'https://api-labs.symbl.ai',
+	basePath: 'https://api.symbl.ai',
 });
 
 const id = btoa("my-first-symbl-ai-code");
@@ -237,7 +237,7 @@ symbl.init({
 	appId: '<your App ID>',
 	appSecret: '<your App Secret>',
 	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
-	basePath: 'https://api-labs.symbl.ai',
+	basePath: 'https://api.symbl.ai',
 });
 const id = btoa("my-first-symbl-ai-code");
 // pass in the MediaStreamAudioSourceNode as sourceNode
