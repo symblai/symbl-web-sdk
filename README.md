@@ -106,7 +106,7 @@ const connectionConfig = {
 const stream = await symbl.createStream(connectionConfig);
 
 // Send the start request
-await symbl.unmute(stream);
+await symbl.start(stream);
 ```
 
 ### Handlers / Callbacks
