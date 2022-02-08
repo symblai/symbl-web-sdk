@@ -5,7 +5,7 @@ import Logger from "./services/Logger";
 import Store from "./services/Storage";
 import {ConfigError, ConnectionError, NullError} from "./services/ErrorHandler";
 import isBrowser from "../browser";
-
+import registerNetworkConnectivityDetector from "./services/NetworkConnectivityDetector";
 
 /** Main Symbl Web SDK class */
 export default class SymblWebEngine {
@@ -43,7 +43,7 @@ export default class SymblWebEngine {
      * Assign a function to receive a callback when ondevicechange is fired.
      */
     deviceChanged: any = () => {};
- 
+
     /**
      * Sets up the basic Symbl connection object
      * @param {string} loggingLevel - establishes default log level
@@ -54,6 +54,8 @@ export default class SymblWebEngine {
         this.logger.setDefaultLevel(logLevel);
         this.store = new Store(this.logger);
         this.store.init();
+
+        registerNetworkConnectivityDetector(sdk);
 
     }
 
@@ -249,7 +251,7 @@ export default class SymblWebEngine {
 
     }
 
-    /** 
+    /**
      * @ignore Applies the users' ondevicechange hanlder if present.
      */
     setOnDeviceHandler(connection: SymblRealtimeConnection): void {
@@ -275,10 +277,10 @@ export default class SymblWebEngine {
      * @param {object} connection - Symbl websocket connection
      */
     async modifyRequest (connection: SymblRealtimeConnection): Promise<void> {
-        
+
         this.logger.debug('Symbl: Modifying request.');
 
-        await this.deviceManager.stopAudioSend();    
+        await this.deviceManager.stopAudioSend();
         await this.deviceManager.deviceDisconnect();
 
         await this.deviceManager.deviceConnect(connection);
@@ -332,7 +334,7 @@ export default class SymblWebEngine {
 
     }
 
-    /** 
+    /**
      * @ignore Sets which device manager to use based on encoding.
      */
      async setDeviceManager (encoding: string) {
