@@ -24,6 +24,8 @@ export default class DeviceManager {
 
     gainNode: GainNode;
 
+    processor: any;
+
     constructor (logger: Logger, source?: MediaStreamAudioSourceNode) {
 
         this.logger = logger || new Logger();
@@ -179,11 +181,9 @@ export default class DeviceManager {
             } else {
                 this.currentStream = this.source.mediaStream;
             }
-
-            let processor;
             if (!window.AudioContext && (this.context as any).createJavascriptNode !== undefined) {
 
-                processor = (this.context as any).createJavascriptNode(
+                this.processor = (this.context as any).createJavascriptNode(
                     1024,
                     1,
                     1
@@ -192,7 +192,7 @@ export default class DeviceManager {
 
             } else {
 
-                processor = this.context.createScriptProcessor(
+                this.processor = this.context.createScriptProcessor(
                     1024,
                     1,
                     1
@@ -201,9 +201,9 @@ export default class DeviceManager {
 
             }
             this.source.connect(this.gainNode);
-            this.gainNode.connect(processor);
-            processor.connect(this.context.destination);
-            processor.onaudioprocess = (event) => {
+            this.gainNode.connect(this.processor);
+            this.processor.connect(this.context.destination);
+            this.processor.onaudioprocess = (event) => {
 
                 // Convert to 16-bit payload
                 const inputData = event.inputBuffer.getChannelData(0);
@@ -258,8 +258,36 @@ export default class DeviceManager {
 
     }
 
-    async stopAudioSend(): Promise<void> {};
-    async pauseStream(): Promise<void> {};
+    async pauseStream(): Promise<void> {
+        this.context.suspend();
+    };
+    async resumeStream(): Promise<void> {
+        this.context.resume();
+    }
+
+    async stopAudioSend(): Promise<void> {
+        return new Promise((resolve) => {
+            this.gainNode.disconnect();
+
+            this.source.disconnect()
+
+            this.currentStream.getAudioTracks().forEach((track) => {
+
+                if (track.readyState === "live") {
+
+                        track.stop();
+
+                    track.enabled = false;
+
+                }
+
+            });
+
+            this.processor.disconnect();
+
+            resolve();
+        });
+    }
 
     deviceDisconnect (): Promise<void> {
 
@@ -270,22 +298,9 @@ export default class DeviceManager {
 
                 this.logger.debug("Closing connection");
                 this.isClosing = true;
-                this.context.close().then(() => {
+                this.context.close().then(async () => {
 
-                    this.currentStream.getAudioTracks().forEach((track) => {
-
-                        if (track.readyState === "live") {
-
-                            if (!isBrowser().safari) {
-
-                                track.stop();
-
-                            }
-                            track.enabled = false;
-
-                        }
-
-                    });
+                    await this.stopAudioSend();
                     this.logger.debug("Connection closed");
                     this.isClosing = false;
                     resolve();

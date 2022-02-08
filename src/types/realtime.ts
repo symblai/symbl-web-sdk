@@ -106,6 +106,11 @@ interface RealtimeOptionsConfig {
      * Audio Encoding in which the audio will be sent over the WebSocket.
      */
     encoding?: string;
+
+    speechRecognition?: {
+        encoding?: string;
+        sampleRateHertz?: number;
+    }
 }
 
 interface RawSpeechPayload {
@@ -217,6 +222,7 @@ interface RealtimeHandlers {
 }
 
 interface SymblRealtimeConnection {
+    id: string;
     conversationId: string;
     sendAudio: (audioData: unknown) => void;
     stop: () => void;

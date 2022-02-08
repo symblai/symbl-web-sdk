@@ -1,7 +1,20 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "0.7.0-alpha.2",
-  "description": "",
+  "version": "0.8.3",
+  "description": "Symbl.ai Web SDK for accessing Symbl.ai APIs directly from the web browser.",
+  "homepage": "https://github.com/symblai/symbl-web-sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/symblai/symbl-web-sdk.git"
+  },
+  "keywords": [
+    "symbl.ai",
+    "symbl",
+    "javascript",
+    "api",
+    "web",
+    "sdk"
+  ],
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
   "devDependencies": {
@@ -41,12 +54,13 @@
     "doc": "typedoc src",
     "build:ts": "rm -rf ./build-tsc && tsc",
     "build": "npm run build:ts && webpack --config webpack.config.js --mode production",
-    "publish-labs": "npm install && npm run build && npm publish --access public --tag labs"
+    "publish-next": "npm install && npm run build && npm publish --access public --tag next",
+    "publish-prod": "npm install && npm run build && npm publish --access public"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache 2.0",
   "dependencies": {
-    "@symblai/symbl-js": "1.3.0-alpha.1",
+    "@symblai/symbl-js": "1.4.2-alpha.3",
     "symbl-opus-encdec": "^0.1.2"
   }
 }
