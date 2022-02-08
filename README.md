@@ -16,7 +16,7 @@ Browser Support
 ## Installation
 
 ```js
-npm install @symblai/symbl-web-sdk@labs
+npm install @symblai/symbl-web-sdk
 ```
 
 ## Build
@@ -33,7 +33,12 @@ In order to use the Symbl Web SDK you need to include it via script tags in your
 
 HTML script:
 ```html
-<script src="https://storage.googleapis.com/symbl-web-sdk/latest-labs/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/latest/symbl.min.js"></script>
+```
+or
+
+```html
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.7.0/symbl.min.js"></script>
 ```
 
 Web Application import:
@@ -116,13 +121,19 @@ const stream = await symbl.createStream(connectionConfig);
 await symbl.unmute(stream);
 ```
 
-### Using createStream to start a realtime request
+### Using `createStream` to start a realtime request
 
 Creating a stream using `symbl.startRealtimeRequest(config)` has been deprecated in favor of `symbl.createStream(config)`. For `createStream`,
 the WebSocket is started in a non processing state. You must send the start request before processing any audio. 
 
-The `createStream` function returns a `stream` object. In order to start the connection you can call `symbl.unmute(stream)`. Unmute will send 
-the start request and start the audio streaming.
+### Starting the stream
+
+The `createStream` function returns a `stream` object. The way to start the connection is dependant on whether you pass `disconnectOnStopRequest` as `false` or not.
+
+If `disconnectOnStopRequest` is set to false ou can call `symbl.unmute(stream)`. Unmute will send the start request and start the audio streaming. 
+
+If `disconnectOnStopRequest` is not set or set to true, you need to call `symbl.start(stream)` to start the stream.
+
 
 ### Using mute/unmute to pause a connection.
 
@@ -220,11 +231,146 @@ const connectionConfig = {
 })();
 ```
 
+## How to pass in a custom sourceNode
+
+If you wish you can pass in a custom [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object to the Web SDK. By default the Web SDK will create the AudioContext and the MediaStreamAudioSourceNode object automatically but using this will give you more control over those.
+
+Once you create the MediaStreamAudioSourceNode object you can pass it via the connectionConfig as `sourceNode`
+
+```js
+
+// create the MediaStreamAudioSourceNode
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+stream = await navigator.mediaDevices.getUserMedia({
+	audio: true,
+	video: false
+});
+context = new AudioContext();
+const sourceNode = context.createMediaStreamSource(stream);
+
+symbl.init({
+	appId: '<your App ID>',
+	appSecret: '<your App Secret>',
+	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
+	basePath: 'https://api-labs.symbl.ai',
+});
+
+const id = btoa("symbl-ai-is-the-best");
+// pass in the MediaStreamAudioSourceNode as sourceNode
+const connectionConfig = {
+	id,
+	sourceNode,
+	insightTypes: ['action_item', 'question'],
+	config: {
+		meetingTitle: 'My Test Meeting ' + id,
+		confidenceThreshold: 0.7,
+		timezoneOffset: 480, // Offset in minutes from UTC
+		languageCode: 'en-US',
+		sampleRateHertz: 48000
+	},
+	speaker: {
+		// Optional, if not specified, will simply not send an email in the end.
+		userId: '', // Update with valid email
+		name: ''
+	},
+	handlers: {
+		/**
+		 * This will return live speech-to-text transcription of the call.
+		 */
+		onSpeechDetected: (data) => {
+		  if (data) {
+		    const {punctuated} = data
+		    console.log('Live: ', punctuated && punctuated.transcript)
+		    console.log('');
+		  }
+		  // console.log('onSpeechDetected ', JSON.stringify(data, null, 2));
+		},
+		/**
+		 * When processed messages are available, this callback will be called.
+		 */
+		onMessageResponse: (data) => {
+		  // console.log('onMessageResponse', JSON.stringify(data, null, 2))
+		},
+		/**
+		 * When Symbl detects an insight, this callback will be called.
+		 */
+		onInsightResponse: (data) => {
+		  // console.log('onInsightResponse', JSON.stringify(data, null, 2))
+		},
+		/**
+		 * When Symbl detects a topic, this callback will be called.
+		 */
+		onTopicResponse: (data) => {
+		  // console.log('onTopicResponse', JSON.stringify(data, null, 2))
+		}
+	}
+};
+
+(async () => {
+	// Creates the WebSocket in a non-processing state
+	const stream = await symbl.createStream(connectionConfig);
+
+	// Send the start request
+	await stream.start(stream);
+})();
+
+```
+
+## Passing in custom `ondevicechange` handler.
+
+By default the Symbl Web SDK will handle the `ondevicechange` event and send a `modify_request` event to modify the sample rate with the new device's sample rate. If you wish to override this logic you can pass in your own `ondevicechange` handler in the handlers config.
+
+
+```js
+symbl.init({
+	appId: '<your App ID>',
+	appSecret: '<your App Secret>',
+	// accessToken: '<your Access Token>', // can be used instead of appId and appSecret
+	basePath: 'https://api-labs.symbl.ai',
+});
+const id = btoa("symbl-ai-is-the-best");
+// pass in the MediaStreamAudioSourceNode as sourceNode
+const connectionConfig = {
+	id,
+	insightTypes: ['action_item', 'question'],
+	config: {
+		languageCode: 'en-US',
+		sampleRateHertz: 48000
+	},
+	handlers: {
+		ondevicechange: () => {
+		  // add your logic here.
+		}
+	}
+};
+
+(async () => {
+	// Creates the WebSocket in a non-processing state
+	const stream = await symbl.createStream(connectionConfig);
+
+	// Send the start request
+	await stream.start(stream);
+})();
+```
+
+### Using the `deviceChanged` callback
+
+You can also make use of our callback using our `deviceChanged` callback:
+
+```js
+symbl.deviceChanged = () => {
+	// Add your logic here
+}
+```
+
+
 ## Transcribing live audio input through your device
 
 As a simple test of the Streaming API you can simply setup a live microphone and push the audio stream using the browser APIs to access the microphone.
 
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
+
+NOTE: The `symbl.startRealtimeRequest` function creates a new AudioContext, so the call must be made on user interaction, such as a button click.
 
 ```js
 symbl.init({
