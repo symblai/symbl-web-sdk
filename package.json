@@ -60,7 +60,7 @@
   "author": "",
   "license": "Apache 2.0",
   "dependencies": {
-    "@symblai/symbl-js": "1.4.2-alpha.3",
+    "@symblai/symbl-js": "1.4.2",
     "symbl-opus-encdec": "^0.1.2"
   }
 }
