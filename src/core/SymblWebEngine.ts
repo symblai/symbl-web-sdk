@@ -5,7 +5,7 @@ import Logger from "./services/Logger";
 import Store from "./services/Storage";
 import {ConfigError, ConnectionError, NullError} from "./services/ErrorHandler";
 import isBrowser from "../browser";
-
+import registerNetworkConnectivityDetector from "./services/NetworkConnectivityDetector";
 
 /** Main Symbl Web SDK class */
 export default class SymblWebEngine {
@@ -69,6 +69,8 @@ export default class SymblWebEngine {
         this.logger.setDefaultLevel(logLevel);
         this.store = new Store(this.logger);
         this.store.init();
+
+        registerNetworkConnectivityDetector(sdk);
 
     }
 
@@ -374,7 +376,7 @@ export default class SymblWebEngine {
      * @param {object} connection - Symbl websocket connection
      */
     async modifyRequest (connection: SymblRealtimeConnection): Promise<void> {
-        
+
         this.logger.debug('Symbl: Modifying request.');
         const deviceManager = this.getDeviceManager(connection);
         await deviceManager.stopAudioSend();    
@@ -433,7 +435,7 @@ export default class SymblWebEngine {
 
     }
 
-    /** 
+    /**
      * @ignore Sets which device manager to use based on encoding.
      */
      async setDeviceManager (encoding: string): Promise<DeviceManager | OpusDeviceManager> {
