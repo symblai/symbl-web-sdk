@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "0.5.1-labs.3",
+  "version": "0.5.1-labs.4",
   "description": "",
   "main": "./build-tsc/index.js",
   "types": "./build-tsc/index.d.js",
@@ -46,7 +46,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@symblai/symbl-js": "1.4.2-alpha.1",
+    "@symblai/symbl-js": "1.4.2-alpha.3",
     "symbl-opus-encdec": "^0.1.2"
   }
 }
