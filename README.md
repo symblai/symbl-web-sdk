@@ -41,7 +41,7 @@ HTML script:
 ```
 or
 ```html
-<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.8.3/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v0.8.4/symbl.min.js"></script>
 ```
 
 Web Application import:
