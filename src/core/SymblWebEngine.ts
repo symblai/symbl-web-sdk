@@ -58,7 +58,7 @@ export default class SymblWebEngine {
      * @ignore
      */
     realtimeConfigMap: any = {};
- 
+
     /**
      * Sets up the basic Symbl connection object
      * @param {string} loggingLevel - establishes default log level
@@ -323,7 +323,7 @@ export default class SymblWebEngine {
 
     }
 
-    /** 
+    /**
      * @ignore Applies the users' ondevicechange hanlder if present.
      */
     setOnDeviceHandler(connection: SymblRealtimeConnection): void {
@@ -379,7 +379,7 @@ export default class SymblWebEngine {
 
         this.logger.debug('Symbl: Modifying request.');
         const deviceManager = this.getDeviceManager(connection);
-        await deviceManager.stopAudioSend();    
+        await deviceManager.stopAudioSend();
         await deviceManager.deviceDisconnect();
 
         await deviceManager.deviceConnect(connection);
@@ -604,9 +604,10 @@ export default class SymblWebEngine {
     /**
      * Subscribe to existing streaming connection in read-only
      * @param {string} connectionId - connection ID created on connection init
-     * @param {obj} options - provide handlers and options
+     * @param {function} cb - callback function to use data returned
+     * @param {boolean} reconnectOnError - Reconnect on WebSocket errors
      */
-    async subscribeToStream (connectionId: string, options: any):
+    async subscribeToStream (connectionId: string, cb: () => unknown, reconnectOnError: boolean):
         Promise<void> {
 
         if (!connectionId) {
@@ -621,7 +622,12 @@ export default class SymblWebEngine {
 
             await this.sdk.subscribeToStream(
                 connectionId,
-                options
+                {
+                    reconnectOnError,
+                    handlers: {
+                        onMessage: cb
+                    }
+                }
             );
 
             this.logger.info(`Symbl: Subscribed to Streaming at ${connectionId}`);
@@ -637,10 +643,10 @@ export default class SymblWebEngine {
     /**
      * Subscribe to existing telephony connection in read-only
      * @param {string} connectionId - connection ID created on connection init
-     * @param {obj} options - provide handlers and options
+     * @param {function} cb - callback function to use data returned
+     * @param {boolean} reconnectOnError - Reconnect on WebSocket errors
      */
-    async subscribeToCall (connectionId: string, options: any):
-        Promise<void> {
+    async subscribeToCall (connectionId: string, cb: () => unknown, reconnectOnError: boolean): Promise<void> {
 
         if (!connectionId) {
 
@@ -654,7 +660,12 @@ export default class SymblWebEngine {
 
             await this.sdk.subscribeToConnection(
                 connectionId,
-                options
+                {
+                    reconnectOnError,
+                    handlers: {
+                        onMessage: cb
+                    }
+                }
             );
 
             this.logger.info(`Symbl: Subscribed to Call at ${connectionId}`);
