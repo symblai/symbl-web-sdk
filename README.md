@@ -77,7 +77,7 @@ These are configs that have been added that are specific to the Web SDK.
 | Name         | Default | Description |
 |--------------|---------|-------|
 | `sourceNode` | `null`  | For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option. |
-| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
+| `reconnectOnError` | `false` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
 
 
 Usage Example:
@@ -440,28 +440,13 @@ const connectionConfig = {
 
 With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
 
-### Current call signature
-
 ```js
-symbl.subscribeToStream(id, {
-	reconnectOnError: true,
-	handlers: {
-		onMessage: (message) => { ... },
-		onSubscribe: () => { ... },
-		onClose: () => { ... },
-		onReconnectFail: (err) => { ... },
-	}
-});
-```
-
-### Deprecated call signature
-
-This way of using the subscribeToSream function has been deprecated. It will still work but might not in future versions. Please convert to the current call signature above. The function passed is equivalent to the `onMessage` handler in the new call signature.
-
-```js
-symbl.subscribeToStream(id, (data) => {
-	console.log('data:', data);
-})
+/**
+ * id: connectionId
+ * cb: message callback
+ * reconnectOnerror: boolean
+ */
+symbl.subscribeToStream(id, (message) => { ... }, true);
 ```
 
 ### Subscribe API Options
