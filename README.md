@@ -449,21 +449,6 @@ With the Subscribe API you can connect to an existing connection via the connect
 symbl.subscribeToStream(id, (message) => { ... }, true);
 ```
 
-### Subscribe API Options
-
-| Name         | Default | Description |
-|--------------|---------|-------|
-| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
-
-### Subscribe API Handlers
-
-| Name | Description |
-|------|-------------|
-| `onMessage(message)` | Fired any time a message is received. |
-| `onSubscribe()` | Fired when the connection intially subscribes |
-| `onClose()` | Fired when the connection is closed |
-| `onReconnectFail(err)` | Fires when the reconnection attempt fails. Related to the `reconnectOnError` config. |
-
 ## Stopping realtime connection
 
 In order to end the connection to the realtime WebSocket you'll need to use the following command with your `connection` object:
