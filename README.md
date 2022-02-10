@@ -1,6 +1,6 @@
 # Symbl Web SDK
 
-The Symbl Web SDK provides convenient access to the Symbl API from applications written in the Javascript language directly in the browser. It includes a pre-defined set of classes for a simple and clear utilization of APIs.
+The Symbl Web SDK provides convenient access to the Symbl API from applications written in the JavaScript language directly in the browser. It includes a pre-defined set of classes for a simple and clear utilization of APIs.
 
 ## Documentation
 
@@ -76,8 +76,8 @@ These are configs that have been added that are specific to the Web SDK.
 
 | Name         | Default | Description |
 |--------------|---------|-------|
-| `sourceNode` | `null`  | For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option. |
-| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
+| `sourceNode` | `null`  | For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default, the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option. |
+| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of an error. You can also make use of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
 
 
 Usage Example:
@@ -125,8 +125,8 @@ Web SDK provides a suite of callbacks for you to utilize in your application.
 | `onConversationCompleted(message)` | Fires when the `conversation_completed` event is recieved from the WebSocket. |
 | `onReconnectFail(err)` | Fires when the reconnection attempt fails. Related to the `reconnectOnError` config. |
 | `onStartedListening(message)` | Fires when the `started_listening` event is received from the WebSocket. |
-| `onRequestStart(message)` | Fires when the `recognition_started` event is received from the WebSocket |
-| `onRequestStop(message)` | Fires when the `recognition_stopped` event is received from the WebSocket |
+| `onRequestStart(message)` | Fires when the `recognition_started` event is received from the WebSocket. |
+| `onRequestStop(message)` | Fires when the `recognition_stopped` event is received from the WebSocket. |
 
 ### Using `createStream` to start a realtime request
 
@@ -221,7 +221,7 @@ const connectionConfig = {
 
 ### Updating your external source node
 
-If you wish to update your external source node you can do se by using the `symbl.updateSourceNode` function:
+If you wish to update your external source node you can do so by using the `symbl.updateSourceNode` function:
 
 ```js
 symbl.updateSourceNode(stream, sourceNode);
@@ -282,7 +282,6 @@ As a simple test of the Streaming API you can simply setup a live microphone and
 
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
 
-NOTE: The `symbl.startRealtimeRequest` function creates a new AudioContext, so the call must be made on user interaction, such as a button click.
 
 ```js
 symbl.init({
@@ -343,7 +342,11 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	// Creates the WebSocket in a non-processing state
+const stream = await symbl.createStream(connectionConfig);
+
+       // Send the start request
+await symbl.unmute(stream);
 })();
 ```
 
@@ -357,8 +360,8 @@ A quick snippet on how to use the mute method.
 
 ```js
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
-	await symbl.mute(connection);
+	const stream = await symbl.createStream(connectionConfig);
+	await symbl.mute(stream);
 })();
 
 ```
@@ -369,8 +372,8 @@ A quick snippet on how to use the unmute method.
 
 ```js
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
-	await symbl.unmute(connection);
+	const stream = await symbl.createStream(connectionConfig);
+	await symbl.unmute(stream);
 })();
 
 ```
@@ -431,14 +434,18 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
+		// Creates the WebSocket in a non-processing state
+const stream = await symbl.createStream(connectionConfig);
+
+            // Send the start request
+await symbl.unmute(stream);
 })();
 ```
 
 
 ## Subscribing to an existing realtime connection with Subscribe API
 
-With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
+With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the real-time transcription example is running.
 
 ### Current call signature
 
@@ -468,20 +475,20 @@ symbl.subscribeToStream(id, (data) => {
 
 | Name         | Default | Description |
 |--------------|---------|-------|
-| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
+| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of an error. You can also make use of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
 
 ### Subscribe API Handlers
 
 | Name | Description |
 |------|-------------|
 | `onMessage(message)` | Fired any time a message is received. |
-| `onSubscribe()` | Fired when the connection intially subscribes |
-| `onClose()` | Fired when the connection is closed |
+| `onSubscribe()` | Fired when the connection intially subscribes. |
+| `onClose()` | Fired when the connection is closed. |
 | `onReconnectFail(err)` | Fires when the reconnection attempt fails. Related to the `reconnectOnError` config. |
 
-## Stopping realtime connection
+## Stopping real-time connection
 
-In order to end the connection to the realtime WebSocket you'll need to use the following command with your `connection` object:
+In order to end the connection to the real-time WebSocket you'll need to use the following command with your `connection` object:
 
 ```js
 symbl.stopRequest(connection);
