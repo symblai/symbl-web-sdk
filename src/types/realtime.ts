@@ -21,7 +21,7 @@ interface SymblRealtimeConfig {
     config?: RealtimeOptionsConfig;
 
     /**
-     * Speaker identity to use for audio in this WebSocket connection. If omitted, 
+     * Speaker identity to use for audio in this WebSocket connection. If omitted,
      * no speaker identification will be used for process
      */
     speaker?: RealtimeUser;
@@ -30,47 +30,47 @@ interface SymblRealtimeConfig {
 
     /**
      * Labs only feature
-     * 
-     * This parameter allows you to set your Streaming API connection in such a way 
-     * that even when the stop_request is sent. The connection does not drop-off, only 
-     * the processing is stopped and the conversationId and connection is kept live 
-     * for 1800 seconds by default. You can always override this value by passing 
+     *
+     * This parameter allows you to set your Streaming API connection in such a way
+     * that even when the stop_request is sent. The connection does not drop-off, only
+     * the processing is stopped and the conversationId and connection is kept live
+     * for 1800 seconds by default. You can always override this value by passing
      * the disconnectOnStopRequest parameter.
-     * 
-     * This allows you to stop and start the Streaming API processing without dropping 
-     * the WebSocket connection, so that you can stop and resume the processing in the 
+     *
+     * This allows you to stop and start the Streaming API processing without dropping
+     * the WebSocket connection, so that you can stop and resume the processing in the
      * middle of a call and optimize the Streaming API usage costs.
      */
     disconnectOnStopRequest?: boolean;
 
     /**
      * Labs only feature
-     * 
-     * This parameter allows you to override the idle time out (if a WebSocket connection is idle for 30 minutes). 
-     * Set this parameter with a value between 0 to 3600 seconds. If the idle connection 
-     * needs to be kept alive beyond 3600 seconds, you have to restart the connection 
+     *
+     * This parameter allows you to override the idle time out (if a WebSocket connection is idle for 30 minutes).
+     * Set this parameter with a value between 0 to 3600 seconds. If the idle connection
+     * needs to be kept alive beyond 3600 seconds, you have to restart the connection
      * at 3600 seconds elapsed.
-     * 
-     * If the value is passed as 0, the WebSocket connection is dropped when stop_request 
+     *
+     * If the value is passed as 0, the WebSocket connection is dropped when stop_request
      * is received. The default value is 1800.
      */
     disconnectOnStopRequestTimeout?: number;
 
     /**
      * Labs only feature
-     * 
-     * When this parameter is set to noConnectionTimeout = 600 secs and if there is no 
-     * graceful termination using stop_request message sent explicitly when there just 
-     * one WebSocket connection, the connectionId and conversationId are kept valid 
-     * for 600 seconds before finalizing the connection, after which connectionId will 
-     * be not available to subscribe and conversationId will have all the last know 
+     *
+     * When this parameter is set to noConnectionTimeout = 600 secs and if there is no
+     * graceful termination using stop_request message sent explicitly when there just
+     * one WebSocket connection, the connectionId and conversationId are kept valid
+     * for 600 seconds before finalizing the connection, after which connectionId will
+     * be not available to subscribe and conversationId will have all the last know
      * information associated with it.
      */
     noConnectionTimeout?: number;
 
     /**
-     * For passing in an external MediaStreamAudioSourceNode object. By default the 
-     * Web SDK will handle audio context and source nodes on it's own, though if you 
+     * For passing in an external MediaStreamAudioSourceNode object. By default the
+     * Web SDK will handle audio context and source nodes on it's own, though if you
      * wish to handle that externally we've provided that option.
      */
     sourceNode: MediaStreamAudioSourceNode;
@@ -227,4 +227,5 @@ interface SymblRealtimeConnection {
     sendAudio: (audioData: unknown) => void;
     stop: () => void;
     start: (options: any) => void;
+    close: () => void;
 }
