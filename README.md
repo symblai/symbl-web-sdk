@@ -282,7 +282,7 @@ As a simple test of the Streaming API you can simply setup a live microphone and
 
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
 
-NOTE: The `symbl.startRealtimeRequest` function creates a new AudioContext, so the call must be made on user interaction, such as a button click.
+NOTE: The `symbl.createStream` function creates a new AudioContext, so the call must be made on user interaction, such as a button click.
 
 ```js
 symbl.init({
@@ -351,7 +351,7 @@ const connectionConfig = {
 
 You can mute and unmute the connected device by simply calling `symbl.mute()` or `symbl.unmute()`.
 
-Note that if `disconnectOnStopRequest` is passed in as `true` in the `createStream` function call, the `mute` and `unmute` function also invoke the `start` and `stop` functions, that signal the Streaming API to start and stop processing the audio being sent in between these two calls.  
+Note that if `disconnectOnStopRequest` is passed in as `false` in the `createStream` function call, the `mute` and `unmute` function also invoke the `start` and `stop` functions, that signal the Streaming API to start and stop processing the audio being sent in between these two calls.  
 
 ### Muting
 
@@ -438,9 +438,9 @@ const connectionConfig = {
 ```
 
 
-## Stopping realtime connection
+## Stopping Streaming API connection
 
-In order to end the connection to the realtime WebSocket you'll need to use the following command with your `connection` object:
+In order to end the connection to the Streaming API you'll need to use the following command with your `stream` object:
 
 ```js
 symbl.stopRequest(stream);
@@ -462,7 +462,7 @@ As a simple test of the Telephony API you can call a phone number and see a live
 
 * Will update with async example. -->
 
-## Subscribing to an existing realtime connection with Subscribe API
+## Subscribing to an existing Streaming API connection with Subscribe API
 
 With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
 
