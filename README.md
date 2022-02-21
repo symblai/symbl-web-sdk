@@ -343,7 +343,7 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	const stream = await symbl.createStream(connectionConfig);
 })();
 ```
 
@@ -351,14 +351,16 @@ const connectionConfig = {
 
 You can mute and unmute the connected device by simply calling `symbl.mute()` or `symbl.unmute()`.
 
+Note that if `disconnectOnStopRequest` is passed in as `true` in the `createStream` function call, the `mute` and `unmute` function also invoke the `start` and `stop` functions, that signal the Streaming API to start and stop processing the audio being sent in between these two calls.  
+
 ### Muting
 
 A quick snippet on how to use the mute method.
 
 ```js
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
-	await symbl.mute(connection);
+	const stream = await symbl.createStream(connectionConfig);
+	await symbl.mute(stream);
 })();
 
 ```
@@ -369,8 +371,8 @@ A quick snippet on how to use the unmute method.
 
 ```js
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
-	await symbl.unmute(connection);
+	const stream = await symbl.createStream(connectionConfig);
+	await symbl.unmute(stream);
 })();
 
 ```
@@ -431,30 +433,17 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	const stream = await symbl.createStream(connectionConfig);
 })();
 ```
 
-
-## Subscribing to an existing realtime connection with Subscribe API
-
-With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
-
-```js
-/**
- * id: connectionId
- * cb: message callback
- * reconnectOnerror: boolean
- */
-symbl.subscribeToStream(id, (message) => { ... }, true);
-```
 
 ## Stopping realtime connection
 
 In order to end the connection to the realtime WebSocket you'll need to use the following command with your `connection` object:
 
 ```js
-symbl.stopRequest(connection);
+symbl.stopRequest(stream);
 ```
 
 If you do not sever the connection you could use more minutes of time than intended, so it is recommended to always end the connection programmatically.
@@ -472,6 +461,28 @@ As a simple test of the Telephony API you can call a phone number and see a live
 <!-- ## Async Example
 
 * Will update with async example. -->
+
+## Subscribing to an existing realtime connection with Subscribe API
+
+With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
+
+```js
+/**
+ * id: connectionId
+ * cb: message callback
+ * reconnectOnerror: boolean
+ */
+const conversationStream = await symbl.subscribeToStream(id, (message) => { ... }, true);
+```
+
+## Closing the Subscribe API connection
+
+In order to end the connection to the Subscribe API WebSocket, you'll need to use the following command with your `conversationStream` object:
+
+```js
+conversationStream.close();
+```
+
 
 ## Need support?
 
