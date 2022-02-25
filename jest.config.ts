@@ -1,9 +1,9 @@
-/*
- * For a detailed explanation regarding each configuration property and type check, visit:
- * https://jestjs.io/docs/configuration
- */
+import type {Config} from '@jest/types';
 
-export default {
+// Sync object
+const config: Config.InitialOptions = {
+  verbose: true,
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -192,3 +192,4 @@ export default {
   // Whether to use watchman for file crawling
   // watchman: true,
 };
+export default config;

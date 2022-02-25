@@ -8,8 +8,14 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+      // Rest of ts config options...
+      "plugins": [
+          {
+              "transform": "typescript-is/lib/transform-inline/transformer"
+          }
+      ]
   },
-  "include": ["src/**/*"],
+  "include": ["src2/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

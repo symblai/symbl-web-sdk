@@ -214,7 +214,7 @@ const connectionConfig = {
 	const stream = await symbl.createStream(connectionConfig);
 
 	// Send the start request
-	await stream.start(stream);
+	await symbl.start(stream);
 })();
 
 ```
@@ -260,7 +260,7 @@ const connectionConfig = {
 	const stream = await symbl.createStream(connectionConfig);
 
 	// Send the start request
-	await stream.start(stream);
+	await symbl.start(stream);
 })();
 ```
 
@@ -282,7 +282,7 @@ As a simple test of the Streaming API you can simply setup a live microphone and
 
 Initialize the SDK and connect via the built-in websocket connector. This will output the live transcription to the console.
 
-NOTE: The `symbl.startRealtimeRequest` function creates a new AudioContext, so the call must be made on user interaction, such as a button click.
+NOTE: The `symbl.createStream` function creates a new AudioContext, so the call must be made on user interaction, such as a button click.
 
 ```js
 symbl.init({
@@ -343,7 +343,8 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	const stream = await symbl.createStream(connectionConfig);
+	await symbl.start(stream);
 })();
 ```
 
@@ -357,8 +358,8 @@ A quick snippet on how to use the mute method.
 
 ```js
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
-	await symbl.mute(connection);
+	const stream = await symbl.createStream(connectionConfig);
+	await symbl.mute(stream);
 })();
 
 ```
@@ -369,8 +370,8 @@ A quick snippet on how to use the unmute method.
 
 ```js
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
-	await symbl.unmute(connection);
+	const stream = await symbl.createStream(connectionConfig);
+	await symbl.unmute(stream);
 })();
 
 ```
@@ -431,7 +432,8 @@ const connectionConfig = {
 };
 
 (async () => {
-	const connection = await symbl.startRealtimeRequest(connectionConfig);
+	const stream = await symbl.createStream(connectionConfig);
+	await symbl.start(stream);
 })();
 ```
 
