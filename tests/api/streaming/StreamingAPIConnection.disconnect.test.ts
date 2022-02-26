@@ -4,6 +4,7 @@ import { StreamingAPIConnection } from '../../../src2/api';
 import { NoConnectionError } from "../../../src2/error";
 // jest.mock('../../src2/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../../constants';
+import { ConnectionState } from "../../../src2/types/connection"
 
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
@@ -43,13 +44,72 @@ test(
         try {
             const audioStream = new PCMAudioStream();
             const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
-            streamingAPIConnection.connect();
-            expect(streamingAPIConnection.connectionState).toBe(1);
-            expect(streamingAPIConnection.isConnected()).toBe(true);
+            streamingAPIConnection.disconnect().then(() => {
+                expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
+            });
+            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTING);
+            expect(streamingAPIConnection.isConnected()).toBe(false);
 
         } catch (e) {
             throw new Error(e);
         }
     }
 );
+
+
+test(
+    "StreamingAPIConnection.connect - Attempt a disconnect when connectionState is already TERMINATED",
+    async () => {
+
+        try {
+            const audioStream = new PCMAudioStream();
+            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+            streamingAPIConnection.connectionState = ConnectionState.TERMINATED;
+            streamingAPIConnection.disconnect();
+            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.TERMINATED);
+            expect(streamingAPIConnection.isConnected()).toBe(false);
+
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+);
+
+
+test(
+    "StreamingAPIConnection.connect - Attempt a disconnect when connectionState is already DISCONNECTED",
+    async () => {
+
+        try {
+            const audioStream = new PCMAudioStream();
+            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+            streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
+            streamingAPIConnection.disconnect();
+            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
+            expect(streamingAPIConnection.isConnected()).toBe(false);
+
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+);
+
+// test(
+//     "StreamingAPIConnection.connect - Testing failure to disconnect",
+//     async () => {
+
+//         try {
+//             const audioStream = new PCMAudioStream();
+//             const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+//             streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
+//             streamingAPIConnection.disconnect();
+//             expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
+//             expect(streamingAPIConnection.isConnected()).toBe(false);
+
+//         } catch (e) {
+//             throw new Error(e);
+//         }
+//     }
+// );
+
 

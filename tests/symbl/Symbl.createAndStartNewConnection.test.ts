@@ -21,7 +21,7 @@ beforeAll(() => {
 });
 
 test(
-    "Symbl.createConnection - Calling createConnection with valid config without passing AudioStream",
+    "Symbl.createAndStartNewConnection - Calling createConnection with valid config without passing AudioStream",
     async () => {
         const authConfig = {
             appId: APP_ID,

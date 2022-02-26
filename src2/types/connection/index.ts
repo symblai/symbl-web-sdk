@@ -1,16 +1,17 @@
-enum SymblConnectionType {
+export enum SymblConnectionType {
     STREAMING = "streaming",
     SUBSCRIBE = "subscribe"
 };
 
-enum ConnectionState {
+export enum ConnectionState {
     CONNECTING,
     CONNECTED,
+    DISCONNECTING,
     DISCONNECTED,
     TERMINATED
 };
 
-enum ConnectionProcessingState {
+export enum ConnectionProcessingState {
     PROCESSING,
     ATTEMPTING,
     NOT_PROCESSING,
