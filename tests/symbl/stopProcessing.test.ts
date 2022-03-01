@@ -148,8 +148,29 @@ test(
                 expect(streamingAPIConnection.isProcessing()).toBe(false);
             });
         } catch(e) {
-            throw new SymblError(e.message);
-            throw e;
+            expect(e).toBe(new SymblError(e.message));
+        }
+    }
+);
+
+test(
+    "Symbl.stopProcessing - If `restartProcessing` is set to true make sure `stop` and `start` methods are both invoked",
+    async () => {
+        try {
+            const audioStream = new PCMAudioStream();
+            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+            streamingAPIConnection.connectionState = ConnectionState.CONNECTED
+            streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING
+            streamingAPIConnection.restartProcessing = true;
+            const stopSpy = jest.spyOn(streamingAPIConnection.stream, 'stop');
+            const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+            streamingAPIConnection.stopProcessing().then(() => {
+                expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.CONNECTED)
+            });
+            expect(stopSpy).toBeCalledTimes(1);
+            expect(startSpy).toBeCalledTimes(1);
+        } catch (e) {
+            throw new Error(e);
         }
     }
 );

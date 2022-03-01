@@ -70,6 +70,9 @@ export default class StreamingAPIConnection extends BaseConnection {
         // Set the value of `_isProcessing` to `false` and emit the appropriate event
         // Any failure to send the `stop_request` should be caught, handled and re-thrown with appropriate error class.
         // Return from function
+        if (this.restartProcessing) {
+            this.startProcessing()
+        }
     }
     
     onAudioSourceChanged(audioSourceChangedEvent) {
@@ -100,7 +103,7 @@ export default class StreamingAPIConnection extends BaseConnection {
     
     async sendAudio(audioData: ArrayBuffer | Uint8Array | Uint16Array) {
         this.stream.sendAudio(audioData);
-    }
+    }   
     
     async sendJSON(data: StreamingAPIStartRequest | StreamingAPIStopRequest | StreamingAPIModifyRequest) {
         // Validate `data` before stringifying
@@ -116,8 +119,8 @@ export default class StreamingAPIConnection extends BaseConnection {
     private attachAudioStream(audioStream: AudioStream) {
         this.audioStream = audioStream;
         
-        this.audioStream.on('audio_source_connected', onAudioSourceChanged);
-        this.audioStream.on('audio_source_disconnected', onAudioSourceChanged);
+        this.audioStream.on('audio_source_connected', this.onAudioSourceChanged);
+        this.audioStream.on('audio_source_disconnected', this.onAudioSourceChanged);
         
         this.registerAudioStreamCallback();
     }

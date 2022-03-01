@@ -46,10 +46,12 @@ test(
         try {
             const audioStream = new PCMAudioStream();
             const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
-            streamingAPIConnection.connectionState = ConnectedState.CONNECTED;
+            streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+            const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
             streamingAPIConnection.startProcessing().then(() => {
                 expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
             });
+            expect(streamSpy).toBeCalledTimes(1);
             expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
             expect(streamingAPIConnection.isProcessing()).toBe(true);
 
@@ -69,10 +71,12 @@ test(
             }
             const audioStream = new PCMAudioStream();
             const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
-            streamingAPIConnection.connectionState = ConnectedState.CONNECTED;
+            streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+            const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
             streamingAPIConnection.startProcessing(startRequestData).then(() => {
                 expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
             });
+            expect(streamSpy).toBeCalledTimes(1);
             expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
             expect(streamingAPIConnection.isProcessing()).toBe(true);
 
@@ -83,7 +87,7 @@ test(
 );
 
 test(
-    "StreamingAPIConnection.startProcesing - throw `NoConnectionError` if connectedState is not CONNECTED",
+    "StreamingAPIConnection.startProcesing - throw `NoConnectionError` if ConnectionState is not CONNECTED",
     async () => {
 
         try {
@@ -92,12 +96,52 @@ test(
             }
             const audioStream = new PCMAudioStream();
             const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
-            streamingAPIConnection.connectionState = ConnectedState.DISCONNECTED;
-            streamingAPIConnection.startProcessing(startRequestData).then(() => {
-                expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
-            });
-            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
-            expect(streamingAPIConnection.isProcessing()).toBe(true);
+            streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
+            streamingAPIConnection.startProcessing();
+            const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+            expect(startSpy).toBeCalledTimes(0);
+
+        } catch (e) {
+            expect(e).toBe(new NoConnectionError('The WebSocket is not connected. Please call the `connect()` method first.'));
+        }
+    }
+);
+
+test(
+    "StreamingAPIConnection.startProcesing - Attempt a connection when processingState is ATTEMPTING",
+    async () => {
+
+        try {
+            const audioStream = new PCMAudioStream();
+            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+            streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+            streamingAPIConnection.processingState = ConnectionProcessingState.ATTEMPTING;
+            const warnSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
+            streamingAPIConnection.startProcessing();
+            expect(warnSpy).toBeCalledTimes(1);
+            const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+            expect(startSpy).toBeCalledTimes(0);
+
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+);
+
+test(
+    "StreamingAPIConnection.startProcesing - Attempt a connection when processingState is PROCESSING",
+    async () => {
+
+        try {
+            const audioStream = new PCMAudioStream();
+            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+            streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+            streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
+            const warnSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
+            streamingAPIConnection.startProcessing();
+            expect(warnSpy).toBeCalledTimes(1);
+            const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+            expect(startSpy).toBeCalledTimes(0);
 
         } catch (e) {
             throw new Error(e);
