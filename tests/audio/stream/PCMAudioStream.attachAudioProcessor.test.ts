@@ -1,5 +1,3 @@
-
-
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
 let audioStream;
 let streamingAPIConnection;

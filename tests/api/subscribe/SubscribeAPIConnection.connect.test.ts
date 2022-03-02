@@ -1,10 +1,9 @@
 import Symbl from "../../../src2/symbl";
 import { PCMAudioStream, OpusAudioStream } from "../../../src2/audio";
-import { StreamingAPIConnection } from '../../../src2/api';
+import { SubscribeAPIConnection } from '../../../src2/api';
 import { NoConnectionError } from "../../../src2/error";
 // jest.mock('../../src2/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../../constants';
-
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
 beforeAll(() => {
@@ -29,15 +28,14 @@ beforeAll(() => {
 });
 
 test(
-    "StreamingAPIConnection.connect - Testing a successful connection attempt",
+    "SubscribeAPIConnection.connect - Testing a successful connection attempt",
     async () => {
 
         try {
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
-            streamingAPIConnection.connect();
-            expect(streamingAPIConnection.connectionState).toBe(1);
-            expect(streamingAPIConnection.isConnected()).toBe(true);
+            const SubscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig);
+            SubscribeAPIConnection.connect();
+            expect(SubscribeAPIConnection.connectionState).toBe(ConnectionState.CONNECTED);
+            expect(SubscribeAPIConnection.isConnected()).toBe(true);
 
         } catch (e) {
             throw new Error(e);
@@ -46,16 +44,17 @@ test(
 );
 
 test(
-    "StreamingAPIConnection.connect - Attempting to connect when connectionState is CONNECTED",
+    "SubscribeAPIConnection.connect - Attempting to connect when connectionState is CONNECTED",
     async () => {
 
         try {
             const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
-            streamingAPIConnection.connectionState = 1
-            streamingAPIConnection.connect();
-            expect(streamingAPIConnection.connectionState).toBe(1);
-            // check that warning was logged
+            const subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig, audioStream);
+            subscribeAPIConnection.connectionState = ConnectionState.CONNECTED;
+            const logSpy = jest.spyOn(subscribeAPIConnection.logger, 'warn');
+            subscribeAPIConnection.connect();
+            expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.CONNECTED);
+            expect(logSpy).toBeCalledTimes(1);
 
         } catch (e) {
             throw new Error(e);
@@ -64,33 +63,31 @@ test(
 );
 
 test(
-    "StreamingAPIConnection.connect - Connection attempt fails due to internet connection",
+    "SubscribeAPIConnection.connect - Connection attempt fails due to internet connection",
     async () => {
-        const audioStream = new PCMAudioStream();
-        const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+        const subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig);
         try {
-            streamingAPIConnection.connect();
+            subscribeAPIConnection.connect();
 
         } catch (e) {
             expect(e).toBe(new NoConnectionError("Connection attempt failed due to no internet connection."));
-            expect(streamingAPIConnection.connectionState).toBe(3);
-            expect(streamingAPIConnection.isConnected()).toBe(false);
+            expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
+            expect(subscribeAPIConnection.isConnected()).toBe(false);
         }
     }
 );
 
 test(
-    "StreamingAPIConnection.connect - Connection attempt fails due to initial handshake",
+    "SubscribeAPIConnection.connect - Connection attempt fails due to initial handshake",
     async () => {
-        const audioStream = new PCMAudioStream();
-        const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+        const subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig);
         try {
-            streamingAPIConnection.connect();
+            subscribeAPIConnection.connect();
 
         } catch (e) {
             expect(e).toBe(new HandshakeError("Connection attempt faild during initial handshake."));
-            expect(streamingAPIConnection.connectionState).toBe(3);            
-            expect(streamingAPIConnection.isConnected()).toBe(false);
+            expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);            
+            expect(subscribeAPIConnection.isConnected()).toBe(false);
         }
     }
 );
