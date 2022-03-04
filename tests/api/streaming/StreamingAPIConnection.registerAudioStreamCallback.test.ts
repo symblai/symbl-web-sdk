@@ -1,13 +1,7 @@
-import Symbl from "../../src2/symbl";
-import { ConnectionFactory, StreamingAPIConnection } from '../../src2/connection';
-import { PCMAudioStream, OpusAudioStream } from '../../src2/audio';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
-import { APP_ID, APP_SECRET } from '../constants';
-import Logger from "../../src2/logger";
-import { Stream } from "stream";
-
-
-
+import Symbl from "../../../src2/symbl";
+import { StreamingAPIConnection } from '../../../src2/api';
+import { PCMAudioStream } from '../../../src2/audio';
+import { APP_ID, APP_SECRET } from '../../constants';
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
 let audioStream
@@ -31,7 +25,9 @@ beforeAll(() => {
             name: 'My name'
         },
     };
-    audioStream = new PCMAudioStream();
+    const context = new AudioContext();
+    const sourceNode = context.createMediaStreamSource(new MediaStream());
+    audioStream = new PCMAudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);  
 });
 

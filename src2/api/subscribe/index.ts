@@ -1,5 +1,1 @@
-import SubscribeAPIConnection from "./SubscribeAPIConnection";
-
-export {
-    SubscribeAPIConnection
-}
+export * from "./SubscribeAPIConnection";

@@ -1,5 +1,1 @@
-import StreamingAPIConnection from "./StreamingAPIConnection";
-
-export {
-    StreamingAPIConnection
-}
+export * from "./StreamingAPIConnection";

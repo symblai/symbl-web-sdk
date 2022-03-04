@@ -1,13 +1,11 @@
 import Symbl from "../../../src2/symbl";
-import { PCMAudioStream, OpusAudioStream } from "../../../src2/audio";
+import { PCMAudioStream } from "../../../src2/audio";
 import { StreamingAPIConnection } from '../../../src2/api';
 import { NoConnectionError } from "../../../src2/error";
-// jest.mock('../../src2/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
 
-
-let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
+let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, streamingAPIConnection;
 beforeAll(() => {
     authConfig = {
         appId: APP_ID,
@@ -26,7 +24,12 @@ beforeAll(() => {
             userId: 'emailAddress',
             name: 'My name'
         },
-    };     
+    };
+    
+    const audioContext = new AudioContext();
+    const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+    const audioStream = new PCMAudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream); 
 });
 
 
@@ -44,8 +47,6 @@ test(
     async () => {
 
         try {
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
             streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
             const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
             streamingAPIConnection.startProcessing().then(() => {
@@ -69,8 +70,6 @@ test(
             const startRequestData = {
                 type: "start_request"
             }
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
             streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
             const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
             streamingAPIConnection.startProcessing(startRequestData).then(() => {
@@ -94,8 +93,6 @@ test(
             const startRequestData = {
                 type: "start_request"
             }
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
             streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
             streamingAPIConnection.startProcessing();
             const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
@@ -112,8 +109,6 @@ test(
     async () => {
 
         try {
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
             streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
             streamingAPIConnection.processingState = ConnectionProcessingState.ATTEMPTING;
             const warnSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
@@ -133,8 +128,6 @@ test(
     async () => {
 
         try {
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
             streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
             streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
             const warnSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');

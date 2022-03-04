@@ -1,9 +1,7 @@
 import Symbl from "../../../src2/symbl";
-import { PCMAudioStream, OpusAudioStream } from "../../../src2/audio";
+import { PCMAudioStream } from "../../../src2/audio";
 import { StreamingAPIConnection } from '../../../src2/api';
-import { NoConnectionError } from "../../../src2/error";
 import { APP_ID, APP_SECRET } from '../../constants';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
 
 /* Design Doc Requirements
     updateAudioStream(audioStream: AudioStream)
@@ -34,14 +32,20 @@ beforeAll(() => {
             name: 'My name'
         },
     };
-    audioStream = new PCMAudioStream();
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);  
+
+    const audioContext = new AudioContext();
+    const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+    audioStream = new PCMAudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
 });
 
 test(
     `StreamingAPIConnection.updateAudioStream - If AudioStream is already attached to the instance, verify that the audio stops processing via the attached stream.`,
     async () => {
-        const newAudioStream = new PCMAudioStream();
+        const audioContext = new AudioContext();
+        const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+        const newAudioStream = new PCMAudioStream(sourceNode);
+    
         const attachSpy = jest.spyOn(streamingAPIConnection.attachAudioStream, 'attachAudioStream')
         const stopSpy = jest.spyOn(streamingAPIConnection, 'stopProcessing');
         streamingAPIConnection.updateAudioStream(newAudioStream);
@@ -54,7 +58,10 @@ test(
 test(
     `StreamingAPIConnection.updateAudioStream - Verify that 'attachAudioStream' function is invoked with the new audioStream`,
     async () => {
-        const newAudioStream = new PCMAudioStream();
+        const audioContext = new AudioContext();
+        const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+        const newAudioStream = new PCMAudioStream(sourceNode);
+
         streamingAPIConnection.audioStream = null;
         const attachSpy = jest.spyOn(streamingAPIConnection.attachAudioStream, 'attachAudioStream')
         streamingAPIConnection.updateAudioStream(newAudioStream);

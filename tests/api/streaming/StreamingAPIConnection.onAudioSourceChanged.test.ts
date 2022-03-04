@@ -1,28 +1,13 @@
-import Symbl from "../../src2/symbl";
-import { ConnectionFactory, StreamingAPIConnection } from '../../src2/connection';
-import { PCMAudioStream, OpusAudioStream } from '../../src2/audio';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
-import { APP_ID, APP_SECRET } from '../constants';
-import Logger from "../../src2/logger";
-import { Stream } from "stream";
-
-/* Design Doc Requirements
-    if (this._isConnected) {
-        if (this._isProcessing && audioSourceChangedEvent.type === 'audio_source_disconnected') {
-            this.restartProcessing = true;
-            this.stopProcessing();
-        } else if (!this._isProcessing && audioSourceChangedEvent.type === 'audio_source_connected' && this.restartProcessing) {
-            this.restartProcessing = false;
-            this.startProcessing();
-        }
-    } else {
-        this.restartProcessing = false;
-    }
-*/
-
+import Symbl from "../../../src2/symbl";
+import { StreamingAPIConnection } from '../../../src2/api';
+import { PCMAudioStream } from '../../../src2/audio';
+import { APP_ID, APP_SECRET } from '../../constants';
+import { SymblEvent } from "../../../src2/events";
+// import Logger from "../../src2/logger";
+// import { Stream } from "stream";
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
-let audioStream
+let audioStream, sourceNode;
 let streamingAPIConnection
 beforeAll(() => {
     authConfig = {
@@ -43,7 +28,9 @@ beforeAll(() => {
             name: 'My name'
         },
     };
-    audioStream = new PCMAudioStream();
+    const context = new AudioContext();
+    sourceNode = context.createMediaStreamSource(new MediaStream());
+    audioStream = new PCMAudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);  
 });
 

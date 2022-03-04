@@ -1,6 +1,6 @@
 import { BaseConnection } from "../../connection";
 
-export default class StreamingAPIConnection extends BaseConnection {
+export class StreamingAPIConnection extends BaseConnection {
     private config: StreamingAPIConnectionConfig;
     private connectionState = ConnectionState.DISCONNECTED;
     private processingState = ConnectionProcessingState.NOT_PROCESSING;

@@ -1,6 +1,6 @@
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
-class AudioStream extends EventTarget {
+export class AudioStream extends EventTarget {
     private sourceNode: MediaStreamAudioSourceNode;
     protected audioCallback: (audioData) => void;
     

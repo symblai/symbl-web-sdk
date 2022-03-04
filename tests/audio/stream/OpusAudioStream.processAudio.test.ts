@@ -1,0 +1,58 @@
+import AudioContext from 'audio-context-mock';
+import Symbl from "../../../src2/symbl";
+import { OpusAudioStream } from '../../../src2/audio';
+import { APP_ID, APP_SECRET } from '../../constants';
+
+let authConfig, symbl, audioStream;
+
+beforeAll(() => {
+    authConfig = {
+        appId: APP_ID,
+        appSecret: APP_SECRET
+    };
+    symbl = new Symbl(authConfig);
+    const opusConfig: any = {
+        numberOfChannels: 1,
+        encoderSampleRate: 48000,
+        encoderFrameSize: 20,
+        maxFramesPerPage: 40,
+        encoderComplexity: 6,
+        streamPages: true,
+        rawOpus: true
+    };
+    const context = new AudioContext();
+    const mediaStream = new MediaStream();
+    const sourceNode = context.createMediaStreamSource(mediaStream);
+    audioStream = new OpusAudioStream(sourceNode, opusConfig);
+});
+
+test(
+    `OpusAudioStream.processAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.`,
+    async () => {
+        try {
+            const audioData = {};
+            audioStream.audioCallback = null;
+            const callbackSpy = jest.spyOn(audioStream, 'audioCallback');
+            audioStream.processAudio(audioData)
+            expect(callbackSpy).toBeCalledTimes(0);
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+);
+
+test(
+    `OpusAudioStream.processAudio - Verify that audioCallback is being invoked`,
+    async () => {
+        try {
+            const audioData = {};
+            audioStream.audioCallback = (audioData) => {};
+            const callbackSpy = jest.spyOn(audioStream, 'audioCallback');
+            audioStream.processAudio(audioData);
+            expect(callbackSpy).toBeCalledTimes(1);
+            expect(callbackSpy).toBeCalledWith(audioData);
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+);

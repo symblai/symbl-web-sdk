@@ -1,4 +1,4 @@
-export default class BaseConnection extends EventTarget {
+export class BaseConnection extends EventTarget {
     private sessionId: string;
     
     constructor(sessionId: string) {

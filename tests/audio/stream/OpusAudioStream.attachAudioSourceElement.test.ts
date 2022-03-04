@@ -1,17 +1,10 @@
-/*
-- Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
-- Failure to do so should be handled and appropriate error should be thrown
-- Check if the `audioContext` already exists and is `running`.
-- If it is, emit `audio_source_disconnected` event and then close the `audioContext`
-- Re-create AudioContext, MediaStream from the active/default audio device if available and invoke `createScriptProcessor` on the `audioContext`
-- Re-assign the class variables
-- Emit `audio_source_connected` event with the updated `sampleRate`
-*/
-
 import AudioContext from 'audio-context-mock';
-// mock audio context
-// window.AudioContext = jest.fn().mockImplementation(() => {});
+import Symbl from "../../../src2/symbl";
+import { SymblEvent } from "../../../src2/events";
+import { OpusAudioStream } from '../../../src2/audio';
+import { APP_ID, APP_SECRET } from '../../constants';
 
+let authConfig, symbl;
 let audioStream;
 let streamingAPIConnection;
 beforeAll(() => {
@@ -20,7 +13,19 @@ beforeAll(() => {
         appSecret: APP_SECRET
     };
     symbl = new Symbl(authConfig);
-    audioStream = new PCMAudioStream();
+    const opusConfig: any = {
+        numberOfChannels: 1,
+        encoderSampleRate: 48000,
+        encoderFrameSize: 20,
+        maxFramesPerPage: 40,
+        encoderComplexity: 6,
+        streamPages: true,
+        rawOpus: true
+    };
+    const context = new AudioContext();
+    const mediaStream = new MediaStream();
+    const sourceNode = context.createMediaStreamSource(mediaStream);
+    audioStream = new OpusAudioStream(sourceNode, opusConfig);
 });
 
 test(
@@ -32,7 +37,10 @@ test(
             srcElement.src = "test.mp4";
             const videoElement = document.createElement("video");
             videoElement.appendChild(srcElement);
+            const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
             expect(audioStream.attachAudioSourceElement(srcElement)).not.toThrow();
+            expect(attachProcessorSpy).toBeCalledTimes(1);
+            expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
             throw e;
         }
@@ -48,7 +56,10 @@ test(
             srcElement.src = "test.mp3";
             const audioElement = document.createElement("audio");
             audioElement.appendChild(srcElement);
+            const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
             expect(audioStream.attachAudioSourceElement(srcElement)).not.toThrow();
+            expect(attachProcessorSpy).toBeCalledTimes(1);
+            expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
             throw e;
         }
@@ -64,7 +75,10 @@ test(
             srcElement.src = "test.mp4";
             const videoElement = document.createElement("video");
             videoElement.appendChild(srcElement);
+            const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
             expect(audioStream.attachAudioSourceElement(videoElement)).not.toThrow();
+            expect(attachProcessorSpy).toBeCalledTimes(1);
+            expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
             throw e;
         }
@@ -80,7 +94,10 @@ test(
             srcElement.src = "test.mp3";
             const audioElement = document.createElement("audio");
             audioElement.appendChild(srcElement);
+            const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
             expect(audioStream.attachAudioSourceElement(audioElement)).not.toThrow();
+            expect(attachProcessorSpy).toBeCalledTimes(1);
+            expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
             throw e;
         }
@@ -94,8 +111,10 @@ test(
         try {
             const audioElement = document.createElement("audio");
             audioElement.src = "test.mp3";
-            audioElement.appendChild(audioElement);
+            const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
             expect(audioStream.attachAudioSourceElement(audioElement)).not.toThrow();
+            expect(attachProcessorSpy).toBeCalledTimes(1);
+            expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
             throw e;
         }
@@ -109,8 +128,10 @@ test(
         try {
             const videoElement = document.createElement("video");
             videoElement.src = "test.mp3";
-            videoElement.appendChild(videoElement);
+            const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
             expect(audioStream.attachAudioSourceElement(videoElement)).not.toThrow();
+            expect(attachProcessorSpy).toBeCalledTimes(1);
+            expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
             throw e;
         }

@@ -1,3 +1,8 @@
+import AudioContext from 'audio-context-mock';
+import Symbl from "../../../src2/symbl";
+import { PCMAudioStream } from '../../../src2/audio';
+import { APP_ID, APP_SECRET } from '../../constants';
+
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
 let audioStream;
 let streamingAPIConnection;
@@ -7,7 +12,9 @@ beforeAll(() => {
         appSecret: APP_SECRET
     };
     symbl = new Symbl(authConfig);
-    audioStream = new PCMAudioStream();
+    const context = new AudioContext();
+    const sourceNode = context.createMediaStreamSource(new MediaStream());
+    audioStream = new PCMAudioStream(sourceNode);
 });
 
 test(

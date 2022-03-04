@@ -7,7 +7,7 @@ import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState } from "../../../src2/types/connection"
 
 
-let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
+let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, sourceNode, audioStream, streamingAPIConnection;
 beforeAll(() => {
     authConfig = {
         appId: APP_ID,
@@ -26,7 +26,11 @@ beforeAll(() => {
             userId: 'emailAddress',
             name: 'My name'
         },
-    };     
+    };
+    const audioContext = new AudioContext();
+    sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+    audioStream = new PCMAudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
 });
 
 
@@ -42,8 +46,6 @@ test(
     async () => {
 
         try {
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
             streamingAPIConnection.disconnect().then(() => {
                 expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
             });
@@ -62,8 +64,6 @@ test(
     async () => {
 
         try {
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
             streamingAPIConnection.connectionState = ConnectionState.TERMINATED;
             streamingAPIConnection.disconnect();
             expect(streamingAPIConnection.connectionState).toBe(ConnectionState.TERMINATED);
@@ -81,8 +81,6 @@ test(
     async () => {
 
         try {
-            const audioStream = new PCMAudioStream();
-            const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
             streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
             streamingAPIConnection.disconnect();
             expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);

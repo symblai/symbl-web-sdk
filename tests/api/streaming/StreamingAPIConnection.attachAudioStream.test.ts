@@ -1,12 +1,11 @@
 import Symbl from "../../../src2/symbl";
 import { PCMAudioStream, OpusAudioStream } from "../../../src2/audio";
 import { StreamingAPIConnection } from '../../../src2/api';
-import { NoConnectionError } from "../../../src2/error";
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
-let audioStream;
+let audioStream, sourceNode;
 let streamingAPIConnection;
 beforeAll(() => {
     authConfig = {
@@ -27,16 +26,17 @@ beforeAll(() => {
             name: 'My name'
         },
     };
-    audioStream = new PCMAudioStream();
+    const context = new AudioContext();
+    sourceNode = context.createMediaStreamSource(new MediaStream());
+    audioStream = new PCMAudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);  
 });
-
 
 test(
     `StreamingAPIConnection.attachAudioStream - Verify that new audio stream is attached to the StreamingAPIConnection instance.`,
     async () => {
-        const newAudioStream = new PCMAudioStream();
-        StreamingAPIConnection.attachAudioStream(newAudioStream);
+        const newAudioStream = new PCMAudioStream(sourceNode);
+        streamingAPIConnection.attachAudioStream(newAudioStream);
         expect(streamingAPIConnection.audioStream).toBe(newAudioStream);
     }
 )

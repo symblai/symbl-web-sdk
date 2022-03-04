@@ -1,8 +1,9 @@
 import Symbl from "../../src2/symbl";
 import { PCMAudioStream, OpusAudioStream } from "../../src2/audio";
-import { ConnectionFactory, StreamingAPIConnection } from '../../src2/connection';
+import { ConnectionFactory } from '../../src2/connection';
 // jest.mock('../../src2/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../constants';
+import { InvalidValueError } from '../../src2/error'
 
 // Validate the `connectionType` to be a valid enum present in the `ConnectionType` enum
 // Validate the `config` against the specific type of `Connection` by calling `validateConfig` and return the instance if the config is valid
@@ -66,7 +67,9 @@ test(
 
         try {
             const factory = new ConnectionFactory();
-            const stream = new PCMAudioStream();
+            const audioContext = new AudioContext();
+            const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+            const stream = new PCMAudioStream(sourceNode);
             const connection = factory.instantiateConnection('streaming', validConnectionConfig, stream)
             expect(connection.type).toBe("streaming");
         } catch (e) {
@@ -81,7 +84,9 @@ test(
 
         try {
             const factory = new ConnectionFactory();
-            const stream = new OpusAudioStream();
+            const audioContext = new AudioContext();
+            const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+            const stream = new PCMAudioStream(sourceNode);
             const connection = factory.instantiateConnection('subscribe', validConnectionConfig, stream)
             expect(connection.type).toBe("subscribe");
         } catch (e) {

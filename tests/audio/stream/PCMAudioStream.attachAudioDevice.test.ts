@@ -1,3 +1,10 @@
+import AudioContext from 'audio-context-mock';
+import Symbl from "../../../src2/symbl";
+import { PCMAudioStream } from '../../../src2/audio';
+import { APP_ID, APP_SECRET } from '../../constants';
+import { InvalidAudioInputDeviceError } from "../../../src2/error";
+import { SymblEvent } from "../../../src2/events";
+
 /**
  * failure cases:
  *  deviceId is invalid - throw InvalidAUdioINputDeviceError
@@ -11,20 +18,21 @@
  *  
  */
 
- import AudioContext from 'audio-context-mock';
  // mock audio context
  // window.AudioContext = jest.fn().mockImplementation(() => {});
  
- let audioStream, device1;
- let streamingAPIConnection;
+ let audioStream, device1, authConfig
+ let symbl, streamingAPIConnection;
  let myStream = new MediaStream();
  beforeAll(() => {
-     authConfig = {
-         appId: APP_ID,
-         appSecret: APP_SECRET
-     };
-     symbl = new Symbl(authConfig);
-     audioStream = new PCMAudioStream();
+    authConfig = {
+        appId: APP_ID,
+        appSecret: APP_SECRET
+    };
+    symbl = new Symbl(authConfig);
+    const context = new AudioContext();
+    const sourceNode = context.createMediaStreamSource(new MediaStream());
+    audioStream = new PCMAudioStream(sourceNode);
 
     device1 = {
         deviceId: "default",

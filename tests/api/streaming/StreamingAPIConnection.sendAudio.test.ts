@@ -1,13 +1,8 @@
-import Symbl from "../../src2/symbl";
-import { ConnectionFactory, StreamingAPIConnection } from '../../src2/connection';
-import { PCMAudioStream, OpusAudioStream } from '../../src2/audio';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
-import { APP_ID, APP_SECRET } from '../constants';
-import Logger from "../../src2/logger";
-import { Stream } from "stream";
-
-
-
+import Symbl from "../../../src2/symbl";
+import { StreamingAPIConnection } from '../../../src2/api';
+import { PCMAudioStream, OpusAudioStream } from '../../../src2/audio';
+import { APP_ID, APP_SECRET } from '../../constants';
+import { StreamingAPIStartRequest } from '../../../src2/types/symbl';
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
 let audioStream
@@ -31,7 +26,9 @@ beforeAll(() => {
             name: 'My name'
         },
     };
-    audioStream = new PCMAudioStream();
+    const audioContext = new AudioContext();
+    const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+    audioStream = new PCMAudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);  
 });
 
@@ -50,7 +47,7 @@ test(
     `Make sure sendAudio is called when invoking sendJSON`,
     async () => {
         const sendAudioSpy = jest.spyOn(streamingAPIConnection.stream, 'sendAudio');
-        const data = new StreamingAPIStartRequest();
+        const data: StreamingAPIStartRequest = { "type": "start_request"}
         streamingAPIConnection.sendJSON(data);
         expect(sendAudioSpy).toBeCalledWith(data);
         expect(sendAudioSpy).toBeCalledTimes(1);

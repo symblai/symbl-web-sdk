@@ -8,7 +8,7 @@
 
 //         try {
 //             const symbl = new Symbl();
-//             const validationSpy = jest.spyOn(symbl, '_validateSymblConfig');
+//             const validatiPCMonSpy = jest.spyOn(symbl, '_validateSymblConfig');
 //             const jsSDKSpy = jest.spyOn(symbl.sdk, 'init');
 //             await symbl.init(authConfig);
 //             expect(validationSpy).toBeCalledWith(authConfig);

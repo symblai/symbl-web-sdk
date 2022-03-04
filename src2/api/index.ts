@@ -1,6 +1,2 @@
-import { StreamingAPIConnection } from "./streaming";
-import { SubscribeAPIConnection } from "./subscribe";
-
-export {
-    StreamingAPIConnection
-}
+export * from "./streaming";
+export * from "./subscribe";

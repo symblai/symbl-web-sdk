@@ -1,4 +1,4 @@
-export default class ConnectionFactory {
+export class ConnectionFactory {
     instantiateConnection(connectionType: SymblConnectionType, config: ConnectionConfig, audioStream?: AudioStream) {
         // Validate the `connectionType` to be a valid enum present in the `ConnectionType` enum
         // Validate the `config` against the specific type of `Connection` by calling `validateConfig` and return the instance if the config is valid

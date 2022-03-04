@@ -1,7 +1,6 @@
 import { BaseConnection } from "../../connection";
 
-
-export default class SubscribeAPIConnection extends BaseConnection {
+export class SubscribeAPIConnection extends BaseConnection {
     private config: SubscribeAPIConnectionConfig;
     private connectionState = ConnectionState.DISCONNECTED;
     private _isConnected = false;
@@ -21,6 +20,7 @@ export default class SubscribeAPIConnection extends BaseConnection {
     }
     
     async connect() {
+        super.connect();
         // If the `connectionState` is already CONNECTED, log at warning level that a connection attempt is being made on an already open connection.
         // Else, set the `connectionState` to CONNECTING and establish a new connection with the Streaming API via JS SDK
         // Once the connection is established, set the `connectionState` to CONNECTED and return from function
