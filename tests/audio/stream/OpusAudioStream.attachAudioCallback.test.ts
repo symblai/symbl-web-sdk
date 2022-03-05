@@ -20,9 +20,9 @@ beforeAll(() => {
         streamPages: true,
         rawOpus: true
     };
-    context = new AudioContext();
-    mediaStream = new MediaStream();
-    sourceNode = context.createMediaStreamSource(mediaStream);
+    const context = new AudioContext();
+    const mediaStream = new MediaStream();
+    const sourceNode = context.createMediaStreamSource(mediaStream);
     audioStream = new OpusAudioStream(sourceNode, opusConfig);
 });
 

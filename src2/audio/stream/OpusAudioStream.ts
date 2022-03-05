@@ -1,9 +1,9 @@
 import { AudioStream } from "./AudioStream";
-import {Recorder} from "symbl-opus-encdec";
+import { Recorder } from "symbl-opus-encdec";
 
 export class OpusAudioStream extends AudioStream {
     private opusEncoder: Recorder;
-    private config: OpusConfig;
+    private config: OpusConfig
     
     constructor(sourceNode: MediaStreamAudioSourceNode, config: OpusConfig) {
         super(sourceNode);
@@ -15,8 +15,8 @@ export class OpusAudioStream extends AudioStream {
         this.opusEncoder = new Recorder(this.config);
     }
     
-    processAudio(audioEvent) {
-        // Send the re-encoded audio by invoking super.onProcessedAudio(convertedAudioData)
+    processAudio(audioData) {
+        super.onProcessedAudio(audioData)
     }
     
     attachAudioProcessor(reInitialise?) {
@@ -26,6 +26,7 @@ export class OpusAudioStream extends AudioStream {
         }
         
         if (this.opusEncoder) {
+            this.opusEncoder.start();
             this.opusEncoder.ondataavailable = this.processAudio;
         }
     }

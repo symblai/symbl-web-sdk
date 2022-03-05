@@ -1,7 +1,9 @@
+import { SymblEvent } from "../../events/SymblEvent";
+
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
 export class AudioStream extends EventTarget {
-    private sourceNode: MediaStreamAudioSourceNode;
+    protected sourceNode: MediaStreamAudioSourceNode;
     protected audioCallback: (audioData) => void;
     
     protected mediaStream: MediaStream;
@@ -16,13 +18,60 @@ export class AudioStream extends EventTarget {
         // Add function bindings here
     }
     
-    static getMediaStream(deviceId?) {
-        // If no audio input device is found, throw `NoAudioInputDeviceDetectedError`
-        // Return the MediaStream from associated with the default Audio Device if `useDefaultAudioDevice` is `true`
-        // If `deviceId` is passed in, then try and select the specific available instance of that Audio Device and return the MediaStream, else throw `InvalidInputDeviceError`
+    static async getMediaStream(deviceId: string = "default") {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false
+        });
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const inputDevices = devices.filter(dev => dev.kind === "audioinput");
+        if (inputDevices.length === 0) {
+            throw NoAudioInputDeviceDetectedError("No input devices found.");
+        }
+        if (deviceId) {
+            const foundDevice = inputDevices.find(dev => dev.deviceId === deviceId);
+            if (!foundDevice) {
+                throw InvalidInputDeviceError("Invalid deviceId passed as argument.");
+            }
+            await stream.getAudioTracks()[0].applyConstraints({
+                deviceId: foundDevice.deviceId
+            })
+        } else {
+            throw InvalidInputDeviceError("Invalid deviceId passed as argument.");
+        }
+        return stream;
     }
     
-    attachAudioSourceElement(audioSourceDomElement) {
+    async attachAudioSourceElement(audioSourceDomElement) {
+        const validateElement = element => {
+            if (!element) {
+                throw new Error(`Element is null. Please pass in a valid audio source dom element.`)
+            }
+            
+            if (!['AUDIO', 'VIDEO', 'SOURCE'].includes(element.nodeName)) {
+                throw new Error(`Please pass in a valid audio source dom element.`)
+            }
+        }
+
+        try {
+            validateElement(audioSourceDomElement);
+
+            if (this.audioContext && this.audioContext.state === "running") {
+                await this.detachAudioSourceElement();
+            }
+
+            const audioContext = new AudioContext();
+            const sourceNode = audioContext.createMediaElementSource(audioSourceDomElement);
+            const processorNode = audioContext.createScriptProcessor(1024, 1, 1);
+            this.audioContext = audioContext;
+            this.sourceNode = sourceNode;
+            this.processorNode = processorNode;
+            const event = new SymblEvent('audio_source_connected', this.audioContext.sampleRate);
+            this.dispatchEvent(event);
+        } catch (e) {
+            throw Error(e);
+        }
+        
         // Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
         // Failure to do so should be handled and appropriate error should be thrown
         // Check if the `audioContext` already exists and is `running`.
@@ -32,15 +81,18 @@ export class AudioStream extends EventTarget {
         // Emit `audio_source_connected` event with the updated `sampleRate`
     }
     
-    detachAudioSourceElement() {
-        // Check if `audioContext`, `sourceNode` and `processorNode` exist.
-        // If they do, close the `audioContext`, disconnect the `sourceNode` and `processorNode`
-        // Emit `audio_source_disconnected` event
+    async detachAudioSourceElement() {
+        if (this.audioContext && this.sourceNode && this.processorNode) {
+            await this.audioContext.close();
+            await this.sourceNode.disconnect();
+            await this.processorNode.disconnect();
+            this.dispatchEvent(new SymblEvent('audio_source_disconnected'));
+        }
     }
     
     updateAudioSourceElement(audioSourceDomElement) {
-        // Invoke `detachAudioSourceElement` function
-        // Invoke `attachAudioSourceElement` function with the new `audioSourceDomElement`
+        this.detachAudioSourceElement();
+        this.attachAudioSourceElement(audioSourceDomElement);
     }
     
     attachAudioDevice(deviceId, mediaStream?: MediaStream) {

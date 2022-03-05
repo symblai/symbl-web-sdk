@@ -1,6 +1,6 @@
-import { Stream } from "stream"
 
-interface SymblConfig {
+
+export interface SymblConfig {
     appId?: string;
     appSecret?: string;
     accessToken?: string;
@@ -18,9 +18,21 @@ interface StreamingAPIConnectionConfig {
 //     "optionalArg": true,
 // }
 
-type InsightType = "action_item" | "question"
-interface StreamingAPIStartRequest {
-    type: "start_request" | "stop_request";
+export type InsightType = "action_item" | "question" | "follow_up";
+
+export interface StreamingAPIStopRequest {
+    type: "stop_request"
+}
+
+export interface StreamingAPIModifyRequest {
+    type: "modify_request";
+    speechRecognition: {
+        sampleRateHertz: number;
+    }
+}
+
+export interface StreamingAPIStartRequest {
+    type: "start_request";
     insightTypes?: InsightType[];
     customVocabulary?: string[];
     config?: Config;
@@ -30,29 +42,19 @@ interface StreamingAPIStartRequest {
     disconnectOnStopRequestTimeout?: number;
 }
 
-interface Speaker {
+export interface Speaker {
     userId?: string;
     name?: string;
 }
 
-interface Config {
+export interface Config {
     confidenceThreshold?: number;
     speechRecognition?: SpeechRecognition;
     meetingTitle?: string;
 }
 
-interface SpeechRecognition {
-    encoding?: 'LINEAR16' | 'FLAC' | 'MULAW' | 'Opus';
+export type Encoding = 'LINEAR16' | 'FLAC' | 'MULAW' | 'Opus';
+export interface SpeechRecognition {
+    encoding?: Encoding;
     sampleRateHertz?: number;
-}
-
-interface SymblData {
-    
-}
-
-export {
-    SymblConfig,
-    StreamingAPIConnectionConfig,
-    StreamingAPIStartRequest,
-    SymblData,
 }

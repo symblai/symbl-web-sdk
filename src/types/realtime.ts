@@ -208,7 +208,7 @@ interface RealtimeTopicData {
     rootWords: {
         text: string;
     }[];
-    socre: number;
+    score: number;
     type: string;
 }
 
