@@ -5,6 +5,18 @@ import { APP_ID, APP_SECRET } from '../../constants';
 
 let authConfig, symbl, audioStream;
 
+Object.defineProperty(window, 'MediaStream', {
+    writable: true,
+    value: jest.fn().mockImplementation((query) => {})
+});
+   
+Object.defineProperty(window, 'MediaStreamAudioSourceNode', {
+    writable: true,
+    value: {
+        disconnect: jest.fn()
+    }
+});
+
 beforeAll(() => {
     authConfig = {
         appId: APP_ID,

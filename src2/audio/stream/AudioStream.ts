@@ -159,17 +159,22 @@ export class AudioStream extends EventTarget {
     async detachAudioDevice() {
         if (this.audioContext) {
             await this.audioContext.close();
-        }
-        if (this.sourceNode) {
-            await this.sourceNode.disconnect();
-        }
-        if (this.gainNode) {
-            await this.gainNode.disconnect();
-        }
-        if (this.processorNode) {
-            await this.processorNode.disconnect();
-        }
-        this.dispatchEvent(new SymblEvent('audio_source_disconnected'));
+
+            if (this.sourceNode) {
+                // console.log('this is this.sourceNode.disconnect: ', this.sourceNode.disconnect)
+                this.sourceNode.disconnect();
+            }
+            if (this.gainNode) {
+                // console.log('this is this.gainNode.disconnect: ', this.gainNode.disconnect)
+                this.gainNode.disconnect();
+            }
+            if (this.processorNode) {
+                // console.log('this is this.eprocessorNode.disconnect: ', this.processorNode.disconnect)
+                this.processorNode.disconnect();
+            }
+
+            this.dispatchEvent(new SymblEvent('audio_source_disconnected'));
+        }        
     }
     
     updateAudioDevice(deviceId, mediaStream?: MediaStream) {

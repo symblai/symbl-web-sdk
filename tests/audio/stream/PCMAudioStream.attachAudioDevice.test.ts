@@ -39,13 +39,14 @@ Object.defineProperty(window, 'MediaStream', {
     writable: true,
     value: jest.fn().mockImplementation((query) => {})
 });
-
+   
 Object.defineProperty(window, 'MediaStreamAudioSourceNode', {
     writable: true,
-    value: jest.fn().mockImplementation((query) => {})
+    value: {
+        disconnect: jest.fn()
+    }
 });
 
-    
  let audioStream, device1, authConfig
  let symbl, streamingAPIConnection;
  let myStream = new MediaStream();
@@ -90,15 +91,6 @@ AudioContext.prototype.createMediaStreamSource = jest.fn().mockReturnValue(myStr
                 enumerateDevices: mockEnumerateDevices
             },
         });
-
-        const mockGetMediaStream = jest.fn().mockResolvedValue(myStream);
-        jest.mock('../../__mocks__/AudioStream.mock.ts', () => {
-            // Works and lets you check for constructor calls:
-            return jest.fn().mockImplementation(() => {
-                return {getMediaStream: mockGetMediaStream};
-            });
-        });
-        
     });
 
     beforeEach(() => {
