@@ -118,25 +118,34 @@ export class AudioStream extends EventTarget {
     }
     
     async attachAudioDevice(deviceId, mediaStream?: MediaStream) {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        this.test();
-        const device = devices.find(dev => dev.kind === "audioinput" && dev.deviceId === deviceId);
+        try {
 
-        if (!device) {
-            throw new InvalidAudioInputDeviceError(`Invalid input deviceId: ${deviceId}`)
+            const devices: any = await navigator.mediaDevices.enumerateDevices();            
+            const device = devices.find(dev => dev.kind === "audioinput" && dev.deviceId === deviceId);
+
+            this.test();
+            if (!device) {
+                throw new InvalidAudioInputDeviceError(`Invalid input deviceId: ${deviceId}`)
+            }
+            if (mediaStream) {
+                this.mediaStream = mediaStream;
+
+            } else {
+                this.mediaStream = await AudioStream.getMediaStream(deviceId);
+            }
+
+            
+            if (this.audioContext && this.audioContext.state === "running") {
+                await this.detachAudioDevice();
+                this.audioContext = new AudioContext();
+            }
+            this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+            this.processorNode = this.audioContext.createScriptProcessor(1024, 1, 1);
+            const event = new SymblEvent('audio_source_connected', this.audioContext.sampleRate);
+            this.dispatchEvent(event);
+        } catch (e) {
+            // throw e;
         }
-        if (mediaStream) {
-            this.mediaStream = mediaStream;
-        }
-        if (this.audioContext && this.audioContext.state === "running") {
-            console.log('detach called ====')
-            this.detachAudioDevice();
-            this.audioContext = new AudioContext();
-        }
-        console.log("======== createMediaStreamSource called ======");
-        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
-        // this.processorNode = this.audioContext.createScriptProcessor(1024, 1, 1);
-        // const event = new SymblEvent('audio_source_connected', this.audioContext.sampleRate);
 
         // If `mediaStream` is passed in, use it to invoke the `createMediaStreamSource` function later in the flow
         // Else, Validate the `deviceId` passed in corresponds to a valid Audio device and is connected.
