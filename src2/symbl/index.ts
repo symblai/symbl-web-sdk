@@ -1,9 +1,10 @@
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
-import { InvalidCredentialsError, AccessTokenExpiredError, InvalidLogLevelError } from "../error";
+import { InvalidCredentialsError, AccessTokenExpiredError, /*InvalidLogLevelError*/ } from "../error";
 import { HttpError } from '../error/network/http'
 import Logger from "../logger";
 import { VALID_LOG_LEVELS } from "../utils/configs";
 import { is, assertType } from 'typescript-is'
+import { SymblConfig } from "../types/symbl";
 /*
 const anotherNonConformer: unknown = { aString: 1337 }
 try {
@@ -56,7 +57,7 @@ export default class Symbl {
         const {appId, accessToken, appSecret, logLevel} = symblConfig;
 
         if (logLevel && VALID_LOG_LEVELS.indexOf(logLevel) === -1) {
-            throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(', ')}`)
+            // throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(', ')}`)
         }
 
         const alphaNumericRegex = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i;
@@ -182,7 +183,6 @@ export default class Symbl {
     //     this.createConnection(options);
 
     //     // Invoke `createConnection` with the above arguments.
-    //     // If the connection is established successfully, check the value for `unMuteAudioDevice` 
     //     // If the connection fails to get established, re-throw the error thrown by `StreamingAPIConnection` instance
     //     // Invoke `startProcessing` on the instance of `StreamingAPIConnection`
     //     // Return the connection instance

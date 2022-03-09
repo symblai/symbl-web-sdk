@@ -5,7 +5,6 @@ jest.mock('../../src2/connection'); // SoundPlayer is now a mock constructor
 import { APP_ID, APP_SECRET } from '../constants';
 
 // Invoke `createConnection` with the above arguments.
-// If the connection is established successfully, check the value for `unMuteAudioDevice` 
 // If the connection fails to get established, re-throw the error thrown by `StreamingAPIConnection` instance
 // Invoke `startProcessing` on the instance of `StreamingAPIConnection`
 // Return the connection instance

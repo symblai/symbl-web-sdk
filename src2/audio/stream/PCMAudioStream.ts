@@ -16,12 +16,12 @@ export class PCMAudioStream extends AudioStream {
         }
     }
     
-    attachAudioSourceElement(audioSourceDomElement) {
+    async attachAudioSourceElement(audioSourceDomElement) {
         super.attachAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();
     }
     
-    detachAudioSourceElement() {
+    async detachAudioSourceElement() {
         super.detachAudioSourceElement();
     }
     
@@ -30,12 +30,12 @@ export class PCMAudioStream extends AudioStream {
         this.attachAudioProcessor();
     }
     
-    attachAudioDevice(deviceId, mediaStream?: MediaStream) {
+    async attachAudioDevice(deviceId, mediaStream?: MediaStream) {
         super.attachAudioDevice(deviceId, mediaStream);
         this.attachAudioProcessor();
     }
     
-    detachAudioDevice() {
+    async detachAudioDevice() {
         super.detachAudioDevice();
     }
     

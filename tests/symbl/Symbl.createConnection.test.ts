@@ -3,7 +3,7 @@ import { ConnectionFactory, StreamingAPIConnection } from '../../src2/connection
 import { PCMAudioStream, OpusAudioStream } from '../../src2/audio';
 jest.mock('../../src2/connection'); // SoundPlayer is now a mock constructor
 import { APP_ID, APP_SECRET } from '../constants';
-
+import { uniquenessRegex } from '../../src2/utils';
 
 // Validate `options` with the `StreamingAPIConnectionConfig` interface
 // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
@@ -425,3 +425,29 @@ test(
         }
     }
 );
+
+test(
+    "Symbl.createConnection - ID should be alphanumeric and minimum length of 6; checking for invalid cases.",
+    async () => {
+        try {
+            const regex = new RegExp(uniquenessRegex);
+            const invalidStrings = ['abc', '123', 'abcdef', '123456'];
+            expect(regex.test(invalidStrings[0])).not.toBe(true);
+        } catch (e) {
+            throw new Error(e)
+        }
+    }
+)
+
+test(
+    "Symbl.createConnection - ID should be alphanumeric and minimum length of 6; checking for valid cases.",
+    async () => {
+        try {
+            const regex = new RegExp(uniquenessRegex);
+            const validStrings = ['abc123', 'xyz369', '0a1b2c3d4f5e', '00000a'];
+            expect(regex.test(validStrings[0])).toBe(true);
+        } catch (e) {
+            throw new Error(e)
+        }
+    }
+)

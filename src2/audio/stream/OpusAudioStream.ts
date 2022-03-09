@@ -31,12 +31,12 @@ export class OpusAudioStream extends AudioStream {
         }
     }
     
-    attachAudioSourceElement(audioSourceDomElement) {
+    async attachAudioSourceElement(audioSourceDomElement) {
         super.attachAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor(true);
     }
     
-    detachAudioSourceElement() {
+    async detachAudioSourceElement() {
         super.detachAudioSourceElement();
     }
     
@@ -45,12 +45,12 @@ export class OpusAudioStream extends AudioStream {
         this.attachAudioProcessor();
     }
     
-    attachAudioDevice(deviceId, mediaStream?: MediaStream) {
+    async attachAudioDevice(deviceId, mediaStream?: MediaStream) {
         super.attachAudioDevice(deviceId, mediaStream);
         this.attachAudioProcessor();
     }
     
-    detachAudioDevice() {
+    async detachAudioDevice() {
         super.detachAudioDevice();
     }
     

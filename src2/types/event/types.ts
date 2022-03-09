@@ -20,7 +20,9 @@ export type EventTypes =
     "trackers" |
     "action_items" |
     "follow_ups" |
-    "questions"
+    "questions" |
+    "audio_source_connected" |
+    "audio_source_disconnected"
 ;
 
 export interface RealtimeUser {

@@ -186,11 +186,9 @@ test(
         const context = new AudioContext();
         context.state = 'running';
         audioStream.audioContext = context;
-        const closeSpy = jest.spyOn(audioStream.audioContext, 'close');
-        const dispatchEventSpy = jest.spyOn(audioStream, 'dispatchEvent');
+        const closeSpy = jest.spyOn(audioStream, 'detachAudioSourceElement');
         audioStream.attachAudioSourceElement(videoElement);
         expect(closeSpy).toBeCalledTimes(1);
-        expect(dispatchEventSpy).toBeCalledWith(new SymblEvent('audio_source_disconnected'));
     }
 )
 
