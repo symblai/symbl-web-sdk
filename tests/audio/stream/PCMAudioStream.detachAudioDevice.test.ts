@@ -77,16 +77,14 @@ test(
             const sourceNodeSpy = jest.spyOn(audioStream.sourceNode, 'disconnect');
             const processorNodeSpy = jest.spyOn(audioStream.processorNode, 'disconnect');
             const dispatchEventSpy = jest.spyOn(audioStream, 'dispatchEvent');
-            // const warnSpy = jest.spyOn(audioStream.logger, 'warn');
+            const warnSpy = jest.spyOn(audioStream.logger, 'warn');
             audioStream.audioContext = null;
             await audioStream.detachAudioDevice();
             expect(audioContextSpy).toBeCalledTimes(0);
             expect(processorNodeSpy).toBeCalledTimes(0);
             expect(sourceNodeSpy).toBeCalledTimes(0);
             expect(dispatchEventSpy).toBeCalledTimes(0);  
-            // expect(warnSpy).toBeCalledTimes(1);
-
-            /* We will un-comment these after logger class is implemented */
+            expect(warnSpy).toBeCalledTimes(1);
         } catch (e) {
             throw e
         } 

@@ -1,1 +1,1 @@
-export const uniquenessRegex = /^[a-zA-Z0-9]{6,}$/
+export const uniquenessRegex = /^[a-zA-Z0-9]{6,}$/;

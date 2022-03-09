@@ -9,6 +9,7 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
+    "esModuleInterop": true,
       // Rest of ts config options...
       "plugins": [
           {

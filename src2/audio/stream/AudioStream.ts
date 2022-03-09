@@ -1,10 +1,11 @@
 import { SymblEvent } from "../../events/SymblEvent";
-
+// import { AudioContext } from "../../utils";
 import { NoAudioInputDeviceDetectedError, InvalidAudioInputDeviceError } from "../../error";
+import Logger from "../../logger";
 
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-
 export class AudioStream extends EventTarget {
+    protected logger: Logger;
     protected sourceNode: MediaStreamAudioSourceNode;
     protected audioCallback: (audioData) => void;
     
@@ -15,6 +16,7 @@ export class AudioStream extends EventTarget {
     
     constructor(sourceNode: MediaStreamAudioSourceNode) {
         super();
+        this.logger = new Logger();
         if (sourceNode) {
             this.sourceNode = sourceNode;
             if (sourceNode.context?.state === "running" || sourceNode.context?.state === "suspended") {
@@ -174,7 +176,9 @@ export class AudioStream extends EventTarget {
             }
 
             this.dispatchEvent(new SymblEvent('audio_source_disconnected'));
-        }        
+        } else {
+            this.logger.warn('Your audio context is already closed.');
+        }
     }
     
     updateAudioDevice(deviceId, mediaStream?: MediaStream) {
