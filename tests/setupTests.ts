@@ -8,10 +8,22 @@ Object.defineProperty(window, 'MediaStream', {
    
 Object.defineProperty(window, 'MediaStreamAudioSourceNode', {
     writable: true,
-    value: {
-        disconnect: jest.fn()
-    }
+    value: jest.fn().mockImplementation(() => {
+    	return {
+	        disconnect: jest.fn()
+	    }
+	})
 });
+
+Object.defineProperty(window, 'MediaElementAudioSourceNode', {
+    writable: true,
+    value: jest.fn().mockImplementation(() => {
+    	return {
+	        disconnect: jest.fn()
+	    }
+	})
+});
+
 
 
 const myStream = new MediaStream();
@@ -39,6 +51,24 @@ Object.defineProperty(navigator, 'mediaDevices', {
     },
 });
 
-(AudioContext.prototype as any).createScriptProcessor = function() {}
-AudioContext.prototype.createMediaStreamSource = jest.fn().mockReturnValue(myStream) as any;
-AudioContext.prototype.createMediaElementSource = jest.fn().mockReturnValue(myStream) as any;
+const myStreamSourceNode = new MediaStreamAudioSourceNode(new AudioContext() as any, {
+	mediaStream: myStream
+});
+
+// const myElementSourceNode = new MediaElementAudioSourceNode(new AudioContext() as any, {
+// 	mediaElement: document.createElement("audio")
+// });
+
+(AudioContext.prototype as any).createScriptProcessor = jest.fn().mockImplementation(() => {
+	return {
+		disconnect: jest.fn()
+	}
+})
+AudioContext.prototype.createMediaStreamSource = jest.fn().mockImplementation(() => {
+	return myStreamSourceNode;
+});
+AudioContext.prototype.createMediaElementSource = jest.fn(() => {
+	return {
+		disconnect: jest.fn()
+	}
+}) as any;

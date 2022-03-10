@@ -136,15 +136,18 @@ export class AudioStream extends EventTarget {
     
     async detachAudioSourceElement() {
         if (this.audioContext) {
-            await this.audioContext.close();
+            console.log(this.audioContext);
+            console.log(this.sourceNode);
+            console.log(this.processorNode);
+            // await this.audioContext.close();
+            if (this.sourceNode) {
+                this.sourceNode.disconnect();
+            }
+            if (this.processorNode) {
+                this.processorNode.disconnect();
+            }
+            this.dispatchEvent(new SymblEvent('audio_source_disconnected'));
         }
-        if (this.sourceNode) {
-            await this.sourceNode.disconnect();
-        }
-        if (this.processorNode) {
-            await this.processorNode.disconnect();
-        }
-        this.dispatchEvent(new SymblEvent('audio_source_disconnected'));
     }
     
     updateAudioSourceElement(audioSourceDomElement) {
@@ -236,6 +239,8 @@ export class AudioStream extends EventTarget {
     onProcessedAudio(audioData) {
         if (this.audioCallback) {
             this.audioCallback(audioData);
+        } else {
+            this.logger.warn('No audio callback attached. Audio not being proceessed.');
         }
     }
 
