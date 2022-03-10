@@ -1,5 +1,3 @@
-import { EventTypes } from "../types/event/types";
-
 export class SymblEvent extends CustomEvent<SymblData> {
     constructor(eventType: EventTypes, data?: any) {
         const detail: CustomEventInit = {

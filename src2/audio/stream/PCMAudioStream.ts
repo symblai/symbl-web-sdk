@@ -11,8 +11,8 @@ export class PCMAudioStream extends AudioStream {
     }
     
     attachAudioProcessor() {
-        if (super.processorNode) {
-            super.processorNode.onaudioprocess = this.processAudio;
+        if (this.processorNode) {
+            this.processorNode.onaudioprocess = this.processAudio;
         }
     }
     

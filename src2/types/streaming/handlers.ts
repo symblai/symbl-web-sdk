@@ -1,11 +1,11 @@
-import { 
-    RealtimeSpeechData,
-    RealtimeMessageData,
-    RealtimeInsightData,
-    RealtimeTopicData
-} from "../event/types";
+// import { 
+//     RealtimeSpeechData,
+//     RealtimeMessageData,
+//     RealtimeInsightData,
+//     RealtimeTopicData
+// } from "../event/types";
 
-export interface RealtimeHandlers {
+interface RealtimeHandlers {
     onSpeechDetected?: (speechData: RealtimeSpeechData[]) => void;
     onMessageResponse?: (messageData: RealtimeMessageData[]) => void;
     onInsightResponse?: (insightData: RealtimeInsightData[]) => void;

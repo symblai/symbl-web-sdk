@@ -1,3 +1,3 @@
-export interface SubscribeAPIConnectionConfig {
-    sessionID: string;
+interface SubscribeAPIConnectionConfig {
+    sessionId: string;
 }

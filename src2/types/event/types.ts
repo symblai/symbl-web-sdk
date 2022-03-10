@@ -1,6 +1,6 @@
-import { InsightType } from "../symbl/index";
+// import { InsightType } from "../symbl/index";
 
-export type EventTypes =
+type EventTypes =
     "connected" |
     "disconnected" |
     "started_listening" |
@@ -25,13 +25,13 @@ export type EventTypes =
     "audio_source_disconnected"
 ;
 
-export interface RealtimeUser {
+interface RealtimeUser {
     userId: string;
     name: string;
     id: string;
 }
 
-export interface RawSpeechPayload {
+interface RawSpeechPayload {
     words: {
         word: string;
         startTime: {
@@ -47,7 +47,7 @@ export interface RawSpeechPayload {
     confidence: number;
 }
 
-export interface RealtimeSpeechData {
+interface RealtimeSpeechData {
     type: string;
     isFinal: boolean;
     payload: {
@@ -61,7 +61,7 @@ export interface RealtimeSpeechData {
     user: RealtimeUser;
 }
 
-export interface RealtimeMessageData {
+interface RealtimeMessageData {
     from: RealtimeUser;
     payload: {
         content: string;
@@ -85,7 +85,7 @@ export interface RealtimeMessageData {
     };
 }
 
-export interface RealtimeInsightData {
+interface RealtimeInsightData {
     id: string;
     confidence: number;
     messageReference: {
@@ -117,7 +117,7 @@ export interface RealtimeInsightData {
 }
 
 
-export interface RealtimeTopicData {
+interface RealtimeTopicData {
     id: string;
     messageRefereces: {
         id: string;
@@ -131,4 +131,4 @@ export interface RealtimeTopicData {
     type: "topic";
 }
 
-export type SymblData = RealtimeSpeechData | RealtimeMessageData | RealtimeInsightData | RealtimeTopicData
+type SymblData = RealtimeSpeechData | RealtimeMessageData | RealtimeInsightData | RealtimeTopicData

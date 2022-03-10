@@ -1,6 +1,6 @@
 
 
-export interface SymblConfig {
+interface SymblConfig {
     appId?: string;
     appSecret?: string;
     accessToken?: string;
@@ -8,9 +8,9 @@ export interface SymblConfig {
     logLevel?: string;
 }
 
-interface StreamingAPIConnectionConfig {
+// interface StreamingAPIConnectionConfig {
 
-}
+// }
 
 // {
 //     "type": "start_request",
@@ -18,20 +18,20 @@ interface StreamingAPIConnectionConfig {
 //     "optionalArg": true,
 // }
 
-export type InsightType = "action_item" | "question" | "follow_up";
+type InsightType = "action_item" | "question" | "follow_up";
 
-export interface StreamingAPIStopRequest {
+interface StreamingAPIStopRequest {
     type: "stop_request"
 }
 
-export interface StreamingAPIModifyRequest {
+interface StreamingAPIModifyRequest {
     type: "modify_request";
     speechRecognition: {
         sampleRateHertz: number;
     }
 }
 
-export interface StreamingAPIStartRequest {
+interface StreamingAPIStartRequest {
     type: "start_request";
     insightTypes?: InsightType[];
     customVocabulary?: string[];
@@ -42,19 +42,19 @@ export interface StreamingAPIStartRequest {
     disconnectOnStopRequestTimeout?: number;
 }
 
-export interface Speaker {
+interface Speaker {
     userId?: string;
     name?: string;
 }
 
-export interface Config {
+interface Config {
     confidenceThreshold?: number;
     speechRecognition?: SpeechRecognition;
     meetingTitle?: string;
 }
 
-export type Encoding = 'LINEAR16' | 'FLAC' | 'MULAW' | 'Opus';
-export interface SpeechRecognition {
+type Encoding = 'LINEAR16' | 'FLAC' | 'MULAW' | 'Opus';
+interface SpeechRecognition {
     encoding?: Encoding;
     sampleRateHertz?: number;
 }

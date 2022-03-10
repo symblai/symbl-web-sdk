@@ -1,3 +1,5 @@
+import { SymblEvent } from "../events";
+
 export class BaseConnection extends EventTarget {
     private sessionId: string;
     
@@ -26,7 +28,7 @@ export class BaseConnection extends EventTarget {
         throw new TypeError('Function not implemented!');
     }
     
-    onDataReceived() {
+    async onDataReceived(data: SymblData) {
         throw new TypeError('Function not implemented!');
     }
     

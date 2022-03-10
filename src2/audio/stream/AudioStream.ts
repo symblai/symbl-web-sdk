@@ -1,16 +1,16 @@
 import { SymblEvent } from "../../events/SymblEvent";
 // import { AudioContext } from "../../utils";
-import { NoAudioInputDeviceDetectedError, InvalidAudioInputDeviceError } from "../../error";
+import { NoAudioInputDeviceDetectedError, InvalidAudioInputDeviceError, InvalidAudioElementError } from "../../error";
 import Logger from "../../logger";
 
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 export class AudioStream extends EventTarget {
     protected logger: Logger;
-    protected sourceNode: MediaStreamAudioSourceNode;
+    public sourceNode: MediaStreamAudioSourceNode | MediaElementAudioSourceNode;
     protected audioCallback: (audioData) => void;
     
     protected mediaStream: MediaStream;
-    protected processorNode: ScriptProcessorNode;
+    public processorNode: ScriptProcessorNode;
     protected audioContext: AudioContext;
     protected gainNode: GainNode;
     
@@ -55,41 +55,74 @@ export class AudioStream extends EventTarget {
     }
     
     async attachAudioSourceElement(audioSourceDomElement) {
-        const validateElement = element => {
-            if (!element) {
-                throw new Error(`Element is null. Please pass in a valid audio source dom element.`)
-            }
-            
-            if (!element.src) {
-                throw new Error(`Please ensure src attribute is supplied.`)                
+        // const validateElement = element => {
+        try {
+            if (!audioSourceDomElement) {
+                throw new InvalidAudioElementError(`Element is null. Please pass in a valid audio source dom element.`)
             }
 
-            if (!['AUDIO', 'VIDEO', 'SOURCE'].includes(element.nodeName)) {
-                throw new Error(`Please pass in a valid audio source dom element.`)
+            if (!['AUDIO', 'VIDEO', 'SOURCE'].includes(audioSourceDomElement.nodeName)) {
+                throw new InvalidAudioElementError(`Please pass in a valid audio source dom element.`)
             }
 
-            if (element.nodeName === 'SOURCE' && !['AUDIO', 'VIDEO'].includes(element.parentElement.nodeName)) {
-                throw new Error(`Please ensure that audio and video element is the parent element of <source /> element.`)
+            if (audioSourceDomElement.nodeName === 'SOURCE' && (audioSourceDomElement.parentElement && !['AUDIO', 'VIDEO'].includes(audioSourceDomElement.parentElement.nodeName))) {
+                throw new InvalidAudioElementError(`Please ensure that audio and video element is the parent element of <source /> element.`)
             }
+
+            if (audioSourceDomElement.nodeName === "SOURCE" && !audioSourceDomElement.src) {
+                throw new InvalidAudioElementError("Element is missing its `src` property");
+            }
+
+            if (['AUDIO', 'VIDEO'].includes(audioSourceDomElement.nodeName)) {
+                const source = audioSourceDomElement.firstChild;
+                console.log('here', source);
+                console.log('element', audioSourceDomElement);
+                console.log('element.src', audioSourceDomElement.src)
+                if (source && source.nodeName !== "SOURCE") {
+                    console.log('here1');
+                    throw new InvalidAudioElementError("Child element must be a source element.");
+                } else if (source && source.nodeName === "SOURCE") {
+                    if (source && !source.src) {
+                        console.log('here2');
+                        throw new InvalidAudioElementError("Element is missing its `src` property");
+                        console.log('here9');
+                    } else if (source && source.src) {
+                        console.log('here3');
+                        audioSourceDomElement = source;
+                    } else {
+                        console.log("here6");
+                    }
+                }
+                console.log('here7')
+
+                if (!audioSourceDomElement.src) {
+                    console.log('here4');
+                    throw new InvalidAudioElementError("Element is missing its `src` property");
+                    console.log('here5');
+                }
+            }
+        } catch(e) {
+            console.log('here8');
+            throw e;
         }
 
         try {
-            validateElement(audioSourceDomElement);
+            // validateElement(audioSourceDomElement);
 
+            console.log(this.audioContext.state);
             if (this.audioContext && this.audioContext.state === "running") {
+                console.log('here11');
                 await this.detachAudioSourceElement();
             }
 
-            const audioContext = new AudioContext();
-            const sourceNode = audioContext.createMediaElementSource(audioSourceDomElement);
-            const processorNode = audioContext.createScriptProcessor(1024, 1, 1);
-            this.audioContext = audioContext;
-            this.sourceNode = sourceNode;
+            const sourceNode = this.audioContext.createMediaElementSource(audioSourceDomElement);
+            const processorNode = this.audioContext.createScriptProcessor(1024, 1, 1);
+            this.sourceNode = <MediaElementAudioSourceNode>sourceNode;
             this.processorNode = processorNode;
             const event = new SymblEvent('audio_source_connected', this.audioContext.sampleRate);
             this.dispatchEvent(event);
         } catch (e) {
-            throw Error(e);
+            throw e;
         }
         
         // Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
@@ -146,7 +179,7 @@ export class AudioStream extends EventTarget {
             const event = new SymblEvent('audio_source_connected', this.audioContext.sampleRate);
             this.dispatchEvent(event);
         } catch (e) {
-            // throw e;
+            throw e;
         }
 
         // If `mediaStream` is passed in, use it to invoke the `createMediaStreamSource` function later in the flow

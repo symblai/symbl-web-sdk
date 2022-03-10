@@ -11,7 +11,7 @@ export class OpusAudioStream extends AudioStream {
         // Validate `config` and throw appropriate error if the validation fails
         this.config = config;
         
-        this.config.sourceNode = sourceNode;
+        this.config.sourceNode = <MediaStreamAudioSourceNode>sourceNode;
         this.opusEncoder = new Recorder(this.config);
     }
     
@@ -21,7 +21,7 @@ export class OpusAudioStream extends AudioStream {
     
     attachAudioProcessor(reInitialise?) {
         if (reInitialise) {
-            this.config.sourceNode = super.sourceNode;
+            this.config.sourceNode = <MediaStreamAudioSourceNode>this.sourceNode;
             this.opusEncoder = new Recorder(this.config);
         }
         

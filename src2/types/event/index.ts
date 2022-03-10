@@ -1,3 +1,3 @@
-interface SymblData {
+// interface SymblData {
     
-}
+// }

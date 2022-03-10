@@ -1,10 +1,10 @@
-import { ConnectionConfig } from "../connection";
+// import { ConnectionConfig } from "../connection";
 
-export interface SymblStreamingAPIConnection {
+interface SymblStreamingAPIConnection {
 
     stop: () => void;
 
-    start: (options: ConnectionConfig) => Promise<any>;
+    start: (options?: StreamingAPIStartRequest) => Promise<any>;
 
     sendAudio: (audioData: unknown) => void;
 

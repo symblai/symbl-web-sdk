@@ -1,0 +1,3 @@
+enum TimeUnit {
+    MS = "ms"
+}

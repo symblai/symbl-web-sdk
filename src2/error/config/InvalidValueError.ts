@@ -6,7 +6,7 @@ export class InvalidValueError extends SymblError {
 
         super(
             message,
-            "InvalidValue"
+            "InvalidValueError"
         );
 
     }

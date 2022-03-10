@@ -1,12 +1,11 @@
-import { Encoding, InsightType, Speaker } from "../symbl/index";
-import { RealtimeHandlers } from "../streaming/handlers";
 
-export enum ConnectionType {
+
+enum SymblConnectionType {
     STREAMING = "streaming",
     SUBSCRIBE = "subscribe"
 };
 
-export enum ConnectionState {
+enum ConnectionState {
     CONNECTING,
     CONNECTED,
     DISCONNECTING,
@@ -14,14 +13,14 @@ export enum ConnectionState {
     TERMINATED
 };
 
-export enum ConnectionProcessingState {
+enum ConnectionProcessingState {
     PROCESSING,
     ATTEMPTING,
     NOT_PROCESSING,
     STOPPING
 }
 
-export interface ConnectionConfig {
+interface StreamingAPIConnectionConfig {
     /**
      * Connection ID. Will be a random UUID if not provided.
      */
@@ -84,3 +83,9 @@ export interface ConnectionConfig {
      */
     noConnectionTimeout?: number;
 }
+
+interface SubscribeAPIConnectionConfig {
+    id: string;
+}
+
+type ConnectionConfig = StreamingAPIConnectionConfig | SubscribeAPIConnectionConfig | StreamingAPIStartRequest;

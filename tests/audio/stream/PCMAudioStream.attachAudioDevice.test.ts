@@ -1,6 +1,6 @@
 import {AudioContext} from "standardized-audio-context-mock";
 
-(AudioContext.prototype as any).createScriptProcessor = function() {}
+
 // (AudioContext.prototype as any).createMediaStreamSource = m2;
 // import AudioContext, {mocks} from "../../__mocks__/AudioContext.mock";
 /**
@@ -35,21 +35,9 @@ import { SymblEvent } from "../../../src2/events";
  // mock audio context
  // AudioContext = jest.fn().mockImplementation(() => {});
 
-Object.defineProperty(window, 'MediaStream', {
-    writable: true,
-    value: jest.fn().mockImplementation((query) => {})
-});
-   
-Object.defineProperty(window, 'MediaStreamAudioSourceNode', {
-    writable: true,
-    value: {
-        disconnect: jest.fn()
-    }
-});
 
- let audioStream, device1, authConfig
+ let audioStream, authConfig
  let symbl, streamingAPIConnection;
- let myStream = new MediaStream();
 
  describe('PCMAudioStream.attachAudioDevice tests', () => {
     beforeAll(() => {
@@ -64,33 +52,7 @@ Object.defineProperty(window, 'MediaStreamAudioSourceNode', {
         sourceNode.context = context;
         audioStream = new PCMAudioStream(sourceNode);
 
-
-AudioContext.prototype.createMediaStreamSource = jest.fn().mockReturnValue(myStream) as any;
-
-        device1 = {
-            deviceId: "default",
-            kind: "audioinput",
-            label: "",
-            groupId: "default"
-        }
-
-        const mockGetUserMedia = jest.fn(() => {
-            return myStream;
-        })
-
-        const mockEnumerateDevices = jest.fn(() => {
-            console.log('enumerate Devices called');
-            return [device1];
-        })
-
-        // const mockEnumerateDevices = jest.fn(() => Promise.resolve([device1]))
-
-        Object.defineProperty(navigator, 'mediaDevices', {
-            value: {
-                getUserMedia: mockGetUserMedia,
-                enumerateDevices: mockEnumerateDevices
-            },
-        });
+        
     });
 
     beforeEach(() => {
