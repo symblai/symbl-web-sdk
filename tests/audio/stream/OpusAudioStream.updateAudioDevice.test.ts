@@ -3,8 +3,7 @@ import Symbl from "../../../src2/symbl";
 import { OpusAudioStream } from '../../../src2/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 
-let authConfig, symbl, device1;
-let audioStream;
+let authConfig, symbl, device1, context, audioStream;
 let myStream = new MediaStream();
 beforeAll(() => {
     authConfig = {
@@ -21,25 +20,10 @@ beforeAll(() => {
         streamPages: true,
         rawOpus: true
     };
-    const context = new AudioContext();
+    context = new AudioContext();
     const mediaStream = new MediaStream();
     const sourceNode = context.createMediaStreamSource(mediaStream);
     audioStream = new OpusAudioStream(sourceNode, opusConfig);
-
-    device1 = {
-        deviceId: "default",
-        kind: "audioinput",
-        label: "",
-        groupId: "default"
-    }
-    device1.__proto__ = MediaDeviceInfo.prototype;
-    navigator.mediaDevices.enumerateDevices = function() { 
-        return new Promise((res, rej)=>{res([device1])})
-    }
-
-    navigator.mediaDevices.getUserMedia = function() { 
-        return new Promise((res, rej)=>{res(myStream)})
-    }
 });
 
 test(
@@ -64,7 +48,7 @@ test(
             expect(detachDeviceSpy).toBeCalledTimes(1);
             expect(attachDeviceSpy).toBeCalledTimes(1);
             expect(attachProcessorSpy).toBeCalledTimes(1);
-            expect(attachDeviceSpy).toBeCalledWith('default', myStream);
+            expect(attachDeviceSpy).toBeCalledWith('default', undefined);
         } catch (e) {
             throw new Error(e)
         }

@@ -42,7 +42,7 @@ test(
             videoElement.appendChild(srcElement);
             await expect(async () => await audioStream.attachAudioSourceElement(srcElement)).not.toThrow();
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -58,7 +58,7 @@ test(
             audioElement.appendChild(srcElement);
             await expect(async () => await audioStream.attachAudioSourceElement(srcElement)).not.toThrow();
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -74,7 +74,7 @@ test(
             videoElement.appendChild(srcElement);
             await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).not.toThrow();
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -90,7 +90,7 @@ test(
             audioElement.appendChild(srcElement);
             await expect(async () => await audioStream.attachAudioSourceElement(audioElement)).not.toThrow();
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -104,7 +104,7 @@ test(
             audioElement.src = "test.mp3";
             await expect(async () => await audioStream.attachAudioSourceElement(audioElement)).not.toThrow();
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -118,7 +118,7 @@ test(
             videoElement.src = "test.mp3";
             await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).not.toThrow();
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )

@@ -42,7 +42,6 @@ export class OpusAudioStream extends AudioStream {
     
     updateAudioSourceElement(audioSourceDomElement) {
         super.updateAudioSourceElement(audioSourceDomElement);
-        this.attachAudioProcessor();
     }
     
     async attachAudioDevice(deviceId, mediaStream?: MediaStream) {
@@ -56,7 +55,6 @@ export class OpusAudioStream extends AudioStream {
     
     updateAudioDevice(deviceId, mediaStream?: MediaStream) {
         super.updateAudioDevice(deviceId, mediaStream);
-        this.attachAudioProcessor();
     }
     
     attachAudioCallback(audioCallback: (audioData) => void) {

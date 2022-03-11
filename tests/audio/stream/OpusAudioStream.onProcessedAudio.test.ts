@@ -27,14 +27,14 @@ beforeAll(() => {
 });
 
 test(
-    `OpusAudioStream.processAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.`,
+    `OpusAudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.`,
     async () => {
         try {
             const audioData = {};
             audioStream.audioCallback = null;
-            const callbackSpy = jest.spyOn(audioStream, 'audioCallback');
-            audioStream.processAudio(audioData)
-            expect(callbackSpy).toBeCalledTimes(0);
+            const logSpy = jest.spyOn(audioStream.logger, 'warn');
+            audioStream.onProcessedAudio(audioData)
+            expect(logSpy).toBeCalledTimes(1);
         } catch (e) {
             throw new Error(e);
         }
@@ -42,13 +42,13 @@ test(
 );
 
 test(
-    `OpusAudioStream.processAudio - Verify that audioCallback is being invoked`,
+    `OpusAudioStream.onProcessedAudio - Verify that audioCallback is being invoked`,
     async () => {
         try {
             const audioData = {};
             audioStream.audioCallback = (audioData) => {};
             const callbackSpy = jest.spyOn(audioStream, 'audioCallback');
-            audioStream.processAudio(audioData);
+            audioStream.onProcessedAudio(audioData);
             expect(callbackSpy).toBeCalledTimes(1);
             expect(callbackSpy).toBeCalledWith(audioData);
         } catch (e) {

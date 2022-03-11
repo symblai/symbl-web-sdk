@@ -40,19 +40,20 @@ test(
             const audioElement = document.createElement("audio");
             audioElement.src = "test.mp3";
             audioStream.audioContext = new AudioContext();
+            await audioStream.audioContext.resume();
             audioStream.sourceNode = audioStream.audioContext.createMediaElementSource(audioElement);
             audioStream.processorNode = audioStream.audioContext.createScriptProcessor(1024, 1, 1);
 
             const audioContextSpy = jest.spyOn(audioStream.audioContext, 'close');
             const sourceNodeSpy = jest.spyOn(audioStream.sourceNode, 'disconnect');
             const processorNodeSpy = jest.spyOn(audioStream.processorNode, 'disconnect');
-            const eventEmitterSpy = jest.spyOn(audioStream, 'eventEmitter');
-            audioStream.detachAudioSourceElement();
+            const dispatchEventSpy = jest.spyOn(audioStream, 'dispatchEvent');
+            await audioStream.detachAudioSourceElement();
             expect(audioContextSpy).toBeCalledTimes(1);
             expect(processorNodeSpy).toBeCalledTimes(1);
             expect(sourceNodeSpy).toBeCalledTimes(1);
-            expect(eventEmitterSpy).toBeCalledWith(new SymblEvent('audio_source_disconnected'));
-            expect(eventEmitterSpy).toBeCalledTimes(1);    
+            expect(dispatchEventSpy).toBeCalledWith(new SymblEvent('audio_source_disconnected'));
+            expect(dispatchEventSpy).toBeCalledTimes(1);    
         } catch (e) {
             throw new Error(e)
         }
@@ -72,13 +73,14 @@ test(
             const audioContextSpy = jest.spyOn(audioStream.audioContext, 'close');
             const sourceNodeSpy = jest.spyOn(audioStream.sourceNode, 'disconnect');
             const processorNodeSpy = jest.spyOn(audioStream.processorNode, 'disconnect');
-            const eventEmitterSpy = jest.spyOn(audioStream, 'eventEmitter');
+            const dispatchEventSpy = jest.spyOn(audioStream, 'dispatchEvent');
             const warnSpy = jest.spyOn(audioStream.logger, 'warn');
-            audioStream.detachAudioSourceElement();
+            audioStream.audioContext = null;
+            await audioStream.detachAudioSourceElement();
             expect(audioContextSpy).toBeCalledTimes(0);
             expect(processorNodeSpy).toBeCalledTimes(0);
             expect(sourceNodeSpy).toBeCalledTimes(0);
-            expect(eventEmitterSpy).toBeCalledTimes(0);  
+            expect(dispatchEventSpy).toBeCalledTimes(0);  
             expect(warnSpy).toBeCalledTimes(1);
         } catch (e) {
             throw e

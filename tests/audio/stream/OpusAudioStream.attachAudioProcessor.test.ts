@@ -1,4 +1,5 @@
-import * as opusLibrary from "symbl-opus-encdec";
+import { Recorder } from "symbl-opus-encdec";
+jest.mock("symbl-opus-encdec");
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src2/symbl";
 import { OpusAudioStream } from '../../../src2/audio';
@@ -50,10 +51,9 @@ test(
 test(
     'OpusAudioStream.attachAudioProcessor - Test that audio processor was reinitialized successfully',
     async () => {
-        const recorderSpy = jest.spyOn(opusLibrary, 'Recorder');
         audioStream.attachAudioProcessor(true);
         expect(audioStream.opusEncoder.ondataavailable).toBe(audioStream.processAudio);
-        expect(recorderSpy).toBeCalledTimes(1);
-        expect(recorderSpy).toBeCalledWith(audioStream.config);
+        expect(Recorder).toBeCalledTimes(1);
+        expect(Recorder).toBeCalledWith(audioStream.config);
     }
 )

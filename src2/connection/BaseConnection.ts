@@ -11,7 +11,7 @@ export class BaseConnection extends EventTarget {
     }
     
     on(eventName: EventTypes, callback: (event: SymblEvent) => void) {
-        this.addEventListener(eventName, callback);
+        // this.addEventListener(eventName, callback);
     }
     
     emitEvents(data: SymblData) {

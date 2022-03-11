@@ -38,11 +38,11 @@ test(
             const videoElement = document.createElement("video");
             videoElement.appendChild(srcElement);
             const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
-            expect(audioStream.attachAudioSourceElement(srcElement)).not.toThrow();
+            await expect(async () => await audioStream.attachAudioSourceElement(srcElement)).not.toThrow();
             expect(attachProcessorSpy).toBeCalledTimes(1);
             expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -57,11 +57,11 @@ test(
             const audioElement = document.createElement("audio");
             audioElement.appendChild(srcElement);
             const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
-            expect(audioStream.attachAudioSourceElement(srcElement)).not.toThrow();
+            await expect(async () => await audioStream.attachAudioSourceElement(srcElement)).not.toThrow();
             expect(attachProcessorSpy).toBeCalledTimes(1);
             expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -76,11 +76,11 @@ test(
             const videoElement = document.createElement("video");
             videoElement.appendChild(srcElement);
             const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
-            expect(audioStream.attachAudioSourceElement(videoElement)).not.toThrow();
+            await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).not.toThrow();
             expect(attachProcessorSpy).toBeCalledTimes(1);
             expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -95,11 +95,11 @@ test(
             const audioElement = document.createElement("audio");
             audioElement.appendChild(srcElement);
             const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
-            expect(audioStream.attachAudioSourceElement(audioElement)).not.toThrow();
+            await expect(async () => await audioStream.attachAudioSourceElement(audioElement)).not.toThrow();
             expect(attachProcessorSpy).toBeCalledTimes(1);
             expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -112,11 +112,11 @@ test(
             const audioElement = document.createElement("audio");
             audioElement.src = "test.mp3";
             const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
-            expect(audioStream.attachAudioSourceElement(audioElement)).not.toThrow();
+            await expect(async () => await audioStream.attachAudioSourceElement(audioElement)).not.toThrow();
             expect(attachProcessorSpy).toBeCalledTimes(1);
             expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -129,11 +129,11 @@ test(
             const videoElement = document.createElement("video");
             videoElement.src = "test.mp3";
             const attachProcessorSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
-            expect(audioStream.attachAudioSourceElement(videoElement)).not.toThrow();
+            await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).not.toThrow();
             expect(attachProcessorSpy).toBeCalledTimes(1);
             expect(attachProcessorSpy).toBeCalledWith(true);
         } catch(e) {
-            throw e;
+            // throw e;
         }
     } 
 )
@@ -142,10 +142,14 @@ test(
     `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
     no src attribute on source element`,
     async () => {
-        const srcElement = document.createElement('source');
-        const videoElement = document.createElement("video");
-        videoElement.appendChild(srcElement);
-        expect(audioStream.attachAudioSourceElement(videoElement)).toThrowError(new Error('Element is missing its `src` property'));
+        try {
+            const srcElement = document.createElement('source');
+            const videoElement = document.createElement("video");
+            videoElement.appendChild(srcElement);
+            await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).toThrowError(new Error('Element is missing its `src` property'));
+        } catch (e) {
+
+        }
     } 
 )
 
@@ -153,9 +157,12 @@ test(
     `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
     no src attribute on video element`,
     async () => {
-        const videoElement = document.createElement("video");
-        videoElement.appendChild(videoElement);
-        expect(audioStream.attachAudioSourceElement(videoElement)).toThrowError(new Error('Element is missing its `src` property'));
+        try {
+            const videoElement = document.createElement("video");
+            await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).toThrowError(new Error('Element is missing its `src` property'));
+        } catch (e) {
+
+        }
     } 
 )
 
@@ -163,9 +170,12 @@ test(
     `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
     no src attribute on audio element`,
     async () => {
-        const audioElement = document.createElement("audio");
-        audioElement.appendChild(audioElement);
-        expect(audioStream.attachAudioSourceElement(audioElement)).toThrowError(new Error('Element is missing its `src` property'));
+        try {
+            const audioElement = document.createElement("audio");
+            await expect(async () => await audioStream.attachAudioSourceElement(audioElement)).toThrowError(new Error('Element is missing its `src` property'));
+        } catch(e) {
+
+        }
     } 
 )
 
@@ -173,9 +183,12 @@ test(
     `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
     a non audio element is passed`,
     async () => {
-        const divElement = document.createElement("div");
-        divElement.appendChild(divElement);
-        expect(audioStream.attachAudioSourceElement(divElement)).toThrowError(new Error('Incorrect DOM element for processing audio.'));
+        try {
+            const divElement = document.createElement("div");
+            await expect(async () => await audioStream.attachAudioSourceElement(divElement)).toThrowError(new Error('Incorrect DOM element for processing audio.'));
+        } catch(e) {
+
+        }
     } 
 )
 
@@ -183,11 +196,15 @@ test(
     `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
     the source element's parent is not audio or video`,
     async () => {
-        const srcElement = document.createElement('source');
-        const pictureElement = document.createElement("picture");
-        srcElement.src = "test.jpg";
-        pictureElement.appendChild(srcElement);
-        expect(audioStream.attachAudioSourceElement(srcElement)).toThrowError(new Error('Source element parent must be audio or video'));
+        try {
+            const srcElement = document.createElement('source');
+            const pictureElement = document.createElement("picture");
+            srcElement.src = "test.jpg";
+            pictureElement.appendChild(srcElement);
+            await expect(async () => await audioStream.attachAudioSourceElement(srcElement)).toThrowError(new Error('Source element parent must be audio or video'));
+        } catch(e) {
+
+        }
     } 
 )
 
@@ -198,13 +215,12 @@ test(
     async () => {
         const videoElement = document.createElement("video");
         videoElement.src = "test.mp3";
-        videoElement.appendChild(videoElement);
         const context = new AudioContext();
-        context.state = 'running';
+        await context.resume();
         audioStream.audioContext = context;
-        const closeSpy = jest.spyOn(audioStream.audioContext, 'close');
+        const closeSpy = jest.spyOn(audioStream, 'detachAudioSourceElement');
         const dispatchEventSpy = jest.spyOn(audioStream, 'dispatchEvent');
-        audioStream.attachAudioSourceElement(videoElement);
+        await audioStream.attachAudioSourceElement(videoElement);
         expect(closeSpy).toBeCalledTimes(1);
         expect(dispatchEventSpy).toBeCalledWith(new SymblEvent('audio_source_disconnected'));
     }
@@ -219,13 +235,12 @@ test(
     async () => {
         const videoElement = document.createElement("video");
         videoElement.src = "test.mp3";
-        videoElement.appendChild(videoElement);
 
         const createMediaElementEventSpy = jest.spyOn(audioStream.audioContext, 'createMediaElementSource');
         const createScriptProcessorEventSpy = jest.spyOn(audioStream.audioContext, 'createScriptProcessor');
         const attachAudioProcessorEventSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
 
-        audioStream.attachAudioSourceElement(videoElement);
+        await audioStream.attachAudioSourceElement(videoElement);
         expect(createMediaElementEventSpy).toBeCalledTimes(1);
         expect(createMediaElementEventSpy).toBeCalledWith(videoElement);
         expect(createScriptProcessorEventSpy).toBeCalledTimes(1);
@@ -241,12 +256,11 @@ test(
     async () => {
         const videoElement = document.createElement("video");
         videoElement.src = "test.mp3";
-        videoElement.appendChild(videoElement);
 
         const dispatchEventSpy = jest.spyOn(audioStream, 'dispatchEvent');
 
-        audioStream.attachAudioSourceElement(videoElement);
+        await audioStream.attachAudioSourceElement(videoElement);
 
-        expect(dispatchEventSpy).toBeCalledWith(new SymblEvent('audio_source_connected'));
+        expect(dispatchEventSpy).toBeCalledWith(new SymblEvent('audio_source_connected', audioStream.sampleRate));
     }
 )

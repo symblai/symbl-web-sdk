@@ -73,6 +73,7 @@ export class AudioStream extends EventTarget {
                 throw new InvalidAudioElementError("Element is missing its `src` property");
             }
 
+            // TODO: I think thid could be recursive by passing in firstChild somehow
             if (['AUDIO', 'VIDEO'].includes(audioSourceDomElement.nodeName)) {
                 const source = audioSourceDomElement.firstChild;
                 console.log('here', source);
@@ -135,11 +136,11 @@ export class AudioStream extends EventTarget {
     }
     
     async detachAudioSourceElement() {
-        if (this.audioContext) {
-            console.log(this.audioContext);
-            console.log(this.sourceNode);
-            console.log(this.processorNode);
-            // await this.audioContext.close();
+        if (this.audioContext && this.audioContext.state !== "closed") {
+            // console.log(this.audioContext);
+            // console.log(this.sourceNode);
+            // console.log(this.processorNode);
+            await this.audioContext.close();
             if (this.sourceNode) {
                 this.sourceNode.disconnect();
             }
@@ -147,6 +148,8 @@ export class AudioStream extends EventTarget {
                 this.processorNode.disconnect();
             }
             this.dispatchEvent(new SymblEvent('audio_source_disconnected'));
+        } else {
+            this.logger.warn('Your audio context is already closed.');
         }
     }
     
@@ -195,7 +198,7 @@ export class AudioStream extends EventTarget {
     }
     
     async detachAudioDevice() {
-        if (this.audioContext) {
+        if (this.audioContext && this.audioContext.state !== "closed") {
             await this.audioContext.close();
 
             if (this.sourceNode) {
