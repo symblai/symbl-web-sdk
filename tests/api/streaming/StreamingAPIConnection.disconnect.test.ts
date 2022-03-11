@@ -1,4 +1,6 @@
 import Symbl from "../../../src2/symbl";
+// import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+// jest.mock("@symblai/symbl-js/build/client.sdk.min");
 import { PCMAudioStream, OpusAudioStream } from "../../../src2/audio";
 import { StreamingAPIConnection } from '../../../src2/api';
 import { NoConnectionError } from "../../../src2/error";
@@ -31,6 +33,9 @@ beforeAll(() => {
     sourceNode = audioContext.createMediaStreamSource(new MediaStream());
     audioStream = new PCMAudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    streamingAPIConnection.stream = {
+        close: jest.fn()
+    }
 });
 
 
@@ -43,18 +48,14 @@ beforeAll(() => {
 
 test(
     "StreamingAPIConnection.connect - Testing a successful disconnection attempt",
-    async () => {
-
-        try {
-            streamingAPIConnection.disconnect().then(() => {
-                expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
-            });
-            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTING);
+    (done) => {
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        streamingAPIConnection.disconnect().then(() => {
+            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
             expect(streamingAPIConnection.isConnected()).toBe(false);
-
-        } catch (e) {
-            throw new Error(e);
-        }
+            done();
+        });
+        expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTING);
     }
 );
 
@@ -62,16 +63,10 @@ test(
 test(
     "StreamingAPIConnection.connect - Attempt a disconnect when connectionState is already TERMINATED",
     async () => {
-
-        try {
-            streamingAPIConnection.connectionState = ConnectionState.TERMINATED;
-            streamingAPIConnection.disconnect();
-            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.TERMINATED);
-            expect(streamingAPIConnection.isConnected()).toBe(false);
-
-        } catch (e) {
-            throw new Error(e);
-        }
+        streamingAPIConnection.connectionState = ConnectionState.TERMINATED;
+        await streamingAPIConnection.disconnect();
+        expect(streamingAPIConnection.connectionState).toBe(ConnectionState.TERMINATED);
+        expect(streamingAPIConnection.isConnected()).toBe(false);
     }
 );
 
@@ -79,16 +74,10 @@ test(
 test(
     "StreamingAPIConnection.connect - Attempt a disconnect when connectionState is already DISCONNECTED",
     async () => {
-
-        try {
-            streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
-            streamingAPIConnection.disconnect();
-            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
-            expect(streamingAPIConnection.isConnected()).toBe(false);
-
-        } catch (e) {
-            throw new Error(e);
-        }
+        streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
+        await streamingAPIConnection.disconnect();
+        expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
+        expect(streamingAPIConnection.isConnected()).toBe(false);
     }
 );
 

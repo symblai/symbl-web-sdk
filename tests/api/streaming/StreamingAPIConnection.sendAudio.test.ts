@@ -29,11 +29,15 @@ beforeAll(() => {
     const audioContext = new AudioContext();
     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
     audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);  
+    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    streamingAPIConnection.stream = {
+        sendAudio: jest.fn(),
+        sendJSON: jest.fn()
+    }  
 });
 
 test(
-    `Make sure sendSON is called when invoking sendSON`,
+    `Make sure sendJSON is called when invoking sendJSON`,
     async () => {
         const sendAudioSpy = jest.spyOn(streamingAPIConnection.stream, 'sendAudio');
         const data = new ArrayBuffer(16);
@@ -49,7 +53,7 @@ test(
         const sendAudioSpy = jest.spyOn(streamingAPIConnection.stream, 'sendAudio');
         const data: StreamingAPIStartRequest = { "type": "start_request"}
         streamingAPIConnection.sendJSON(data);
-        expect(sendAudioSpy).toBeCalledWith(data);
+        expect(sendAudioSpy).toBeCalledWith(JSON.stringify(data));
         expect(sendAudioSpy).toBeCalledTimes(1);
     }
 );

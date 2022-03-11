@@ -32,20 +32,20 @@ beforeAll(() => {
 });
 
 test(
-    `Ensure attachAudioStream is invoked if audioStream is not null`,
+    `Ensure attachAudioCallback is invoked if audioStream is not null`,
     async () => {
-        const attachAudioStreamSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream');
+        const attachAudioCallbackSpy = jest.spyOn(streamingAPIConnection.audioStream, 'attachAudioCallback');
         streamingAPIConnection.registerAudioStreamCallback();
-        expect(attachAudioStreamSpy).toBeCalledTimes(1);
+        expect(attachAudioCallbackSpy).toBeCalledTimes(1);
     }
 );
 
 test(
-    `Ensure attachAudioStream is NOT invoked if audioStream is null`,
+    `Ensure attachAudioCallback is NOT invoked if audioStream is null`,
     async () => {
-        const attachAudioStreamSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream');
+        const attachAudioCallbackSpy = jest.spyOn(streamingAPIConnection.audioStream, 'attachAudioCallback');
         streamingAPIConnection.audioStream = null;
         streamingAPIConnection.registerAudioStreamCallback();
-        expect(attachAudioStreamSpy).toBeCalledTimes(0);
+        expect(attachAudioCallbackSpy).toBeCalledTimes(0);
     }
 );

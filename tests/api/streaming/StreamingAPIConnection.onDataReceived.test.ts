@@ -2,7 +2,7 @@ import Symbl from "../../../src2/symbl";
 import { StreamingAPIConnection } from '../../../src2/api';
 import { PCMAudioStream } from '../../../src2/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { SymblData } from '../../../src2/types/symbl';
+import { SymblData } from '../../../src2/types';
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, sourceNode;
 let audioStream

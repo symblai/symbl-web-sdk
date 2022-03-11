@@ -2,6 +2,7 @@ import Symbl from "../../../src2/symbl";
 import { PCMAudioStream } from "../../../src2/audio";
 import { StreamingAPIConnection } from '../../../src2/api';
 import { APP_ID, APP_SECRET } from '../../constants';
+import { ConnectionState, ConnectionProcessingState } from "../../../src2/types"
 
 /* Design Doc Requirements
     updateAudioStream(audioStream: AudioStream)
@@ -37,18 +38,23 @@ beforeAll(() => {
     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
     audioStream = new PCMAudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    streamingAPIConnection.stream = {
+        stop: jest.fn()
+    }
 });
 
 test(
     `StreamingAPIConnection.updateAudioStream - If AudioStream is already attached to the instance, verify that the audio stops processing via the attached stream.`,
     async () => {
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
         const audioContext = new AudioContext();
         const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
         const newAudioStream = new PCMAudioStream(sourceNode);
     
-        const attachSpy = jest.spyOn(streamingAPIConnection.attachAudioStream, 'attachAudioStream')
+        const attachSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream')
         const stopSpy = jest.spyOn(streamingAPIConnection, 'stopProcessing');
-        streamingAPIConnection.updateAudioStream(newAudioStream);
+        await streamingAPIConnection.updateAudioStream(newAudioStream);
         expect(attachSpy).toBeCalledTimes(1);
         expect(stopSpy).toBeCalledTimes(1);
         expect(streamingAPIConnection.audioStream).toBe(newAudioStream);
@@ -58,13 +64,15 @@ test(
 test(
     `StreamingAPIConnection.updateAudioStream - Verify that 'attachAudioStream' function is invoked with the new audioStream`,
     async () => {
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
         const audioContext = new AudioContext();
         const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
         const newAudioStream = new PCMAudioStream(sourceNode);
 
         streamingAPIConnection.audioStream = null;
-        const attachSpy = jest.spyOn(streamingAPIConnection.attachAudioStream, 'attachAudioStream')
-        streamingAPIConnection.updateAudioStream(newAudioStream);
+        const attachSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream')
+        await streamingAPIConnection.updateAudioStream(newAudioStream);
         expect(attachSpy).toBeCalledTimes(1);
         expect(streamingAPIConnection.audioStream).toBe(newAudioStream);
     }

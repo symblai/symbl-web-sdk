@@ -120,8 +120,9 @@ export class StreamingAPIConnection extends BaseConnection {
         } else {
             try {
                 this.processingState = ConnectionProcessingState.ATTEMPTING;
-                startRequestData ? await this.stream.start() : await this.stream.start(startRequestData);
+                startRequestData ? await this.stream.start(startRequestData) : await this.stream.start();
                 this.processingState = ConnectionProcessingState.PROCESSING;
+                this._isProcessing = true;
             } catch(e) {
                 throw e;
             }
@@ -188,11 +189,11 @@ export class StreamingAPIConnection extends BaseConnection {
         }
     }
     
-    async isProcessing() {
+    isProcessing() {
         return this._isProcessing;
     }
     
-    async isConnected() {
+    isConnected() {
         return this._isConnected;
     }
     
@@ -232,7 +233,7 @@ export class StreamingAPIConnection extends BaseConnection {
     }
     
     async updateAudioStream(audioStream: AudioStream) {
-        if (this.audioStream) {
+        if (audioStream) {
             try {
                 await this.stopProcessing();
                 this.attachAudioStream(audioStream);
