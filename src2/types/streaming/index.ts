@@ -1,4 +1,5 @@
-// import { ConnectionConfig } from "../connection";
+import { ConnectionConfig } from "../connection";
+import { StreamingAPIStartRequest } from "../symbl";
 
 interface SymblStreamingAPIConnection {
 
@@ -14,4 +15,8 @@ interface SymblStreamingAPIConnection {
 
     conversationId: string;
 
+}
+
+export {
+    SymblStreamingAPIConnection
 }

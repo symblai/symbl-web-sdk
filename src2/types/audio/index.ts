@@ -8,3 +8,7 @@ interface OpusConfig {
     sourceNode: MediaStreamAudioSourceNode;
     rawOpus: boolean;
 };
+
+export {
+    OpusConfig
+}

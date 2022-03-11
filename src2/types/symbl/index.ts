@@ -58,3 +58,15 @@ interface SpeechRecognition {
     encoding?: Encoding;
     sampleRateHertz?: number;
 }
+
+export {
+    SymblConfig,
+    StreamingAPIStopRequest,
+    StreamingAPIModifyRequest,
+    StreamingAPIStartRequest,
+    Speaker,
+    Config,
+    SpeechRecognition,
+    Encoding,
+    InsightType
+}

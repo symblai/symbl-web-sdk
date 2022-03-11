@@ -1,4 +1,14 @@
-
+import {
+    InsightType,
+    Speaker,
+    Encoding,
+    StreamingAPIStartRequest,
+    StreamingAPIStopRequest,
+    StreamingAPIModifyRequest
+} from "../symbl";
+import { 
+    RealtimeHandlers
+} from "../streaming/handlers"
 
 enum SymblConnectionType {
     STREAMING = "streaming",
@@ -89,3 +99,12 @@ interface SubscribeAPIConnectionConfig {
 }
 
 type ConnectionConfig = StreamingAPIConnectionConfig | SubscribeAPIConnectionConfig | StreamingAPIStartRequest;
+
+export {
+    SymblConnectionType,
+    ConnectionState,
+    ConnectionProcessingState,
+    ConnectionConfig,
+    StreamingAPIConnectionConfig,
+    SubscribeAPIConnectionConfig
+}

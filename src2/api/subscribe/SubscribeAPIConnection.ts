@@ -1,6 +1,12 @@
 import { BaseConnection } from "../../connection";
 import { SymblEvent } from "../../events";
 import Logger from "../../logger";
+import {
+    ConnectionState,
+    SymblConnectionType,
+    SubscribeAPIConnectionConfig,
+    SymblData
+} from "../../types";
 
 export class SubscribeAPIConnection extends BaseConnection {
     private config: SubscribeAPIConnectionConfig;
@@ -9,18 +15,19 @@ export class SubscribeAPIConnection extends BaseConnection {
     private connectionState = ConnectionState.DISCONNECTED;
     private _isConnected = false;
     private logger: Logger = new Logger();
+    public connectionType = SymblConnectionType.SUBSCRIBE;
     
     constructor(config: SubscribeAPIConnectionConfig) {
-        super(config.sessionId);
+        super(config.id);
         
         this.config = config;
         // Add function bindings here
     }
     
     static async validateConfig(config: SubscribeAPIConnectionConfig) : Promise<SubscribeAPIConnectionConfig> {
-        // Validate the `sessionId` passed in the `config`.
+        // Validate the `id` passed in the `config`.
         // If it is absent, throw `RequiredParameterAbsentError`
-        // If the `uniqueness` of the `sessionId` is incorrect, throw `SessionIDNotUniqueError`
+        // If the `uniqueness` of the `id` is incorrect, throw `idNotUniqueError`
         // If the validation of the `config` is successful, return the validated config
         return config;
     }
@@ -32,7 +39,7 @@ export class SubscribeAPIConnection extends BaseConnection {
         } else {
             try {
                 this.connectionState = ConnectionState.CONNECTING;
-                await this.stream.subscribeToStream(this.config.sessionId);
+                await this.stream.subscribeToStream(this.config.id);
                 this.connectionState = ConnectionState.CONNECTED;
                 this._isConnected = true;
                 this.dispatchEvent(new SymblEvent("connected"));

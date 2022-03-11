@@ -1,9 +1,16 @@
+
 import Symbl from "../../src2/symbl";
 import { PCMAudioStream, OpusAudioStream } from "../../src2/audio";
 import { ConnectionFactory } from '../../src2/connection';
+import { StreamingAPIConnection, SubscribeAPIConnection } from '../../src2/api';
 // jest.mock('../../src2/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../constants';
 import { InvalidValueError } from '../../src2/error'
+import {
+    SymblConnectionType,
+    ConnectionState,
+    ConnectionProcessingState
+} from "../../src2/types/connection"
 
 // Validate the `connectionType` to be a valid enum present in the `ConnectionType` enum
 // Validate the `config` against the specific type of `Connection` by calling `validateConfig` and return the instance if the config is valid
@@ -11,7 +18,7 @@ import { InvalidValueError } from '../../src2/error'
 // Validation of the `config` should be done in the respective class ingesting it. Appropriate error should be bubbled in case of failure in validation.
 // Return the instantiated `Connection` type
 
-let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
+let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, mediaStream;
 beforeAll(() => {
     authConfig = {
         appId: APP_ID,
@@ -30,7 +37,8 @@ beforeAll(() => {
             userId: 'emailAddress',
             name: 'My name'
         },
-    };     
+    };
+    mediaStream = new MediaStream();
 });
 
 test(
@@ -39,8 +47,8 @@ test(
 
         try {
             const factory = new ConnectionFactory();
-            const connection = factory.instantiateConnection('streaming', validConnectionConfig)
-            expect(connection.type).toBe("streaming");
+            const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validConnectionConfig)
+            expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
         } catch (e) {
             throw new Error(e);
         }
@@ -53,8 +61,8 @@ test(
 
         try {
             const factory = new ConnectionFactory();
-            const connection = factory.instantiateConnection('subscribe', validConnectionConfig)
-            expect(connection.type).toBe("subscribe");
+            const connection = await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validConnectionConfig)
+            expect(connection.connectionType).toBe(SymblConnectionType.SUBSCRIBE);
         } catch (e) {
             throw new Error(e);
         }
@@ -68,10 +76,10 @@ test(
         try {
             const factory = new ConnectionFactory();
             const audioContext = new AudioContext();
-            const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+            const sourceNode = audioContext.createMediaStreamSource(mediaStream)
             const stream = new PCMAudioStream(sourceNode);
-            const connection = factory.instantiateConnection('streaming', validConnectionConfig, stream)
-            expect(connection.type).toBe("streaming");
+            const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validConnectionConfig, stream)
+            expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
         } catch (e) {
             throw new Error(e);
         }
@@ -85,12 +93,12 @@ test(
         try {
             const factory = new ConnectionFactory();
             const audioContext = new AudioContext();
-            const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+            const sourceNode = audioContext.createMediaStreamSource(mediaStream)
             const stream = new PCMAudioStream(sourceNode);
-            const connection = factory.instantiateConnection('subscribe', validConnectionConfig, stream)
-            expect(connection.type).toBe("subscribe");
+            const connection = await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validConnectionConfig, stream)
+            expect(connection.connectionType).toBe(SymblConnectionType.SUBSCRIBE);
         } catch (e) {
-            expect(e).toEqual(new InvalidValueError("Invalid config"))
+            expect(e).toEqual(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
         }
     }
 );
@@ -101,9 +109,9 @@ test(
     async () => {
         try {
             const factory = new ConnectionFactory();
-            const connection = factory.instantiateConnection('not-valid', validConnectionConfig)
+            const connection = await factory.instantiateConnection('not-valid' as any, validConnectionConfig)
         } catch (e) {
-            expect(e).toEqual(new InvalidValueError("Invalid config"))
+            expect(e).toEqual(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
         }
     }
 );
@@ -114,10 +122,10 @@ test(
 
         try {
             const factory = new ConnectionFactory();
-            const connection = factory.instantiateConnection('streaming', validConnectionConfig)
-            expect(connection.type).toBe("streaming");
+            const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validConnectionConfig)
+            expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
         } catch (e) {
-            expect(e).toEqual(new InvalidValueError("Invalid config"))
+            expect(e).toEqual(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
         }
     }
 );
@@ -128,10 +136,10 @@ test(
 
         try {
             const factory = new ConnectionFactory();
-            const connection = factory.instantiateConnection('subscribe', validConnectionConfig)
-            expect(connection.type).toBe("subscribe");
+            const connection = await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validConnectionConfig)
+            expect(connection.connectionType).toBe(SymblConnectionType.SUBSCRIBE);
         } catch (e) {
-            expect(e).toEqual(new InvalidValueError("Invalid config"))
+            expect(e).toEqual(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
         }
     }
 );

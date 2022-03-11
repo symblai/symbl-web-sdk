@@ -1,5 +1,6 @@
 import { AudioStream } from "./AudioStream";
 import { Recorder } from "symbl-opus-encdec";
+import { OpusConfig } from "../../types";
 
 export class OpusAudioStream extends AudioStream {
     private opusEncoder: Recorder;

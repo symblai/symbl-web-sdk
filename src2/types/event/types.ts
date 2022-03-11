@@ -1,4 +1,4 @@
-// import { InsightType } from "../symbl/index";
+import { InsightType } from "../symbl/index";
 
 type EventTypes =
     "connected" |
@@ -132,3 +132,14 @@ interface RealtimeTopicData {
 }
 
 type SymblData = RealtimeSpeechData | RealtimeMessageData | RealtimeInsightData | RealtimeTopicData
+
+export {
+    SymblData,
+    RealtimeUser,
+    RawSpeechPayload,
+    RealtimeSpeechData,
+    RealtimeMessageData,
+    RealtimeInsightData,
+    RealtimeTopicData,
+    EventTypes
+}

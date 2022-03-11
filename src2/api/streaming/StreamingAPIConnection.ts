@@ -4,6 +4,18 @@ import { AudioStream } from "../../audio";
 import Logger from "../../logger";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import { NoConnectionError } from "../../error";
+import {
+    SymblConnectionType,
+    ConnectionProcessingState,
+    ConnectionState,
+    ConnectionConfig,
+    StreamingAPIConnectionConfig,
+    StreamingAPIStartRequest,
+    StreamingAPIModifyRequest,
+    StreamingAPIStopRequest,
+    SymblStreamingAPIConnection,
+    SymblData
+} from "../../types";
 
 export class StreamingAPIConnection extends BaseConnection {
     private config: StreamingAPIConnectionConfig;
@@ -16,6 +28,7 @@ export class StreamingAPIConnection extends BaseConnection {
     private audioStream: AudioStream;
     private logger: Logger;
     private sdk: sdk = sdk;
+    public connectionType = SymblConnectionType.STREAMING;
     
     constructor(config: StreamingAPIConnectionConfig, audioStream: AudioStream) {
         super(config.id);
@@ -33,11 +46,6 @@ export class StreamingAPIConnection extends BaseConnection {
     }
     
     static async validateConfig(config: StreamingAPIConnectionConfig | StreamingAPIStartRequest) : Promise<StreamingAPIConnectionConfig | StreamingAPIStartRequest> {
-        // if (is<StreamingAPIConnectionConfig>config) {
-
-        // } else {
-        //     throw new Error("Invalid config.");
-        // }
         return config;
         // Perform validations for received config
         // Explicit validations on required fields to be passed in the `StreamingAPIConnectionConfig`

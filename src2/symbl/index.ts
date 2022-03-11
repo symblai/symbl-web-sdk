@@ -8,6 +8,12 @@ import { uniquenessRegex, uuid } from "../utils";
 import { ConnectionFactory } from "../connection";
 import { StreamingAPIConnection, SubscribeAPIConnection } from "../api";
 import { AudioStream } from "../audio";
+import {
+    SymblConnectionType,
+    TimeUnit,
+    SymblConfig,
+    StreamingAPIConnectionConfig
+} from "../types";
 /*
 const anotherNonConformer: unknown = { aString: 1337 }
 try {
@@ -172,7 +178,7 @@ export default class Symbl {
             const connection = await new ConnectionFactory().instantiateConnection(
                 SymblConnectionType.STREAMING, options, audioStream);
             await connection.connect();
-            return connection;
+            return connection as StreamingAPIConnection;
         } catch(e) {
             throw e;
         }
@@ -192,7 +198,7 @@ export default class Symbl {
         try {
             const connection = await this.createConnection(options, audioStream);
             await connection.startProcessing();
-            return connection;
+            return connection as StreamingAPIConnection;
         } catch(e) {
             throw e;
         }
@@ -211,7 +217,7 @@ export default class Symbl {
             const connection = await new ConnectionFactory().instantiateConnection(
                 SymblConnectionType.SUBSCRIBE, {} as StreamingAPIConnectionConfig);
             await connection.connect();
-            return connection;
+            return connection as SubscribeAPIConnection;
         } catch(e) {
             throw e;
         }

@@ -1,4 +1,3 @@
-import {AudioContext} from "standardized-audio-context-mock";
 import { Recorder } from "symbl-opus-encdec";
 
 global.URL.createObjectURL = jest.fn();
@@ -7,6 +6,25 @@ Recorder.isRecordingSupported = jest.fn(() => true)
 const myAudioTrack = {
     "applyConstraints": jest.fn()
 };
+
+Object.defineProperty(window, 'AudioContext', {
+	value: jest.fn().mockImplementation(() => {
+		return {
+			createMediaStreamSource: jest.fn(() => {
+				disconnect: jest.fn()
+			}),
+			createElementStreamSource: jest.fn(() => {
+				disconnect: jest.fn()
+			}),
+			createScriptProcessor: jest.fn(() => {
+				disconnect: jest.fn()
+			}),
+			createGain: jest.fn(() => {
+				disconnect: jest.fn()
+			}),
+		}
+	})
+});
 
 Object.defineProperty(window, 'MediaStream', {
     writable: true,
@@ -76,27 +94,6 @@ Object.defineProperty(navigator, 'mediaDevices', {
     },
 });
 
-const myStreamSourceNode = new MediaStreamAudioSourceNode(new AudioContext() as any, {
-	mediaStream: myStream
-});
-
-// const myElementSourceNode = new MediaElementAudioSourceNode(new AudioContext() as any, {
-// 	mediaElement: document.createElement("audio")
-// });
-
-(AudioContext.prototype as any).createScriptProcessor = jest.fn().mockImplementation(() => {
-	return {
-		disconnect: jest.fn()
-	}
-})
-AudioContext.prototype.createMediaStreamSource = jest.fn().mockImplementation(() => {
-	return myStreamSourceNode;
-});
-AudioContext.prototype.createMediaElementSource = jest.fn(() => {
-	return {
-		disconnect: jest.fn()
-	}
-}) as any;
 
 Object.defineProperty(window, 'Worker', {
     value: jest.fn().mockImplementation(() => {

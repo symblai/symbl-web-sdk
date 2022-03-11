@@ -1,4 +1,5 @@
 import { SymblEvent } from "../events";
+import { SymblData, EventTypes } from "../types";
 
 export class BaseConnection extends EventTarget {
     private sessionId: string;
