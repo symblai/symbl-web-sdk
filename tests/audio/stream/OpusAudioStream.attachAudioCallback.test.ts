@@ -2,6 +2,9 @@ import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src2/symbl";
 import { OpusAudioStream } from '../../../src2/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
+import { Recorder } from "symbl-opus-encdec";
+
+global.URL.createObjectURL = jest.fn();
 
 let authConfig, symbl, audioStream;
 
@@ -11,6 +14,9 @@ beforeAll(() => {
         appSecret: APP_SECRET
     };
     symbl = new Symbl(authConfig);
+    
+    Recorder.isRecordingSupported = jest.fn(() => true)
+
     const opusConfig: any = {
         numberOfChannels: 1,
         encoderSampleRate: 48000,

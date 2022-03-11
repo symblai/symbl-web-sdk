@@ -3,9 +3,9 @@ import Symbl from "../../../src2/symbl";
 import { PCMAudioStream } from '../../../src2/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 
-let authConfig, symbl, device1;
+let authConfig, symbl;
 let audioStream;
-let myStream = new MediaStream();
+let myStream2 = new MediaStream();
 beforeAll(() => {
     authConfig = {
         appId: APP_ID,
@@ -15,21 +15,6 @@ beforeAll(() => {
     const context = new AudioContext();
     const sourceNode = context.createMediaStreamSource(new MediaStream());
     audioStream = new PCMAudioStream(sourceNode);
-
-    device1 = {
-        deviceId: "default",
-        kind: "audioinput",
-        label: "",
-        groupId: "default"
-    }
-    device1.__proto__ = MediaDeviceInfo.prototype;
-    navigator.mediaDevices.enumerateDevices = function() { 
-        return new Promise((res, rej)=>{res([device1])})
-    }
-
-    navigator.mediaDevices.getUserMedia = function() { 
-        return new Promise((res, rej)=>{res(myStream)})
-    }
 });
 
 test(
@@ -39,6 +24,8 @@ test(
         try {
             // setup
             const mediaStream = new MediaStream();
+            const context = new AudioContext();
+        
             audioStream.audioContext = new AudioContext();
             audioStream.sourceNode = audioStream.audioContext.createMediaStreamSource(mediaStream);
             audioStream.processorNode = audioStream.audioContext.createScriptProcessor(1024, 1, 1);
@@ -54,7 +41,7 @@ test(
             expect(detachDeviceSpy).toBeCalledTimes(1);
             expect(attachDeviceSpy).toBeCalledTimes(1);
             expect(attachProcessorSpy).toBeCalledTimes(1);
-            expect(attachDeviceSpy).toBeCalledWith('default', myStream);
+            expect(attachDeviceSpy).toBeCalledWith('default', undefined);
         } catch (e) {
             throw new Error(e)
         }
@@ -68,6 +55,7 @@ test(
         try {
             // setup
             const mediaStream = new MediaStream();
+            const context = new AudioContext();
             audioStream.audioContext = new AudioContext();
             audioStream.sourceNode = audioStream.audioContext.createMediaStreamSource(new MediaStream());
             audioStream.processorNode = audioStream.audioContext.createScriptProcessor(1024, 1, 1);

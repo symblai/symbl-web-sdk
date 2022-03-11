@@ -41,7 +41,6 @@ export class PCMAudioStream extends AudioStream {
     
     updateAudioDevice(deviceId, mediaStream?: MediaStream) {
         super.updateAudioDevice(deviceId, mediaStream);
-        this.attachAudioProcessor();
     }
     
     attachAudioCallback(audioCallback: (audioData) => void) {
