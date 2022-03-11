@@ -70,6 +70,7 @@ export class StreamingAPIConnection extends BaseConnection {
                 this._isConnected = false;
             }
         }
+        return this;
         // If the `connectionState` is already CONNECTED, log at warning level that a connection attempt is being made on an already open connection.
         // Else, set the `connectionState` to CONNECTING and establish a new connection with the Streaming API via JS SDK
         // Once the connection is established, set the `connectionState` to CONNECTED and return from function
