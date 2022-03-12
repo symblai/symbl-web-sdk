@@ -34,7 +34,7 @@ interface StreamingAPIConnectionConfig {
     /**
      * Connection ID. Will be a random UUID if not provided.
      */
-    id: string;
+    id?: string;
 
     /**
      * Types of insights to return. If not provided, no insights will be returned.

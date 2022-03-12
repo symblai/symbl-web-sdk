@@ -33,13 +33,12 @@ export class SubscribeAPIConnection extends BaseConnection {
     }
     
     async connect() {
-        super.connect();
         if (this.connectionState === ConnectionState.CONNECTED) {
             this.logger.warn("A connection attempt is being made on an already open connection.");
         } else {
             try {
                 this.connectionState = ConnectionState.CONNECTING;
-                await this.stream.subscribeToStream(this.config.id);
+                await this.sdk.subscribeToStream(this.config.id);
                 this.connectionState = ConnectionState.CONNECTED;
                 this._isConnected = true;
                 this.dispatchEvent(new SymblEvent("connected"));
@@ -69,6 +68,7 @@ export class SubscribeAPIConnection extends BaseConnection {
                 await this.stream.close();
                 this.connectionState = ConnectionState.DISCONNECTED;
                 this._isConnected = false;
+                this.dispatchEvent(new SymblEvent('disconnected'));
             } catch(e) {
                 throw e;
             }
@@ -81,7 +81,7 @@ export class SubscribeAPIConnection extends BaseConnection {
         // Any failure to close the connection should be handled, and logged as an error.
     }
     
-    async isConnected() {
+    isConnected() {
         return this._isConnected;
     }    
     

@@ -2,7 +2,6 @@ import { BaseConnection } from "../../connection";
 import { is } from "typescript-is";
 import { AudioStream } from "../../audio";
 import Logger from "../../logger";
-import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import { NoConnectionError } from "../../error";
 import {
     SymblConnectionType,
@@ -27,7 +26,6 @@ export class StreamingAPIConnection extends BaseConnection {
     private stream: SymblStreamingAPIConnection;
     private audioStream: AudioStream;
     private logger: Logger;
-    private sdk: sdk = sdk;
     public connectionType = SymblConnectionType.STREAMING;
     
     constructor(config: StreamingAPIConnectionConfig, audioStream: AudioStream) {

@@ -1,8 +1,10 @@
+import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import { SymblEvent } from "../events";
 import { SymblData, EventTypes } from "../types";
 
 export class BaseConnection extends EventTarget {
     private sessionId: string;
+    protected sdk: sdk = sdk;
     
     constructor(sessionId: string) {
         super();
