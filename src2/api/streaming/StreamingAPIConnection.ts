@@ -64,6 +64,7 @@ export class StreamingAPIConnection extends BaseConnection {
                 this.connectionState = ConnectionState.CONNECTED;
                 this._isConnected = true;
             } catch(e) {
+                console.log(e);
                 this.connectionState = ConnectionState.TERMINATED;
                 this._isConnected = false;
             }
@@ -102,6 +103,7 @@ export class StreamingAPIConnection extends BaseConnection {
     }
     
     async startProcessing(startRequestData?: StreamingAPIStartRequest): Promise<StreamingAPIConnection> {
+        console.log('this.connectionState', this.connectionState);
         if (this.connectionState !== ConnectionState.CONNECTED) {
             throw new NoConnectionError('No connection available. You need to call `.connect()` before you can start processing.');
         }

@@ -39,7 +39,7 @@ interface StreamingAPIConnectionConfig {
     /**
      * Types of insights to return. If not provided, no insights will be returned.
      */
-    insightTypes?: InsightType[];
+    insightTypes?: string[]
 
     /**
      * Configuration for this request.

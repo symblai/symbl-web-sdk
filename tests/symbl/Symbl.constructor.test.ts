@@ -9,12 +9,7 @@ test(
             appId: APP_ID,
             appSecret: APP_SECRET
         };
-
-        try {
-            const symbl = new Symbl(authConfig);
-        } catch (e) {
-            throw new Error(e);
-        }
+        expect(() => new Symbl(authConfig)).not.toThrow();
     }
 );
 
@@ -25,22 +20,14 @@ test(
             accessToken: ACCESS_TOKEN
         };
 
-        try {
-            const symbl = new Symbl(authConfig);  
-        } catch (e) {
-            throw new Error("Fix your test!");
-        }
+        expect(() => new Symbl(authConfig)).not.toThrow()
     }
 );
     
 test(
     "constructor for Symbl class - passing in no parameters",
     async () => {
-        try {
-            const symbl = new Symbl(null);
-        } catch(e) {
-            throw new Error("Fix your test!");
-        }
+        expect(() => new Symbl(null)).not.toThrow()
     }
 );
 
@@ -51,12 +38,9 @@ test(
             appId: APP_ID
         };
 
-        try {
-            const symbl = new Symbl(authConfig);  
-        } catch (e) {
-            // throw new Error("Fix your test!");
-            expect(e).toEqual(new InvalidCredentialsError("AppSecret is missing"))
-        }
+        expect(() => new Symbl(authConfig)).toThrowError(new InvalidCredentialsError("AppSecret is missing"))
+
+    
     }
 );
 
@@ -67,12 +51,7 @@ test(
             appSecret: APP_SECRET
         };
 
-        try {
-            const symbl = new Symbl(authConfig);  
-        } catch (e) {
-            // throw new Error("Fix your test!");
-            expect(e).toEqual(new InvalidCredentialsError("AppID is missing"))
-        }
+        expect(() => new Symbl(authConfig)).toThrowError(new InvalidCredentialsError("AppID is missing"))
     }
 );
 
@@ -85,12 +64,7 @@ test(
             accessToken: ACCESS_TOKEN
         };
 
-        try {
-            const symbl = new Symbl(authConfig);  
-        } catch (e) {
-            // throw new Error("Fix your test!");
-            expect(e).toEqual(new InvalidCredentialsError("You must use `accessToken` or an `appId`/`appSecret` pair separately."))
-        }
+        expect(() => new Symbl(authConfig)).toThrowError(new InvalidCredentialsError("You must use `accessToken` or an `appId`/`appSecret` pair separately."))
     }
 );
 
@@ -98,15 +72,11 @@ test(
     "constructor for Symbl class - malformed appId",
     async () => {
         const authConfig = {
-            appId: APP_ID,
+            appId: "soijaosdifjasf",
             appSecret: APP_SECRET,
         };
         
-        try {
-            const symbl = new Symbl(authConfig);
-        } catch (e) {
-            expect(e).toEqual(new InvalidCredentialsError("AppID is not valid"))
-        }
+        expect(() => new Symbl(authConfig)).toThrowError(new InvalidCredentialsError("AppID is not valid"))
     }
 );
 
@@ -115,15 +85,10 @@ test(
     async () => {
         const authConfig = {
             appId: APP_ID,
-            appSecret: APP_SECRET
+            appSecret: "xyz"
         };
 
-        try {
-            const symbl = new Symbl(authConfig);  
-        } catch (e) {
-            // throw new Error("Fix your test!");
-            expect(e).toEqual(new InvalidCredentialsError("The app secret value is invalid."))
-        }
+        expect(() => new Symbl(authConfig)).toThrowError(new InvalidCredentialsError("AppSecret is not valid"))
     }
 );
 
@@ -134,11 +99,6 @@ test(
             accessToken: EXPIRED_ACCESS_TOKEN
         };
 
-        try {
-            const symbl = new Symbl(authConfig);  
-        } catch (e) {
-            // throw new Error("Fix your test!");
-            expect(e).toEqual(new AccessTokenExpiredError("Provided token as expired"))
-        }
+        expect(() => new Symbl(authConfig)).toThrowError(new AccessTokenExpiredError("Provided token as expired"))
     }
 );

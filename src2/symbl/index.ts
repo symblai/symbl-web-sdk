@@ -180,6 +180,7 @@ export default class Symbl {
             await connection.connect();
             return connection as StreamingAPIConnection;
         } catch(e) {
+            console.error(e);
             throw e;
         }
 
@@ -200,6 +201,7 @@ export default class Symbl {
             await connection.startProcessing();
             return connection as StreamingAPIConnection;
         } catch(e) {
+            console.error(e);
             throw e;
         }
 
