@@ -15,7 +15,7 @@ import {
     SymblStreamingAPIConnection,
     SymblData
 } from "../../types";
-
+import { InvalidValueError, NotSupportedAudioEncodingError, NotSupportedSampleRateError } from "../../error/symbl/index";
 export class StreamingAPIConnection extends BaseConnection {
     private config: StreamingAPIConnectionConfig;
     private connectionState = ConnectionState.DISCONNECTED;
@@ -42,16 +42,125 @@ export class StreamingAPIConnection extends BaseConnection {
             this.attachAudioStream(this.audioStream);
         }
     }
-    
-    static async validateConfig(config: StreamingAPIConnectionConfig | StreamingAPIStartRequest) : Promise<StreamingAPIConnectionConfig | StreamingAPIStartRequest> {
+
+    /*
+        Perform validations for received config
+        Explicit validations on required fields to be passed in the `StreamingAPIConnectionConfig`
+        
+        In case any required key/value pair is missing, throw `RequiredParameterAbsentError`
+        [Adam] To confirm, there is 0 required field in the config argument? 'id' is not a required field as uuid is generated
+
+        In case of any invalid key/value pairs, throw `InvalidValueError`
+        In case the audio encoding is not supported, throw `NotSupportedAudioEncodingError`
+        In case the sample rate is not supported by the AudioEncoding, throw `NotSupportedSampleRateError`
+        If the validation of the `config` is successful, return the validated config
+    */
+    static async validateConfig(config: StreamingAPIConnectionConfig) : Promise<StreamingAPIConnectionConfig | StreamingAPIStartRequest> {
+        // validate the configs
+        const { 
+            id,
+            insightTypes,
+            config: configObj,
+            speaker,
+            handlers,
+            reconnectOnError,
+            disconnectOnStopRequest,
+            disconnectOnStopRequestTimeout,
+            noConnectionTimeout,
+        } = config
+
+        if (id && typeof id !== 'string') {
+            throw new InvalidValueError(`StreamingAPIConnectionConfig argument 'id' field should be a type string.`)
+        }
+
+        if (insightTypes && !Array.isArray(insightTypes)) {
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings, including "action_item", "question", and "follow_up".`)
+        }
+
+        if (configObj) {
+            const { confidenceThreshold, meetingTitle, encoding, sampleRateHertz } = configObj;
+            if (confidenceThreshold && typeof confidenceThreshold !== 'number') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.`)
+            }
+            if (meetingTitle && typeof meetingTitle !== 'string') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.meetingTitle' field should be a type string.`)
+            }
+            if (sampleRateHertz && typeof sampleRateHertz !== 'number') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.`)
+            }
+
+            if (encoding) {
+                if (typeof encoding !== 'string') {
+                    throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.encoding' field should be a type string.`)
+                }
+                if (!VALID_ENCODING.includes(encoding)) {
+                    throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - "LINEAR16" | "FLAC" | "MULAW" | "Opus".`)
+                }
+
+                if (encoding === 'LINEAR16' && (sampleRateHertz < 8000 || sampleRateHertz > 48000)) {
+                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are from 8000 to 48000.`)
+                }
+                if (encoding === 'FLAC' && (sampleRateHertz < 16000)) {
+                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For FLAC encoding, supported sample rates are 16000 and above.`)
+                }
+                if (encoding === 'MULAW' && (sampleRateHertz !== 8000)) {
+                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For MULAW encoding, supported sample rate is 8000.`)
+                    // https://docs.symbl.ai/docs/streaming-api/api-reference#config#speech-recognition
+                    // [Adam] MULAW range seems incorrect in Docs, need revision
+                }
+                if (encoding === 'Opus' && (sampleRateHertz < 16000 || sampleRateHertz > 48000)) {
+                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are 16000 to 48000.`)
+                }
+            }
+        }
+        
+        if (speaker) {
+            const { userId, name } = speaker
+            if (userId && typeof userId !== 'string') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'speaker.userId' field should be a type string.`)
+            }    
+            if (name && typeof name !== 'string') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'speaker.name' field should be a type string.`)
+            }
+        }
+
+        if (handlers) {
+            const { onSpeechDetected, onMessageResponse, onInsightResponse, onTopicResponse, onDataReceived } = handlers
+            if (onSpeechDetected && typeof onSpeechDetected !== 'function') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onSpeechDetected' field should be a function.`)
+            }
+            if (onMessageResponse && typeof onMessageResponse !== 'function') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onMessageResponse' field should be a function.`)
+            }
+            if (onInsightResponse && typeof onInsightResponse !== 'function') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onInsightResponse' field should be a function.`)
+            }
+            if (onTopicResponse && typeof onTopicResponse !== 'function') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onTopicResponse' field should be a function.`)
+            }
+            if (onDataReceived && typeof onDataReceived !== 'function') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onDataReceived' field should be a function.`)
+            }
+        }
+
+        if (reconnectOnError && typeof reconnectOnError !== 'boolean') {
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: 'reconnectOnError' field should be a type boolean.`)
+        }
+
+        if (disconnectOnStopRequest) {
+            if (typeof disconnectOnStopRequest !== 'boolean') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.`)
+            }
+            if (disconnectOnStopRequestTimeout || typeof disconnectOnStopRequestTimeout !== 'number') {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a valid number.`)
+            }
+        }
+
+        if (noConnectionTimeout && typeof noConnectionTimeout !== 'number') {
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: 'noConnectionTimeout' optional field should be a type number.`)
+        }
+
         return config;
-        // Perform validations for received config
-        // Explicit validations on required fields to be passed in the `StreamingAPIConnectionConfig`
-        // In case any required key/value pair is missing, throw `RequiredParameterAbsentError`
-        // In case of any invalid key/value pairs, throw `InvalidValueError`
-        // In case the audio encoding is not supported, throw `NotSupportedAudioEncodingError`
-        // In case the sample rate is not supported by the AudioEncoding, throw `NotSupportedSampleRateError`
-        // If the validation of the `config` is successful, return the validated config
     }
     
     async connect() {

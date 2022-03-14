@@ -60,37 +60,37 @@ describe('streamingAPIConnection.validateConfig', async () => {
 
 
     test(
-        `Config with only id`
+        `Config with only id`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f"
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with nothing. should generate a uuid`
+        `config with nothing. should generate a uuid`,
         async () => {
             const validConnectionConfig = {}
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
             expect(uuid).toBeCalledTimes(1);
         }
     );
 
     test(
-        `config with only id and insightTypes`
+        `config with only id and insightTypes`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
                 insightTypes: ["action_item", "question", "follow_up"]
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with only id and config -- all fields filled out`
+        `config with only id and config -- all fields filled out`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
@@ -101,12 +101,12 @@ describe('streamingAPIConnection.validateConfig', async () => {
                     sampleRateHertz: 48000
                 }
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with only id and config -- some optional fields missing`
+        `config with only id and config -- some optional fields missing`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
@@ -115,12 +115,12 @@ describe('streamingAPIConnection.validateConfig', async () => {
                     sampleRateHertz: 48000
                 }
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with only id and speaker -- all fields filled out`
+        `config with only id and speaker -- all fields filled out`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
@@ -129,12 +129,12 @@ describe('streamingAPIConnection.validateConfig', async () => {
                     name: "Adam Voliva"
                 }
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with only id and speaker -- some optional fields missing`
+        `config with only id and speaker -- some optional fields missing`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
@@ -142,46 +142,46 @@ describe('streamingAPIConnection.validateConfig', async () => {
                     name: "Adam Voliva"
                 }
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with only id and reconnectOnError`
+        `config with only id and reconnectOnError`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
                 reconnectOnError: true
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with only id and disconnectOnStopRequest/disconnectOnStopRequestTimeout`
+        `config with only id and disconnectOnStopRequest/disconnectOnStopRequestTimeout`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
                 disconnectOnStopRequest: false,
                 disconnectOnStopRequestTimeout: 1800
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with only id and noConnectionTimeout`
+        `config with only id and noConnectionTimeout`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
                 noConnectionTimeout: 1800
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
     test(
-        `config with all values filled out`
+        `config with all values filled out`,
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
@@ -196,12 +196,12 @@ describe('streamingAPIConnection.validateConfig', async () => {
                     userId: "123",
                     name: "Adam Voliva"
                 },
-                reconnectOnError: true,ll
+                reconnectOnError: true,
                 disconnectOnStopRequest: false,
-                disconnectOnStopRequestTimeout: 1800
+                disconnectOnStopRequestTimeout: 1800,
                 noConnectionTimeout: 1800
             }
-            async expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
+            expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
     );
 
