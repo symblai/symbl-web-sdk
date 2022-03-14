@@ -201,7 +201,6 @@ export default class Symbl {
             await connection.startProcessing();
             return connection as StreamingAPIConnection;
         } catch(e) {
-            console.error(e);
             throw e;
         }
 
