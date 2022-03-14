@@ -1,49 +1,74 @@
-import { AudioStream } from "./AudioStream";
+import {AudioStream} from "./AudioStream";
 
 export class PCMAudioStream extends AudioStream {
-    constructor(sourceNode: MediaStreamAudioSourceNode) {
-        super(sourceNode);
+
+    processAudio (audioEvent): void {
+
+        /*
+         * Conversion logic from Big Endian to Little Endian
+         * Send the processed audio by invoking super.onProcessedAudio(convertedAudioData)
+         */
     }
-    
-    processAudio(audioEvent) {
-        // Conversion logic from Big Endian to Little Endian
-        // Send the processed audio by invoking super.onProcessedAudio(convertedAudioData)
-    }
-    
-    attachAudioProcessor() {
+
+    attachAudioProcessor (): void {
+
         if (this.processorNode) {
+
             this.processorNode.onaudioprocess = this.processAudio;
+
         }
+
     }
-    
-    async attachAudioSourceElement(audioSourceDomElement) {
+
+    async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
+
         super.attachAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();
+
     }
-    
-    async detachAudioSourceElement() {
+
+    async detachAudioSourceElement (): Promise<void> {
+
         super.detachAudioSourceElement();
+
     }
-    
-    updateAudioSourceElement(audioSourceDomElement) {
+
+    updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): void {
+
         super.updateAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();
+
     }
-    
-    async attachAudioDevice(deviceId, mediaStream?: MediaStream) {
-        super.attachAudioDevice(deviceId, mediaStream);
+
+    async attachAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
+
+        super.attachAudioDevice(
+            deviceId,
+            mediaStream
+        );
         this.attachAudioProcessor();
+
     }
-    
-    async detachAudioDevice() {
+
+    async detachAudioDevice (): Promise<void> {
+
         super.detachAudioDevice();
+
     }
-    
-    updateAudioDevice(deviceId, mediaStream?: MediaStream) {
-        super.updateAudioDevice(deviceId, mediaStream);
+
+    updateAudioDevice (deviceId: string, mediaStream?: MediaStream): void {
+
+        super.updateAudioDevice(
+            deviceId,
+            mediaStream
+        );
+
     }
-    
-    attachAudioCallback(audioCallback: (audioData) => void) {
+
+    attachAudioCallback (audioCallback: (audioData) => void): void {
+
         super.attachAudioCallback(audioCallback);
+
     }
+
 }
