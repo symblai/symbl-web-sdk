@@ -119,6 +119,10 @@ export class StreamingAPIConnection extends BaseConnection {
                     throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${OPUS_SAMPLE_RATE_HERTZ}.`)
                 }
             }
+
+            if (!encoding && sampleRateHertz && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+                throw new NotSupportedSampleRateError(`LINEAR16 is the default encoding and the supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
+            }
         }
         
         if (speaker) {
@@ -135,17 +139,22 @@ export class StreamingAPIConnection extends BaseConnection {
             throw new InvalidValueError(`StreamingAPIConnectionConfig: 'reconnectOnError' field should be a type boolean.`)
         }
 
-        if (disconnectOnStopRequest) {
-            if (typeof disconnectOnStopRequest !== 'boolean') {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.`)
-            }
-            if (disconnectOnStopRequestTimeout || typeof disconnectOnStopRequestTimeout !== 'number') {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a valid number.`)
+        if (typeof disconnectOnStopRequest !== 'boolean') {
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.`)
+        }
+
+        if (disconnectOnStopRequest === false) {
+            if (typeof disconnectOnStopRequestTimeout !== 'number' ||
+            (disconnectOnStopRequestTimeout < 0 || disconnectOnStopRequestTimeout > 3600)) {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 3600.`)
             }
         }
 
-        if (noConnectionTimeout && typeof noConnectionTimeout !== 'number') {
-            throw new InvalidValueError(`StreamingAPIConnectionConfig: 'noConnectionTimeout' optional field should be a type number.`)
+        if (noConnectionTimeout) {
+            if (typeof noConnectionTimeout !== 'number' ||
+            (noConnectionTimeout < 0 || noConnectionTimeout > 3600)) {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'noConnectionTimeout' optional field should be a type number.`)
+            }
         }
 
         return config;
