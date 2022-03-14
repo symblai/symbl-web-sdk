@@ -6,7 +6,6 @@ import { StreamingAPIConnection } from '../../../src2/api';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src2/types"
 
-
 describe('streamingAPIConnection.validateConfig', async () => {
 
     let authConfig, symbl, audioStream;
@@ -83,7 +82,7 @@ describe('streamingAPIConnection.validateConfig', async () => {
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
-                insightTypes: ["action_item", "question", "follow_up"]
+                insightTypes: ["action_item", "question"]
             }
             expect(async () => await StreamingAPIConnection.validateConfig()).not.toThrow();
         }
@@ -185,7 +184,7 @@ describe('streamingAPIConnection.validateConfig', async () => {
         async () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f",
-                insightTypes: ["action_item", "question", "follow_up"],
+                insightTypes: ["action_item", "question"],
                 config: {
                     confidenceThreshold: 0.9,
                     meetingTitle: "My meeting",

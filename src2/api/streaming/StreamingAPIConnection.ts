@@ -16,6 +16,21 @@ import {
     SymblData
 } from "../../types";
 import { InvalidValueError, NotSupportedAudioEncodingError, NotSupportedSampleRateError } from "../../error/symbl/index";
+import { VALID_INSIGHT_TYPES, VALID_ENCODING, LINEAR16_SAMPLE_RATE_HERTZ, OPUS_SAMPLE_RATE_HERTZ } from '../../constants/index';
+
+const validateInsightTypes = insightTypes => {
+    if (!Array.isArray(insightTypes)) {
+        return false;
+    }
+
+    for (const insight of insightTypes) {
+        if (!VALID_INSIGHT_TYPES.includes(insight)) {
+            return false;
+        }
+    }
+
+    return true;
+}
 export class StreamingAPIConnection extends BaseConnection {
     private config: StreamingAPIConnectionConfig;
     private connectionState = ConnectionState.DISCONNECTED;
@@ -56,13 +71,11 @@ export class StreamingAPIConnection extends BaseConnection {
         If the validation of the `config` is successful, return the validated config
     */
     static async validateConfig(config: StreamingAPIConnectionConfig) : Promise<StreamingAPIConnectionConfig | StreamingAPIStartRequest> {
-        // validate the configs
         const { 
             id,
             insightTypes,
             config: configObj,
             speaker,
-            handlers,
             reconnectOnError,
             disconnectOnStopRequest,
             disconnectOnStopRequestTimeout,
@@ -73,8 +86,10 @@ export class StreamingAPIConnection extends BaseConnection {
             throw new InvalidValueError(`StreamingAPIConnectionConfig argument 'id' field should be a type string.`)
         }
 
-        if (insightTypes && !Array.isArray(insightTypes)) {
-            throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings, including "action_item", "question", and "follow_up".`)
+        if (insightTypes) {
+            if (!validateInsightTypes(insightTypes)) {
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES}`)
+            }
         }
 
         if (configObj) {
@@ -94,22 +109,14 @@ export class StreamingAPIConnection extends BaseConnection {
                     throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.encoding' field should be a type string.`)
                 }
                 if (!VALID_ENCODING.includes(encoding)) {
-                    throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - "LINEAR16" | "FLAC" | "MULAW" | "Opus".`)
+                    throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${VALID_ENCODING}.`)
                 }
 
-                if (encoding === 'LINEAR16' && (sampleRateHertz < 8000 || sampleRateHertz > 48000)) {
-                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are from 8000 to 48000.`)
+                if (encoding === 'LINEAR16' && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
                 }
-                if (encoding === 'FLAC' && (sampleRateHertz < 16000)) {
-                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For FLAC encoding, supported sample rates are 16000 and above.`)
-                }
-                if (encoding === 'MULAW' && (sampleRateHertz !== 8000)) {
-                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For MULAW encoding, supported sample rate is 8000.`)
-                    // https://docs.symbl.ai/docs/streaming-api/api-reference#config#speech-recognition
-                    // [Adam] MULAW range seems incorrect in Docs, need revision
-                }
-                if (encoding === 'Opus' && (sampleRateHertz < 16000 || sampleRateHertz > 48000)) {
-                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are 16000 to 48000.`)
+                if (encoding === 'Opus' && (!OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz))) {
+                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${OPUS_SAMPLE_RATE_HERTZ}.`)
                 }
             }
         }
@@ -121,25 +128,6 @@ export class StreamingAPIConnection extends BaseConnection {
             }    
             if (name && typeof name !== 'string') {
                 throw new InvalidValueError(`StreamingAPIConnectionConfig: 'speaker.name' field should be a type string.`)
-            }
-        }
-
-        if (handlers) {
-            const { onSpeechDetected, onMessageResponse, onInsightResponse, onTopicResponse, onDataReceived } = handlers
-            if (onSpeechDetected && typeof onSpeechDetected !== 'function') {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onSpeechDetected' field should be a function.`)
-            }
-            if (onMessageResponse && typeof onMessageResponse !== 'function') {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onMessageResponse' field should be a function.`)
-            }
-            if (onInsightResponse && typeof onInsightResponse !== 'function') {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onInsightResponse' field should be a function.`)
-            }
-            if (onTopicResponse && typeof onTopicResponse !== 'function') {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onTopicResponse' field should be a function.`)
-            }
-            if (onDataReceived && typeof onDataReceived !== 'function') {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'handlers.onDataReceived' field should be a function.`)
             }
         }
 
