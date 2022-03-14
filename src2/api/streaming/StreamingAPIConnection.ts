@@ -2,7 +2,6 @@ import { BaseConnection } from "../../connection";
 import { is } from "typescript-is";
 import { AudioStream } from "../../audio";
 import Logger from "../../logger";
-import { NoConnectionError } from "../../error";
 import {
     SymblConnectionType,
     ConnectionProcessingState,
@@ -15,8 +14,19 @@ import {
     SymblStreamingAPIConnection,
     SymblData
 } from "../../types";
-import { InvalidValueError, NotSupportedAudioEncodingError, NotSupportedSampleRateError } from "../../error/symbl/index";
-import { VALID_INSIGHT_TYPES, VALID_ENCODING, LINEAR16_SAMPLE_RATE_HERTZ, OPUS_SAMPLE_RATE_HERTZ } from '../../constants/index';
+import {
+    NoConnectionError,
+    InvalidValueError,
+    NotSupportedAudioEncodingError,
+    NotSupportedSampleRateError
+} from "../../error";
+import { 
+    VALID_INSIGHT_TYPES,
+    VALID_ENCODING,
+    LINEAR16_SAMPLE_RATE_HERTZ,
+    OPUS_SAMPLE_RATE_HERTZ
+} from '../../constants';
+
 
 const validateInsightTypes = insightTypes => {
     if (!Array.isArray(insightTypes)) {

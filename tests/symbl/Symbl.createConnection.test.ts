@@ -51,6 +51,8 @@ jest.mock('../../src2/connection', () => {
 })
 /** end mocks definition **/
 
+
+
 test(
     "Symbl.createConnection - Calling createConnection with valid config without passing AudioStream",
     async () => {
@@ -90,392 +92,104 @@ test(
             appSecret: APP_SECRET
         };
         const id = "123940-2390394-19848598";
-        try {
-            const symbl = new Symbl(authConfig);
-            const connectionConfig = {
-                id,
-                insightTypes: ['action_item', 'question'],
-                config: {
-                    meetingTitle: 'My Test Meeting',
-                    confidenceThreshold: 0.7,
-                    timezoneOffset: 480,
-                    languageCode: 'en-US',
-                },
-                speaker: {
-                    userId: 'emailAddress',
-                    name: 'My name'
-                },
-            };
-            // const connectSpy = jest.spyOn(Connection)
-            expect(ConnectionFactory).toHaveBeenCalled();
-            const connection = symbl.createConnection(connectionConfig);
-            expect(connection instanceof StreamingAPIConnection);
-            expect(connection.id).toBe(id);
-        } catch (e) {
-            throw new Error(e);
-        }
+        const symbl = new Symbl(authConfig);
+        const connectionConfig = {
+            id,
+            insightTypes: ['action_item', 'question'],
+            config: {
+                meetingTitle: 'My Test Meeting',
+                confidenceThreshold: 0.7,
+                timezoneOffset: 480,
+                languageCode: 'en-US',
+            },
+            speaker: {
+                userId: 'emailAddress',
+                name: 'My name'
+            },
+        };
+        // const connectSpy = jest.spyOn(Connection)
+        const connection = await symbl.createConnection(connectionConfig);
+        expect(ConnectionFactory).toHaveBeenCalled();
+        expect(connectMock).toBeCalledTimes(1);
+        expect(uuid).toBeCalledTimes(0);
+        expect(startProcessingMock).toBeCalledTimes(0);
+        expect(connection instanceof StreamingAPIConnection);
     }
 );
 
-// test(
-//     "Symbl.createConnection - Calling createConnection with valid config and passing in PCMAudioStream",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-//         const audioStream = new PCMAudioStream();
+test(
+    "Symbl.createConnection - Calling createConnection with valid config and passing in PCMAudioStream",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET
+        };
+        const context = new AudioContext();
+        const mediaStream = new MediaStream();
+        const sourceNode = context.createMediaStreamSource(mediaStream);
+        const audioStream = new PCMAudioStream(sourceNode);
+        const symbl = new Symbl(authConfig);
+        const connectionConfig = {
+            insightTypes: ['action_item', 'question'],
+            config: {
+                meetingTitle: 'My Test Meeting',
+                confidenceThreshold: 0.7,
+                timezoneOffset: 480,
+                languageCode: 'en-US',
+            },
+            speaker: {
+                userId: 'emailAddress',
+                name: 'My name'
+            },
+        };
+        const connection = await symbl.createConnection(connectionConfig, audioStream);
+        expect(ConnectionFactory).toHaveBeenCalled();
+        expect(connectMock).toBeCalledTimes(1);
+        expect(uuid).toBeCalledTimes(1);
+        expect(startProcessingMock).toBeCalledTimes(0);
+        expect(connection instanceof StreamingAPIConnection);
+    }
+);
 
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 'My name'
-//                 },
-//             };
-//             // const connectSpy = jest.spyOn(Connection)
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig, audioStream);
-//             expect(connection instanceof StreamingAPIConnection);
-//             expect(connection.audioStream).toBe(audioStream);
-//         } catch (e) {
-//             throw new Error(e);
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with valid config and passing in OpusAudioStream",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-//         const audioStream = new OpusAudioStream();
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 'My name'
-//                 },
-//             };
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig, audioStream);
-//             expect(connection instanceof StreamingAPIConnection);
-//             expect(connection.audioStream).toBe(audioStream);
-//         } catch (e) {
-//             throw new Error(e);
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with invalid config - extra insightType",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question', 'invalid_type'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 'My name'
-//                 },
-//             };
-//             const connection = symbl.createConnection(connectionConfig);
-//         } catch (e) {
-//             expect(e).toEqual(new InvalidValueError("Invalid config"))
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with invalid config - extra key in config",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                     extraKey: 'value',
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 'My name'
-//                 },
-//             };
-//             // const connectSpy = jest.spyOn(Connection)
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig);
-//             expect(connection instanceof StreamingAPIConnection);
-//         } catch (e) {
-//             expect(e).toEqual(new InvalidValueError("Invalid config"))
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with invalid config - extra key in speaker",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 'My name',
-//                     extraKey: 'value',
-//                 },
-//             };
-//             // const connectSpy = jest.spyOn(Connection)
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig);
-//             expect(connection instanceof StreamingAPIConnection);
-//         } catch (e) {
-//             expect(e).toEqual(new InvalidValueError("Invalid config"))
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with invalid config - extra key at root level",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 'My name',
-//                 },
-//                 extraKey: 'value',
-//             };
-//             // const connectSpy = jest.spyOn(Connection)
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig);
-//             expect(connection instanceof StreamingAPIConnection);
-//         } catch (e) {
-//             expect(e).toEqual(new InvalidValueError("Invalid config"))
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with invalid config - invalid value type in key",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 1,
-//                 },
-//             };
-//             // const connectSpy = jest.spyOn(Connection)
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig);
-//             expect(connection instanceof StreamingAPIConnection);
-//         } catch (e) {
-//             expect(e).toEqual(new InvalidValueError("Invalid config"))
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with invalid config - NotSupportedSampleRateError",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                     sampleRateHertz: 1
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 1,
-//                 },
-//             };
-//             // const connectSpy = jest.spyOn(Connection)
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig);
-//             expect(connection instanceof StreamingAPIConnection);
-//         } catch (e) {
-//             expect(e).toEqual(new NotSupportedSampleRateError("Invalid sampleRateHertz for encoding"))
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with invalid config - NotSupportedSampleRateError - 32khz on opus",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                     encoding: 'opus',
-//                     sampleRateHertz: 32000
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 1,
-//                 },
-//             };
-//             // const connectSpy = jest.spyOn(Connection)
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig);
-//             expect(connection instanceof StreamingAPIConnection);
-//         } catch (e) {
-//             expect(e).toEqual(new NotSupportedSampleRateError("Invalid sampleRateHertz for encoding"))
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - Calling createConnection with invalid config - NotSupportedAudioEncodingError",
-//     async () => {
-//         const authConfig = {
-//             appId: APP_ID,
-//             appSecret: APP_SECRET
-//         };
-
-//         try {
-//             const symbl = new Symbl(authConfig);
-//             const connectionConfig = {
-//                 insightTypes: ['action_item', 'question'],
-//                 config: {
-//                     meetingTitle: 'My Test Meeting',
-//                     confidenceThreshold: 0.7,
-//                     timezoneOffset: 480,
-//                     languageCode: 'en-US',
-//                     encoding: 'not-supported',
-//                 },
-//                 speaker: {
-//                     userId: 'emailAddress',
-//                     name: 1,
-//                 },
-//             };
-//             // const connectSpy = jest.spyOn(Connection)
-//             expect(ConnectionFactory).toHaveBeenCalled();
-//             const connection = symbl.createConnection(connectionConfig);
-//             expect(connection instanceof StreamingAPIConnection);
-//         } catch (e) {
-//             expect(e).toEqual(new NotSupportedAudioEncodingError("Not a valid encoding"))
-//         }
-//     }
-// );
-
-// test(
-//     "Symbl.createConnection - ID should be alphanumeric and minimum length of 6; checking for invalid cases.",
-//     async () => {
-//         try {
-//             const regex = new RegExp(uniquenessRegex);
-//             const invalidStrings = ['abc', '123', 'abcdef', '123456'];
-//             expect(regex.test(invalidStrings[0])).not.toBe(true);
-//         } catch (e) {
-//             throw new Error(e)
-//         }
-//     }
-// )
-
-// test(
-//     "Symbl.createConnection - ID should be alphanumeric and minimum length of 6; checking for valid cases.",
-//     async () => {
-//         try {
-//             const regex = new RegExp(uniquenessRegex);
-//             const validStrings = ['abc123', 'xyz369', '0a1b2c3d4f5e', '00000a'];
-//             expect(regex.test(validStrings[0])).toBe(true);
-//         } catch (e) {
-//             throw new Error(e)
-//         }
-//     }
-// )
+test(
+    "Symbl.createConnection - Calling createConnection with valid config and passing in OpusAudioStream",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET
+        };
+        const opusConfig: any = {
+            numberOfChannels: 1,
+            encoderSampleRate: 48000,
+            encoderFrameSize: 20,
+            maxFramesPerPage: 40,
+            encoderComplexity: 6,
+            streamPages: true,
+            rawOpus: true
+        };
+        const context = new AudioContext();
+        const mediaStream = new MediaStream();
+        const sourceNode = context.createMediaStreamSource(mediaStream);
+        const audioStream = new OpusAudioStream(sourceNode, opusConfig);
+        const symbl = new Symbl(authConfig);
+        const connectionConfig = {
+            insightTypes: ['action_item', 'question'],
+            config: {
+                meetingTitle: 'My Test Meeting',
+                confidenceThreshold: 0.7,
+                timezoneOffset: 480,
+                languageCode: 'en-US',
+            },
+            speaker: {
+                userId: 'emailAddress',
+                name: 'My name'
+            },
+        };
+        const connection = await symbl.createConnection(connectionConfig, audioStream);
+        expect(ConnectionFactory).toHaveBeenCalled();
+        expect(connectMock).toBeCalledTimes(1);
+        expect(uuid).toBeCalledTimes(1);
+        expect(startProcessingMock).toBeCalledTimes(0);
+        expect(connection instanceof StreamingAPIConnection);
+    }
+);
