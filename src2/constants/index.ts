@@ -1,4 +1,6 @@
-export const VALID_INSIGHT_TYPES = [];
-export const VALID_ENCODING = [];
-export const LINEAR16_SAMPLE_RATE_HERTZ = [];
-export const OPUS_SAMPLE_RATE_HERTZ = [];
+export const DEFAULT_SAMPLE_RATE_HERTZ = 16000;
+export const DEFAULT_ENCODING_TYPE = 'LINEAR16';
+export const VALID_INSIGHT_TYPES = ['action_item', 'question']
+export const VALID_ENCODING = ['LINEAR16', 'OPUS'];
+export const LINEAR16_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 44100, 48000];
+export const OPUS_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 48000];

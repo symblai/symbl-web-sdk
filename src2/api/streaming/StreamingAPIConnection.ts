@@ -2,6 +2,7 @@ import { BaseConnection } from "../../connection";
 import { is } from "typescript-is";
 import { AudioStream } from "../../audio";
 import Logger from "../../logger";
+import { uuid } from "../../utils";
 import {
     SymblConnectionType,
     ConnectionProcessingState,
@@ -24,7 +25,9 @@ import {
     VALID_INSIGHT_TYPES,
     VALID_ENCODING,
     LINEAR16_SAMPLE_RATE_HERTZ,
-    OPUS_SAMPLE_RATE_HERTZ
+    OPUS_SAMPLE_RATE_HERTZ,
+    DEFAULT_SAMPLE_RATE_HERTZ,
+    DEFAULT_ENCODING_TYPE
 } from '../../constants';
 
 
@@ -94,6 +97,8 @@ export class StreamingAPIConnection extends BaseConnection {
 
         if (id && typeof id !== 'string') {
             throw new InvalidValueError(`StreamingAPIConnectionConfig argument 'id' field should be a type string.`)
+        } else if (!id) {
+            config.id = uuid();
         }
 
         if (insightTypes) {
@@ -103,7 +108,7 @@ export class StreamingAPIConnection extends BaseConnection {
         }
 
         if (configObj) {
-            const { confidenceThreshold, meetingTitle, encoding, sampleRateHertz } = configObj;
+            let { confidenceThreshold, meetingTitle, encoding, sampleRateHertz } = configObj;
             if (confidenceThreshold && typeof confidenceThreshold !== 'number') {
                 throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.`)
             }
@@ -114,24 +119,27 @@ export class StreamingAPIConnection extends BaseConnection {
                 throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.`)
             }
 
+            if (!encoding) {
+                encoding = DEFAULT_ENCODING_TYPE;
+            }
+            if (!sampleRateHertz) {
+                sampleRateHertz = DEFAULT_SAMPLE_RATE_HERTZ;
+            }
+
             if (encoding) {
                 if (typeof encoding !== 'string') {
                     throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.encoding' field should be a type string.`)
                 }
-                if (!VALID_ENCODING.includes(encoding)) {
+                if (!VALID_ENCODING.includes(encoding.toUpperCase())) {
                     throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${VALID_ENCODING}.`)
                 }
 
-                if (encoding === 'LINEAR16' && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+                if (encoding.toUpperCase() === 'LINEAR16' && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
                     throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
                 }
-                if (encoding === 'Opus' && (!OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz))) {
+                if (encoding.toUpperCase() === 'Opus' && (!OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz))) {
                     throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${OPUS_SAMPLE_RATE_HERTZ}.`)
                 }
-            }
-
-            if (!encoding && sampleRateHertz && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
-                throw new NotSupportedSampleRateError(`LINEAR16 is the default encoding and the supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
             }
         }
         
