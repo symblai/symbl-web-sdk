@@ -1,15 +1,26 @@
 import {
-    SymblData,
-    EventTypes
+    EventTypes,
+    SymblData
 } from "../types";
 
 export class SymblEvent extends CustomEvent<SymblData> {
-    constructor(eventType: EventTypes, data?: any) {
+
+    constructor (eventType: EventTypes, data?: unknown) {
+
         const detail: CustomEventInit = {
-            detail: data
+            "detail": data
         };
-        super(eventType, detail);
+        super(
+            eventType,
+            detail
+        );
+
     }
+
 }
 
-// new CustomEvent('topic', topic);
+export class NetworkEvent extends SymblEvent {
+
+}
+
+// New CustomEvent('topic', topic);
