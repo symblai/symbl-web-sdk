@@ -8,8 +8,26 @@ import { ConnectionState, ConnectionProcessingState } from "../../../src2/types"
 import { InvalidValueError } from "../../../src2/error"
 import { VALID_INSIGHT_TYPES} from "../../../src2/constants";
 
-describe('streamingAPIConnection.validateConfig', () => {
+const validConfig = {
+        id: 'valid-id',
+        insightTypes: ["action_item", "question"],
+        config: {
+            confidenceThreshold: 0.9,
+            meetingTitle: 'valid-meeting-title',
+            encoding: 'LINEAR16',
+            sampleRateHertz: 16000,
+        },
+        speaker: {
+            userId: 'valid-user-id',
+            name: 'valid-name'
+        },
+        reconnectOnError: true,
+        disconnectOnStopRequest: false,
+        disconnectOnStopRequestTimeout: 3600,
+        noConnectionTimeout: 3600,
+}
 
+describe('streamingAPIConnection.validateConfig', () => {
     let authConfig, symbl, audioStream;
     beforeAll(() => {
         authConfig = {
@@ -42,23 +60,6 @@ describe('streamingAPIConnection.validateConfig', () => {
     // config with only id and disconnectOnStopRequest/disconnectOnStopRequestTimeout
     // config with only id and noConnectionTimeout
     // config with all values filled out
-
-    /*
-    config with invalid insightTypes
-    config with non-numerical confidenceThreshold
-    config with non-string meetingTitle;
-    config with invalid encoding type
-    config with non-numerical sampleRateHertz
-    config with non-string userId
-    config with non-string name
-    config with handlers present
-    config with non-boolean reconnectOnError
-    config with non-boolean disconnectOnStopRequest
-    config with non-numerical disconnectOnStopRequestTimeout
-    config without paired disconnectonStopRequest configs
-    config with non-numerical noConnectionTimeout
-    */
-
 
     test(
         `Config with only id`,
@@ -206,25 +207,100 @@ describe('streamingAPIConnection.validateConfig', () => {
         }
     );
 
-
-
+    /*
+    // config with invalid insightTypes
+    // config with non-numerical confidenceThreshold
+    // config with non-string meetingTitle;
+    // config with invalid encoding type
+    // config with non-numerical sampleRateHertz
+    config with non-string userId
+    config with non-string name
+    config with handlers present
+    config with non-boolean reconnectOnError
+    config with non-boolean disconnectOnStopRequest
+    config with non-numerical disconnectOnStopRequestTimeout
+    config without paired disconnectonStopRequest configs
+    config with non-numerical noConnectionTimeout
+    */
     test(
         `config with invalid insightTypes`,
         async () => {
-            try {
-                const invalidConnectionConfig = {
-                    insightTypes: ["action_item", "question", "invalid_type"]
-                }
-                await expect(async () => {
-                    await StreamingAPIConnection.validateConfig(invalidConnectionConfig)
-                }).toThrow(
-                    new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES}`)
-                );
-            } catch(e) {
-                //
+            const invalidConfig = {
+                ...validConfig,
+                insightTypes: ["action_item", "question", "invalid_type"]
             }
+            expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig)
+            }).toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES}`)
+            );
         }
     );
 
+    test(
+        `config with non-numerical confidenceThreshold`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                config: {
+                    confidenceThreshold: 'string'
+                }
+            }
+            expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig)
+            }).toThrow(
+                new InvalidValueError(``)
+            );
+        }
+    );
 
+    test(
+        `config with non-string meetingTitle;`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                meetingTitle: 123
+            }
+            expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig)
+            }).toThrow(
+                new InvalidValueError(``)
+            );
+        }
+    );
+
+    test(
+        `config with invalid encoding type;`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                config: {
+                    encoding: 'INVALID16'
+                }
+            }
+            expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig)
+            }).toThrow(
+                new InvalidValueError(``)
+            );
+        }
+    );
+
+    test(
+        `config with non-numerical sampleRateHertz;`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                config: {
+                    encoding: 'LINEAR16',
+                    sampleRateHertz: 'onehundred'
+                }
+            }
+            expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig)
+            }).toThrow(
+                new InvalidValueError(``)
+            );
+        }
+    );
 });

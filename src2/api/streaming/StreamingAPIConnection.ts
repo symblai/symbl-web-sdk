@@ -137,7 +137,7 @@ export class StreamingAPIConnection extends BaseConnection {
                 if (encoding.toUpperCase() === 'LINEAR16' && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
                     throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
                 }
-                if (encoding.toUpperCase() === 'Opus' && (!OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz))) {
+                if (encoding.toUpperCase() === 'OPUS' && (!OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz))) {
                     throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${OPUS_SAMPLE_RATE_HERTZ}.`)
                 }
             }
