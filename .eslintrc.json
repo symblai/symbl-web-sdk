@@ -36,7 +36,7 @@
         "comma-dangle": "error",
         "comma-spacing": "error",
         "comma-style": "error",
-        "complexity": "error",
+        "complexity": "warn",
         "computed-property-spacing": "error",
         "consistent-return": "error",
         "consistent-this": "error",
