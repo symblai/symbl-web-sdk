@@ -39,8 +39,8 @@ describe("SubscribeAPIConnection.disconnect", () => {
             },
         };
         subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig) as any;
-        (<any>subscribeAPIConnection).stream = {
-            close: jest.fn(),
+        subscribeAPIConnection.stream = {
+            close: jest.fn(() => {}),
         }
     });
 
@@ -84,6 +84,23 @@ describe("SubscribeAPIConnection.disconnect", () => {
             });
             
             expect((<any>subscribeAPIConnection).connectionState).toBe(ConnectionState.DISCONNECTING);
+        }
+    );
+
+    test(
+        "Verify error handling on disconnect method",
+        async () => {
+            const newSubscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig) as any;
+            newSubscribeAPIConnection.dispatchEvent =  jest.fn(() => {
+                throw new Error("An error happened.");
+            })
+            
+            (<any>newSubscribeAPIConnection).connectionState = ConnectionState.CONNECTED;
+            // const closeSpy = jest.spyOn(subscribeAPIConnection.stream, 'close');
+
+            await expect(async () => await newSubscribeAPIConnection.disconnect()).rejects.toThrow();
+            
+            // expect((<any>subscribeAPIConnection).connectionState).toBe(ConnectionState.DISCONNECTING);
         }
     );
 

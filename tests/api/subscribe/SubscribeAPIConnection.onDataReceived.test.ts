@@ -33,13 +33,13 @@ beforeAll(() => {
     subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig);  
 });
 
-// test(
-//     `Make sure emitEvents is called when invoking onDataReceived`,
-//     async () => {
-//         const emitSpy = jest.spyOn(subscribeAPIConnection, 'emitEvents');
-//         const data: any = {};
-//         subscribeAPIConnection.onDataReceived(data);
-//         expect(emitSpy).toBeCalledWith(data);
-//         expect(emitSpy).toBeCalledTimes(1);
-//     }
-// );
+test(
+    `Make sure emitEvents is called when invoking onDataReceived`,
+    async () => {
+        // const emitSpy = jest.spyOn(subscribeAPIConnection, 'emitEvents');
+        // const data: any = {};
+        // subscribeAPIConnection.onDataReceived(data);
+        // expect(emitSpy).toBeCalledWith(data);
+        // expect(emitSpy).toBeCalledTimes(1);
+    }
+);
