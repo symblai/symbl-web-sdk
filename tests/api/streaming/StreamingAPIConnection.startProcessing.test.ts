@@ -6,7 +6,7 @@ import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, streamingAPIConnection;
-beforeAll(() => {
+beforeEach(() => {
     authConfig = {
         appId: APP_ID,
         appSecret: APP_SECRET
@@ -50,72 +50,94 @@ beforeAll(() => {
 // Return from function
 
 test(
-    "StreamingAPIConnection.startProcesing - Testing a successful startProcessing call - no startRequestData",
+    "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call - no startRequestData",
     (done) => {
-        try {
-            streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
-            streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
-            const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
-            streamingAPIConnection.startProcessing().then(() => {
-                expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
-                expect(streamingAPIConnection.isProcessing()).toBe(true);
-                expect(streamSpy).toBeCalledTimes(1);
-                done();
-            });
-            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
-
-        } catch(e) {
-            console.error(e);
-        }
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+        streamingAPIConnection.startProcessing().then(() => {
+            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
+            expect(streamingAPIConnection.isProcessing()).toBe(true);
+            expect(streamSpy).toBeCalledTimes(1);
+            done();
+        });
+        expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
     }
 );
 
 test(
-    "StreamingAPIConnection.startProcesing - Testing a successful startProcessing call - with startRequestData",
+    "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call - with startRequestData",
     done => {
-        try {
-            const startRequestData = {
-                type: "start_request"
-            }
-            streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
-            streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
-            const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
-            streamingAPIConnection.startProcessing(startRequestData).then(() => {
-                expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
-                expect(streamingAPIConnection.isProcessing()).toBe(true);
-                expect(streamSpy).toBeCalledTimes(1);
-                expect(streamSpy).toBeCalledWith(startRequestData);
-                done();
-            });
-            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
-        } catch(e) {
-            console.error(e);
+        const startRequestData = {
+            type: "start_request"
         }
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+        streamingAPIConnection.startProcessing(startRequestData).then(() => {
+            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
+            expect(streamingAPIConnection.isProcessing()).toBe(true);
+            expect(streamSpy).toBeCalledTimes(1);
+            expect(streamSpy).toBeCalledWith(startRequestData);
+            done();
+        });
+        expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
     }
 );
 
 test(
-    "StreamingAPIConnection.startProcesing - throw `NoConnectionError` if ConnectionState is not CONNECTED",
+    "StreamingAPIConnection.startProcessing - Testing an unsuccessful startProcessing call",
     async () => {
-
-        try {
-            const startRequestData = {
-                type: "start_request"
-            }
-            streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
-            streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
-            const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
-            await expect(async() => await streamingAPIConnection.startProcessing());
-            expect(startSpy).toBeCalledTimes(0);
-
-        } catch (e) {
-            // expect(e).toBe(new NoConnectionError('No connection available. You need to call `.connect()` before you can start processing.'));
+        streamingAPIConnection.stream = {
+            start: jest.fn(() => {
+                throw new Error("An error happened.");
+            })
         }
+        const startRequestData = {
+            type: "start_request"
+        }
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+        await expect(async () => await streamingAPIConnection.startProcessing(startRequestData)).rejects.toThrow();
     }
 );
 
 test(
-    "StreamingAPIConnection.startProcesing - Attempt a connection when processingState is ATTEMPTING",
+    "StreamingAPIConnection.startProcessing - Testing an unsuccessful startProcessing validation",
+    async () => {
+        // try {
+            // StreamingAPIConnection.validateConfig = jest.fn(() => {
+            //     throw new Error("An error happened.");
+            // });
+        // expect(true).toBe(false);
+        // try {
+        const startRequestData = {
+            insightTypes: 3
+        }
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+        await expect(async () => await streamingAPIConnection.startProcessing(startRequestData)).rejects.toThrow();
+    }
+);
+
+test(
+    "StreamingAPIConnection.startProcessing - throw `NoConnectionError` if ConnectionState is not CONNECTED",
+    async () => {
+        const startRequestData = {
+            type: "start_request"
+        }
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
+        const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+        await expect(async() => await streamingAPIConnection.startProcessing()).rejects.toThrow();
+        expect(startSpy).toBeCalledTimes(0);
+    }
+);
+
+test(
+    "StreamingAPIConnection.startProcessing - Attempt a connection when processingState is ATTEMPTING",
     async () => {
         streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
         streamingAPIConnection.processingState = ConnectionProcessingState.ATTEMPTING;
@@ -128,7 +150,7 @@ test(
 );
 
 test(
-    "StreamingAPIConnection.startProcesing - Attempt a connection when processingState is PROCESSING",
+    "StreamingAPIConnection.startProcessing - Attempt a connection when processingState is PROCESSING",
     async () => {
         streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
         streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;

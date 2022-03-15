@@ -1,6 +1,13 @@
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
-import { InvalidCredentialsError, AccessTokenExpiredError, InvalidValueError, SessionIDNotUniqueError, RequiredParameterAbsentError, /*InvalidLogLevelError*/ } from "../error";
-import { HttpError } from '../error/network/http'
+import { 
+    InvalidCredentialsError,
+    AccessTokenExpiredError,
+    InvalidValueError,
+    SessionIDNotUniqueError,
+    RequiredParameterAbsentError,
+    HttpError,
+    /*InvalidLogLevelError*/
+} from "../error";
 import Logger from "../logger";
 import { VALID_LOG_LEVELS } from "../utils/configs";
 import { is, assertType } from 'typescript-is'

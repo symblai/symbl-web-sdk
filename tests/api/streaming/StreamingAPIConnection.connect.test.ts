@@ -39,8 +39,10 @@ test(
     "StreamingAPIConnection.connect - Testing a successful connection attempt",
     (done) => {
         streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
+        const logSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
         streamingAPIConnection.connect().then(() => {
             expect(streamingAPIConnection.connectionState).toBe(ConnectionState.CONNECTED);
+            expect(logSpy).toBeCalledTimes(0);
             done();
         })
         expect(streamingAPIConnection.connectionState).toBe(ConnectionState.CONNECTING);
@@ -48,20 +50,28 @@ test(
 );
 
 test(
+    "StreamingAPIConnection.connect - Testing a terminated connection attempt",
+    async () => {
+        streamingAPIConnection.sdk = {
+            createStream: jest.fn(() => {
+                throw new Error("An error happened.");
+            })
+        }
+        streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
+        const logSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
+        await streamingAPIConnection.connect();
+        expect(streamingAPIConnection.connectionState).toBe(ConnectionState.TERMINATED);
+    }
+);
+
+test(
     "StreamingAPIConnection.connect - Attempting to connect when connectionState is CONNECTED",
     async () => {
-
-        try {
-
-
-            streamingAPIConnection.connectionState = ConnectionState.CONNECTED
-            await streamingAPIConnection.connect()
-            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.CONNECTED);
-            // check that warning was logged
-
-        } catch (e) {
-            throw new Error(e);
-        }
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED
+        const logSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
+        await streamingAPIConnection.connect()
+        expect(streamingAPIConnection.connectionState).toBe(ConnectionState.CONNECTED);
+        expect(logSpy).toBeCalledTimes(1);
     }
 );
 

@@ -1,7 +1,9 @@
 import Symbl from "../../src2/symbl";
-import { ConnectionFactory, SubscribeAPIConnection } from '../../src2/connection';
-jest.mock('../../src2/connection'); // SoundPlayer is now a mock constructor
+import { ConnectionFactory, BaseConnection } from '../../src2/connection';
+import { SubscribeAPIConnection } from '../../src2/api';
 import { APP_ID, APP_SECRET } from '../constants';
+import { uuid } from '../../src2/utils';
+import { RequiredParameterAbsentError } from "../../src2/error";
 
 
 // Validate `sessionId` and if not present, throw `RequiredParameterAbsentError`
@@ -10,11 +12,35 @@ import { APP_ID, APP_SECRET } from '../constants';
 // If connection fails to get established, re-throw the error returned by `SubscribeAPIConnection`
 
 
-beforeEach(() => {
-    // will Clear all instances and calls to constructor and all methods:
-    ConnectionFactory.mockClear();
-    SubscribeAPIConnection.mockClear();
+/** define mocks */
+jest.mock("../../src2/utils");
+const connectMock = jest.fn(() => {
+    // (StreamingAPIConnection as any).processingState = ConnectionProcessingState.PROCESSING;
+})
+jest.mock("../../src2/api", () => {
+    return {
+        SubscribeAPIConnection: jest.fn().mockImplementation(() => {
+            return {
+                connect: connectMock,
+                sdk: {
+                    subscribeToStream: jest.fn()
+                },
+            }
+        })
+    }
 });
+jest.mock('../../src2/connection', () => {
+    return {
+        ConnectionFactory: jest.fn().mockImplementation(() => {
+            return {
+                instantiateConnection: jest.fn(() => {
+                    return new SubscribeAPIConnection({} as any) as any;
+                })
+            }
+        })
+    }
+});
+/** end mocks definition **/
 
 test(
     "Symbl.subscribeToConnection - Calling subscribeToConnection with valid parameters",
@@ -23,34 +49,26 @@ test(
             appId: APP_ID,
             appSecret: APP_SECRET
         };
-        const sessionId = "230920-99392-187463";
-        try {
-            const symbl = new Symbl(authConfig);
-            const subscription = symbl.subscribeToConnection(sessionId);
-            const connectSpy = jest.spyOn(subscription, 'connect');
-            expect(connectSpy).toHaveBeenCalled();
-            expect(subscription instanceof SubscribeAPIConnection);
-        } catch (e) {
-            throw new Error(e);
-        }
+        const sessionId = "23e920-9d92-1874a3";
+        const symbl = new Symbl(authConfig);
+        const subscription = await symbl.subscribeToConnection(sessionId);
+        expect(connectMock).toHaveBeenCalled();
+        expect(subscription instanceof SubscribeAPIConnection);
     }
 );
 
 test(
     "Symbl.subscribeToConnection - Calling subscribeToConnection without sessionId",
     async () => {
-        const authConfig = {
-            appId: APP_ID,
-            appSecret: APP_SECRET
-        };
         try {
+            const authConfig = {
+                appId: APP_ID,
+                appSecret: APP_SECRET
+            };
             const symbl = new Symbl(authConfig);
-            const subscription = symbl.subscribeToConnection();
-            const connectSpy = jest.spyOn(subscription, 'connect');
-            expect(connectSpy).toHaveBeenCalled();
-            expect(subscription instanceof SubscribeAPIConnection);
-        } catch (e) {
-            expect(e).toEqual(new RequiredParameterAbsentError("sessionID is required"))
+            await expect(async () => await symbl.subscribeToConnection(null)).toThrowError(new RequiredParameterAbsentError("sessionID is required"));
+        } catch(e) {
+            //
         }
     }
 );

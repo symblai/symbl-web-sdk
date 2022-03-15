@@ -1,6 +1,5 @@
 import { BaseConnection } from "../../connection";
 import { SymblEvent } from "../../events";
-import Logger from "../../logger";
 import {
     ConnectionState,
     SymblConnectionType,
@@ -14,7 +13,6 @@ export class SubscribeAPIConnection extends BaseConnection {
     private stream: any;
     private connectionState = ConnectionState.DISCONNECTED;
     private _isConnected = false;
-    private logger: Logger = new Logger();
     public connectionType = SymblConnectionType.SUBSCRIBE;
     
     constructor(config: SubscribeAPIConnectionConfig) {
@@ -86,6 +84,6 @@ export class SubscribeAPIConnection extends BaseConnection {
     }    
     
     async onDataReceived(data: SymblData) {
-        super.emitEvents(data);
+        await super.emitEvents(data);
     }
 }

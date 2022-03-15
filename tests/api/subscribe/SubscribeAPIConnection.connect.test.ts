@@ -31,7 +31,7 @@ describe('SubscribeAPIConnection.connect()', () => {
             },
         };
         subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig) as any;
-        subscribeAPIConnection.stream = {
+        subscribeAPIConnection.sdk = {
             subscribeToStream: jest.fn(() => Promise.resolve())
         }
     });
@@ -49,47 +49,54 @@ describe('SubscribeAPIConnection.connect()', () => {
     );
 
     test(
+        "Testing an unsuccessful connection attempt",
+        async () => {
+            subscribeAPIConnection.connectionState = ConnectionState.DISCONNECTED;
+            subscribeAPIConnection.sdk = {
+                subscribeToStream: jest.fn(() => {
+                    throw new Error("An error happened.");
+                })
+            }
+            await expect(async () => await subscribeAPIConnection.connect()).rejects.toThrow();
+        }
+    );
+
+    test(
         "Attempting to connect when connectionState is CONNECTED",
         async () => {
-
-            try {
-                subscribeAPIConnection.connectionState = ConnectionState.CONNECTED;
-                const logSpy = jest.spyOn(subscribeAPIConnection.logger, 'warn');
-                subscribeAPIConnection.connect();
-                expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.CONNECTED);
-                expect(logSpy).toBeCalledTimes(1);
-
-            } catch (e) {
-                throw new Error(e);
-            }
+            subscribeAPIConnection.connectionState = ConnectionState.CONNECTED;
+            const logSpy = jest.spyOn(subscribeAPIConnection.logger, 'warn');
+            subscribeAPIConnection.connect();
+            expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.CONNECTED);
+            expect(logSpy).toBeCalledTimes(1);
         }
     );
 
-    test(
-        "Connection attempt fails due to internet connection",
-        async () => {
-            try {
-                subscribeAPIConnection.connect();
+    // test(
+    //     "Connection attempt fails due to internet connection",
+    //     async () => {
+    //         try {
+    //             subscribeAPIConnection.connect();
 
-            } catch (e) {
-                expect(e).toBe(new NoConnectionError("Connection attempt failed due to no internet connection."));
-                expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
-                expect(subscribeAPIConnection.isConnected()).toBe(false);
-            }
-        }
-    );
+    //         } catch (e) {
+    //             expect(e).toBe(new NoConnectionError("Connection attempt failed due to no internet connection."));
+    //             expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
+    //             expect(subscribeAPIConnection.isConnected()).toBe(false);
+    //         }
+    //     }
+    // );
 
-    test(
-        "Connection attempt fails due to initial handshake",
-        async () => {
-            try {
-                subscribeAPIConnection.connect();
+    // test(
+    //     "Connection attempt fails due to initial handshake",
+    //     async () => {
+    //         try {
+    //             subscribeAPIConnection.connect();
 
-            } catch (e) {
-                expect(e).toBe(new HandshakeError("Connection attempt faild during initial handshake."));
-                expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);            
-                expect(subscribeAPIConnection.isConnected()).toBe(false);
-            }
-        }
-    );
+    //         } catch (e) {
+    //             expect(e).toBe(new HandshakeError("Connection attempt faild during initial handshake."));
+    //             expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);            
+    //             expect(subscribeAPIConnection.isConnected()).toBe(false);
+    //         }
+    //     }
+    // );
 });

@@ -10,13 +10,8 @@ test(
             appId: APP_ID,
             appSecret: APP_SECRET
         };
-
-        try {
-            const symbl = new Symbl();
-            symbl._validateSymblConfig(authConfig);
-        } catch (e) {
-            throw new Error(e);
-        }
+        const symbl = new Symbl();
+        await expect(() => symbl._validateSymblConfig(authConfig)).not.toThrow();
     }
 );
 
@@ -26,13 +21,9 @@ test(
         const authConfig = {
             accessToken: ACCESS_TOKEN
         };
-
-        try {
-            const symbl = new Symbl();
-            symbl._validateSymblConfig(authConfig);  
-        } catch (e) {
-            throw new Error(e);
-        }
+        const symbl = new Symbl();
+        symbl._validateSymblConfig(authConfig);  
+        await expect(() => symbl._validateSymblConfig(authConfig)).not.toThrow();
     }
 );
     
@@ -41,9 +32,9 @@ test(
     async () => {
         try {
             const symbl = new Symbl(null);
-            symbl._validateSymblConfig(null);
+            await expect(() => symbl._validateSymblConfig(null)).toThrowError(new InvalidCredentialsError('No credentials were passed'));
         } catch(e) {
-            expect(e).toEqual(new InvalidCredentialsError('No credentials were passed'));
+            //
         }
     }
 );
@@ -57,9 +48,9 @@ test(
 
         try {
             const symbl = new Symbl();
-            symbl._validateSymblConfig(authConfig);  
+            await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("AppSecret is missing"));
         } catch (e) {
-            expect(e).toEqual(new InvalidCredentialsError("AppSecret is missing"))
+            //
         }
     }
 );
@@ -73,9 +64,9 @@ test(
 
         try {
             const symbl = new Symbl();
-            symbl._validateSymblConfig(authConfig);
+            await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("AppID is missing"));
         } catch (e) {
-            expect(e).toEqual(new InvalidCredentialsError("AppID is missing"))
+            //
         }
     }
 );
@@ -91,9 +82,9 @@ test(
 
         try {
             const symbl = new Symbl();
-            symbl._validateSymblConfig(authConfig);
+            await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("You must use `accessToken` or an `appId`/`appSecret` pair separately."));
         } catch (e) {
-            expect(e).toEqual(new InvalidCredentialsError("You must use `accessToken` or an `appId`/`appSecret` pair separately."))
+            //
         }
     }
 );
@@ -108,9 +99,9 @@ test(
         
         try {
             const symbl = new Symbl();
-            symbl._validateSymblConfig(authConfig);
+            await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("AppID is not valid"));
         } catch (e) {
-            expect(e).toEqual(new InvalidCredentialsError("AppID is not valid"))
+            //
         }
     }
 );
@@ -125,9 +116,9 @@ test(
 
         try {
             const symbl = new Symbl();
-            symbl._validateSymblConfig(authConfig);
+            await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("The app secret value is invalid."));
         } catch (e) {
-            expect(e).toEqual(new InvalidCredentialsError("The app secret value is invalid."))
+            //
         }
     }
 );
@@ -141,9 +132,9 @@ test(
 
         try {
             const symbl = new Symbl();
-            symbl._validateSymblConfig(authConfig);
+            await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new AccessTokenExpiredError("Provided token as expired"));
         } catch (e) {
-            expect(e).toEqual(new AccessTokenExpiredError("Provided token as expired"))
+            //
         }
     }
 );

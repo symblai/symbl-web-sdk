@@ -1,8 +1,7 @@
 import { BaseConnection } from "../../connection";
 import { is } from "typescript-is";
 import { AudioStream } from "../../audio";
-import Logger from "../../logger";
-import { NoConnectionError } from "../../error";
+import { uuid } from "../../utils";
 import {
     SymblConnectionType,
     ConnectionProcessingState,
@@ -15,8 +14,21 @@ import {
     SymblStreamingAPIConnection,
     SymblData
 } from "../../types";
-import { InvalidValueError, NotSupportedAudioEncodingError, NotSupportedSampleRateError } from "../../error/symbl/index";
-import { VALID_INSIGHT_TYPES, VALID_ENCODING, LINEAR16_SAMPLE_RATE_HERTZ, OPUS_SAMPLE_RATE_HERTZ } from '../../constants/index';
+import {
+    NoConnectionError,
+    InvalidValueError,
+    NotSupportedAudioEncodingError,
+    NotSupportedSampleRateError
+} from "../../error";
+import { 
+    VALID_INSIGHT_TYPES,
+    VALID_ENCODING,
+    LINEAR16_SAMPLE_RATE_HERTZ,
+    OPUS_SAMPLE_RATE_HERTZ,
+    DEFAULT_SAMPLE_RATE_HERTZ,
+    DEFAULT_ENCODING_TYPE
+} from '../../constants';
+
 
 const validateInsightTypes = insightTypes => {
     if (!Array.isArray(insightTypes)) {
@@ -40,12 +52,10 @@ export class StreamingAPIConnection extends BaseConnection {
     private restartProcessing = false;
     private stream: SymblStreamingAPIConnection;
     private audioStream: AudioStream;
-    private logger: Logger;
     public connectionType = SymblConnectionType.STREAMING;
     
     constructor(config: StreamingAPIConnectionConfig, audioStream: AudioStream) {
         super(config.id);
-        this.logger = new Logger();
         this.config = config;
         this.config.handlers = {
             onDataReceived: this.onDataReceived
@@ -70,7 +80,7 @@ export class StreamingAPIConnection extends BaseConnection {
         In case the sample rate is not supported by the AudioEncoding, throw `NotSupportedSampleRateError`
         If the validation of the `config` is successful, return the validated config
     */
-    static async validateConfig(config: StreamingAPIConnectionConfig) : Promise<StreamingAPIConnectionConfig | StreamingAPIStartRequest> {
+    static validateConfig(config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig | StreamingAPIStartRequest {
         const { 
             id,
             insightTypes,
@@ -84,6 +94,8 @@ export class StreamingAPIConnection extends BaseConnection {
 
         if (id && typeof id !== 'string') {
             throw new InvalidValueError(`StreamingAPIConnectionConfig argument 'id' field should be a type string.`)
+        } else if (!id) {
+            config.id = uuid();
         }
 
         if (insightTypes) {
@@ -93,7 +105,7 @@ export class StreamingAPIConnection extends BaseConnection {
         }
 
         if (configObj) {
-            const { confidenceThreshold, meetingTitle, encoding, sampleRateHertz } = configObj;
+            let { confidenceThreshold, meetingTitle, encoding, sampleRateHertz } = configObj;
             if (confidenceThreshold && typeof confidenceThreshold !== 'number') {
                 throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.`)
             }
@@ -104,24 +116,27 @@ export class StreamingAPIConnection extends BaseConnection {
                 throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.`)
             }
 
+            if (!encoding) {
+                encoding = DEFAULT_ENCODING_TYPE;
+            }
+            if (!sampleRateHertz) {
+                sampleRateHertz = DEFAULT_SAMPLE_RATE_HERTZ;
+            }
+
             if (encoding) {
                 if (typeof encoding !== 'string') {
                     throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.encoding' field should be a type string.`)
                 }
-                if (!VALID_ENCODING.includes(encoding)) {
+                if (!VALID_ENCODING.includes(encoding.toUpperCase())) {
                     throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${VALID_ENCODING}.`)
                 }
 
-                if (encoding === 'LINEAR16' && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+                if (encoding.toUpperCase() === 'LINEAR16' && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
                     throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
                 }
-                if (encoding === 'Opus' && (!OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz))) {
+                if (encoding.toUpperCase() === 'OPUS' && (!OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz))) {
                     throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${OPUS_SAMPLE_RATE_HERTZ}.`)
                 }
-            }
-
-            if (!encoding && sampleRateHertz && !LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
-                throw new NotSupportedSampleRateError(`LINEAR16 is the default encoding and the supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
             }
         }
         
@@ -139,7 +154,7 @@ export class StreamingAPIConnection extends BaseConnection {
             throw new InvalidValueError(`StreamingAPIConnectionConfig: 'reconnectOnError' field should be a type boolean.`)
         }
 
-        if (typeof disconnectOnStopRequest !== 'boolean') {
+        if (!!disconnectOnStopRequest && typeof disconnectOnStopRequest !== 'boolean') {
             throw new InvalidValueError(`StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.`)
         }
 
@@ -197,7 +212,9 @@ export class StreamingAPIConnection extends BaseConnection {
                 this.connectionState = ConnectionState.DISCONNECTED;
                 this._isConnected = false;
             } catch(e) {
-                this.logger.error('Error while disconnecting', e);
+                this.connectionState = ConnectionState.TERMINATED;
+                this._isConnected = false;
+                throw e;
             }
         }
         // If the `connectionState` is already DISCONNECTED, log at warning level that a connection closure attempt is being made on an already closed connection.

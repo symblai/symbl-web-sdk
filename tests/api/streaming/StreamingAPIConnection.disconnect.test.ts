@@ -59,6 +59,24 @@ test(
     }
 );
 
+test(
+    "StreamingAPIConnection.connect - Testing an unsuccessful disconnection attempt",
+    async () => {
+        try {
+            streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+            streamingAPIConnection.stream = {
+                close: jest.fn(() => {
+                    throw new Error("An error happened.");
+                })
+            }
+            await streamingAPIConnection.disconnect();
+        } catch (e) {
+            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.TERMINATED);
+            //
+        }
+    }
+);
+
 
 test(
     "StreamingAPIConnection.connect - Attempt a disconnect when connectionState is already TERMINATED",

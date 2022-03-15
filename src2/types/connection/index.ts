@@ -47,7 +47,7 @@ interface StreamingAPIConnectionConfig {
     config?: {
         confidenceThreshold?: number;
         meetingTitle?: string;
-        encoding?: Encoding;
+        encoding?: string;
         sampleRateHertz?: number;
     };
 
