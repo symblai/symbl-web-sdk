@@ -22,7 +22,8 @@ type EventTypes =
     "follow_up" |
     "question" |
     "audio_source_connected" |
-    "audio_source_disconnected"
+    "audio_source_disconnected" |
+    "offline"
 ;
 
 interface RealtimeUser {
