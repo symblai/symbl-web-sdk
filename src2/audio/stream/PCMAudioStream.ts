@@ -1,17 +1,34 @@
 import {AudioStream} from "./AudioStream";
 
 export class PCMAudioStream extends AudioStream {
-
-    processAudio (audioEvent): void {
-
-        /*
-         * Conversion logic from Big Endian to Little Endian
-         * Send the processed audio by invoking super.onProcessedAudio(convertedAudioData)
-         */
+    constructor(sourceNode: MediaStreamAudioSourceNode) {
+        super(sourceNode);
     }
+    
+    processAudio(audioEvent) {
+        // Conversion logic from Big Endian to Little Endian
+        // Send the processed audio by invoking super.onProcessedAudio(convertedAudioData)
 
-    attachAudioProcessor (): void {
+        const inputData = audioEvent.inputBuffer.getChannelData(0);
+        const targetBuffer = new Int16Array(inputData.length);
+        for (let index = inputData.length; index > 0; index -= 1) {
 
+            targetBuffer[index] = 32767 * Math.min(
+                1,
+                inputData[index]
+            );
+
+        }
+        try {
+            // Send audio stream to websocket.
+            super.onProcessedAudio(targetBuffer.buffer);
+
+        } catch (err) {
+            throw err;
+        }    
+    }
+    
+    attachAudioProcessor() {
         if (this.processorNode) {
 
             this.processorNode.onaudioprocess = this.processAudio;
