@@ -229,9 +229,9 @@ describe('streamingAPIConnection.validateConfig', () => {
                 ...validConfig,
                 insightTypes: ["action_item", "question", "invalid_type"]
             }
-            expect(async () => {
-                await StreamingAPIConnection.validateConfig(invalidConfig)
-            }).toThrow(
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
                 new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES}`)
             );
         }
@@ -246,9 +246,9 @@ describe('streamingAPIConnection.validateConfig', () => {
                     confidenceThreshold: 'string'
                 }
             }
-            expect(async () => {
-                await StreamingAPIConnection.validateConfig(invalidConfig)
-            }).toThrow(
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
                 new InvalidValueError(``)
             );
         }
@@ -261,9 +261,9 @@ describe('streamingAPIConnection.validateConfig', () => {
                 ...validConfig,
                 meetingTitle: 123
             }
-            expect(async () => {
-                await StreamingAPIConnection.validateConfig(invalidConfig)
-            }).toThrow(
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
                 new InvalidValueError(``)
             );
         }
@@ -278,9 +278,9 @@ describe('streamingAPIConnection.validateConfig', () => {
                     encoding: 'INVALID16'
                 }
             }
-            expect(async () => {
-                await StreamingAPIConnection.validateConfig(invalidConfig)
-            }).toThrow(
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
                 new InvalidValueError(``)
             );
         }
@@ -296,9 +296,9 @@ describe('streamingAPIConnection.validateConfig', () => {
                     sampleRateHertz: 'onehundred'
                 }
             }
-            expect(async () => {
-                await StreamingAPIConnection.validateConfig(invalidConfig)
-            }).toThrow(
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
                 new InvalidValueError(``)
             );
         }
