@@ -77,3 +77,25 @@ test(
         expect(streamingAPIConnection.audioStream).toBe(newAudioStream);
     }
 );
+
+
+
+test(
+    `StreamingAPIConnection.updateAudioStream - Verify error handling if attachment fails`,
+    async () => {
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
+        const audioContext = new AudioContext();
+        const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+        const newAudioStream = new PCMAudioStream(sourceNode);
+
+        streamingAPIConnection.audioStream = null;
+        streamingAPIConnection.attachAudioStream = jest.fn(() => {
+            throw new Error("An error happened.");
+        });
+        const attachSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream')
+        await expect(async() => await streamingAPIConnection.updateAudioStream(newAudioStream)).rejects.toThrow();
+        expect(attachSpy).toBeCalledTimes(1);
+        expect(streamingAPIConnection.audioStream).not.toBe(newAudioStream);
+    }
+);

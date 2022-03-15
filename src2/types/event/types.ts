@@ -16,11 +16,11 @@ type EventTypes =
     "error" |
     "speech_recognition" |
     "messages" |
-    "topics" |
-    "trackers" |
-    "action_items" |
-    "follow_ups" |
-    "questions" |
+    "topic" |
+    "tracker" |
+    "action_item" |
+    "follow_up" |
+    "question" |
     "audio_source_connected" |
     "audio_source_disconnected"
 ;

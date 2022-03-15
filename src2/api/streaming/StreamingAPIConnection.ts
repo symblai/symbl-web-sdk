@@ -1,7 +1,6 @@
 import { BaseConnection } from "../../connection";
 import { is } from "typescript-is";
 import { AudioStream } from "../../audio";
-import Logger from "../../logger";
 import { uuid } from "../../utils";
 import {
     SymblConnectionType,
@@ -53,12 +52,10 @@ export class StreamingAPIConnection extends BaseConnection {
     private restartProcessing = false;
     private stream: SymblStreamingAPIConnection;
     private audioStream: AudioStream;
-    private logger: Logger;
     public connectionType = SymblConnectionType.STREAMING;
     
     constructor(config: StreamingAPIConnectionConfig, audioStream: AudioStream) {
         super(config.id);
-        this.logger = new Logger();
         this.config = config;
         this.config.handlers = {
             onDataReceived: this.onDataReceived
@@ -83,7 +80,7 @@ export class StreamingAPIConnection extends BaseConnection {
         In case the sample rate is not supported by the AudioEncoding, throw `NotSupportedSampleRateError`
         If the validation of the `config` is successful, return the validated config
     */
-    static async validateConfig(config: StreamingAPIConnectionConfig) : Promise<StreamingAPIConnectionConfig | StreamingAPIStartRequest> {
+    static validateConfig(config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig | StreamingAPIStartRequest {
         const { 
             id,
             insightTypes,
@@ -157,7 +154,7 @@ export class StreamingAPIConnection extends BaseConnection {
             throw new InvalidValueError(`StreamingAPIConnectionConfig: 'reconnectOnError' field should be a type boolean.`)
         }
 
-        if (typeof disconnectOnStopRequest !== 'boolean') {
+        if (!!disconnectOnStopRequest && typeof disconnectOnStopRequest !== 'boolean') {
             throw new InvalidValueError(`StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.`)
         }
 
@@ -215,7 +212,9 @@ export class StreamingAPIConnection extends BaseConnection {
                 this.connectionState = ConnectionState.DISCONNECTED;
                 this._isConnected = false;
             } catch(e) {
-                this.logger.error('Error while disconnecting', e);
+                this.connectionState = ConnectionState.TERMINATED;
+                this._isConnected = false;
+                throw e;
             }
         }
         // If the `connectionState` is already DISCONNECTED, log at warning level that a connection closure attempt is being made on an already closed connection.

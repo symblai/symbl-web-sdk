@@ -75,6 +75,7 @@ test(
     `StreamingAPIConnection.onAudioSourceChanged - If '_isConnected' is false, then 'restartProcessing' should be set to false.`,
     async () => {
         streamingAPIConnection._isConnected = false;
+        streamingAPIConnection.onAudioSourceChanged(new SymblEvent('audio_source_connected'));
         expect(streamingAPIConnection.restartProcessing).toBe(false);
     }
 )
