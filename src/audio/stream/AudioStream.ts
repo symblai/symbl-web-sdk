@@ -1,10 +1,10 @@
 import {InvalidAudioElementError, InvalidAudioInputDeviceError, NoAudioInputDeviceDetectedError} from "../../error";
 import Logger from "../../logger";
-import {SymblEvent} from "../../events/SymblEvent";
+import {SymblEvent, DelegatedEventTarget} from "../../events";
 // Import { AudioContext } from "../../utils";
 
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-export class AudioStream extends EventTarget {
+export class AudioStream extends DelegatedEventTarget {
 
     protected logger: Logger;
 
@@ -20,7 +20,9 @@ export class AudioStream extends EventTarget {
 
     protected gainNode: GainNode;
 
-    constructor (sourceNode: MediaStreamAudioSourceNode) {
+    protected stream: any;
+
+    constructor (sourceNode?: MediaStreamAudioSourceNode) {
 
         super();
         this.logger = new Logger();
@@ -32,6 +34,7 @@ export class AudioStream extends EventTarget {
                 this.audioContext = sourceNode.context as AudioContext;
 
             }
+            this.mediaStream = this.sourceNode.mediaStream;
 
         }
         if (!this.audioContext) {
@@ -48,11 +51,12 @@ export class AudioStream extends EventTarget {
     }
 
     static async getMediaStream (deviceId = "default"): Promise<MediaStream> {
-
+        console.log('gum');
         const stream = await navigator.mediaDevices.getUserMedia({
             "audio": true,
             "video": false
         });
+        console.log('stream', stream);
         const devices = await navigator.mediaDevices.enumerateDevices();
         const inputDevices = devices.filter((dev) => dev.kind === "audioinput");
         if (inputDevices.length === 0) {
@@ -61,11 +65,16 @@ export class AudioStream extends EventTarget {
 
         }
         if (deviceId) {
-
-            const foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
+            console.log("deviceId", deviceId);
+            let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
+            console.log('foundDevice', foundDevice);
             if (!foundDevice) {
-
-                throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
+                console.log("inputDevices.length", inputDevices.length);
+                if (deviceId === "default" && inputDevices.length) {
+                    foundDevice = inputDevices[0];
+                } else {
+                    throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
+                }
 
             }
             await stream.getAudioTracks()[0].applyConstraints({
@@ -77,11 +86,12 @@ export class AudioStream extends EventTarget {
             throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
 
         }
+
         return stream;
 
     }
 
-    async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<void> {
 
         // Const validateElement = element => {
         try {
@@ -117,7 +127,7 @@ export class AudioStream extends EventTarget {
 
             }
 
-            // TODO: I think thid could be recursive by passing in firstChild somehow
+         
             if ([
                 "AUDIO",
                 "VIDEO"
@@ -143,39 +153,39 @@ export class AudioStream extends EventTarget {
 
                 } else if (source && source.nodeName === "SOURCE") {
 
-                    if (source && !source.src) {
+                    // if (source && !source.src) {
 
-                        console.log("here2");
-                        throw new InvalidAudioElementError("Element is missing its `src` property");
-                        console.log("here9");
+                    //     console.log("here2");
+                    //     throw new InvalidAudioElementError("Element is missing its `src` property");
+                    //     console.log("here9");
 
-                    } else if (source && source.src) {
+                    // } else if (source && source.src) {
 
-                        console.log("here3");
-                        audioSourceDomElement = source;
+                    //     console.log("here3");
+                    //     audioSourceDomElement = source;
 
-                    } else {
+                    // } else {
 
-                        console.log("here6");
+                    //     console.log("here6");
 
-                    }
-
-                }
-                console.log("here7");
-
-                if (!audioSourceDomElement.src) {
-
-                    console.log("here4");
-                    throw new InvalidAudioElementError("Element is missing its `src` property");
-                    console.log("here5");
+                    // }
+                    this.attachAudioSourceElement(source);
 
                 }
+                // console.log("here7");
+
+                // if (!audioSourceDomElement.src) {
+
+                //     console.log("here4");
+                //     throw new InvalidAudioElementError("Element is missing its `src` property");
+                //     console.log("here5");
+
+                // }
 
             }
 
         } catch (e) {
 
-            console.log("here8");
             throw e;
 
         }
@@ -187,7 +197,6 @@ export class AudioStream extends EventTarget {
             console.log(this.audioContext.state);
             if (this.audioContext && this.audioContext.state === "running") {
 
-                console.log("here11");
                 await this.detachAudioSourceElement();
 
             }
@@ -261,47 +270,48 @@ export class AudioStream extends EventTarget {
 
     }
 
-    async attachAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
+    async attachAudioDevice (deviceId: string = "default", mediaStream?: MediaStream): Promise<void> {
 
         try {
 
-            const devices: any = await navigator.mediaDevices.enumerateDevices();
-            const device = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId);
-
-            this.test();
-            if (!device) {
-
-                throw new InvalidAudioInputDeviceError(`Invalid input deviceId: ${deviceId}`);
-
+            if (this.audioContext && this.audioContext.state === "running") {
+                console.log('detaching');
+                await this.detachAudioDevice();
+                this.audioContext = new AudioContext();
             }
+
+            // const devices: any = await navigator.mediaDevices.enumerateDevices();
+            // const device = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId);
+            // if (!device) {
+
+            //     throw new InvalidAudioInputDeviceError(`Invalid input deviceId: ${deviceId}`);
+
+            // }
             if (mediaStream) {
 
                 this.mediaStream = mediaStream;
 
-            } else {
+            } else if (!this.mediaStream) {
 
                 this.mediaStream = await AudioStream.getMediaStream(deviceId);
 
             }
 
 
-            if (this.audioContext && this.audioContext.state === "running") {
+            await this.mediaStream.getAudioTracks()[0].applyConstraints({
+                "sampleRate": {
+                    "ideal": this.audioContext.sampleRate
+                }
+            });
 
-                await this.detachAudioDevice();
-                this.audioContext = new AudioContext();
 
-            }
             this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
             this.processorNode = this.audioContext.createScriptProcessor(
                 1024,
                 1,
                 1
             );
-            const event = new SymblEvent(
-                "audio_source_connected",
-                this.audioContext.sampleRate
-            );
-            this.dispatchEvent(event);
+            this.gainNode = this.audioContext.createGain();
 
         } catch (e) {
 
@@ -372,9 +382,15 @@ export class AudioStream extends EventTarget {
     }
 
     attachAudioCallback (audioCallback: (audioData) => void): void {
-
+        console.log('attaching audio callback', audioCallback);
+        console.log('this', this);
         this.audioCallback = audioCallback;
+        console.log('attaching audio callback2', this.audioCallback);
 
+    }
+
+    attachStream(stream: any) {
+        this.stream = stream;
     }
 
     protected attachAudioProcessor (): void {
@@ -390,14 +406,14 @@ export class AudioStream extends EventTarget {
     }
 
     onProcessedAudio (audioData: unknown): void {
-
-        if (this.audioCallback) {
-
-            this.audioCallback(audioData);
+        console.log('onProcessedAudio', this);
+        if (this.stream) {
+            console.log('audioData', audioData);
+            this.stream.sendAudio(audioData);
 
         } else {
 
-            this.logger.warn("No audio callback attached. Audio not being proceessed.");
+            // this.logger.warn("No audio callback attached. Audio not being proceessed.");
 
         }
 

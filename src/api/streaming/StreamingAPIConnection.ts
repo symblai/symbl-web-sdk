@@ -63,9 +63,6 @@ export class StreamingAPIConnection extends BaseConnection {
         this.audioStream = audioStream;
         
         // Add function bindings here
-        if (this.audioStream) {
-            this.attachAudioStream(this.audioStream);
-        }
     }
 
     /*
@@ -243,6 +240,8 @@ export class StreamingAPIConnection extends BaseConnection {
         } else {
             try {
                 this.processingState = ConnectionProcessingState.ATTEMPTING;
+                this.attachAudioStream(this.audioStream);
+                await this.audioStream.attachAudioDevice();
                 startRequestData ? await this.stream.start(startRequestData) : await this.stream.start();
                 this.processingState = ConnectionProcessingState.PROCESSING;
                 this._isProcessing = true;
@@ -328,7 +327,8 @@ export class StreamingAPIConnection extends BaseConnection {
         return;
     }
     
-    async sendAudio(audioData: ArrayBuffer | Uint8Array | Uint16Array) {
+    sendAudio(audioData: ArrayBuffer | Uint8Array | Uint16Array) {
+        console.log('audioData', audioData);
         this.stream.sendAudio(audioData);
     }   
     
@@ -339,13 +339,15 @@ export class StreamingAPIConnection extends BaseConnection {
     
     private registerAudioStreamCallback() {
         if (this.audioStream) {
-            this.audioStream.attachAudioCallback(this.sendAudio);
+            console.log('registerAudioStreamCallback', this.stream);
+            // this.audioStream.attachAudioCallback(this.sendAudio);
+            this.audioStream.attachStream(this.stream);
         }
     }
     
     private attachAudioStream(audioStream: AudioStream) {
         this.audioStream = audioStream;
-        
+
         // this.audioStream.on('audio_source_connected', this.onAudioSourceChanged);
         // this.audioStream.on('audio_source_disconnected', this.onAudioSourceChanged);
 

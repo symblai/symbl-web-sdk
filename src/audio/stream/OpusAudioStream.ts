@@ -88,7 +88,7 @@ export class OpusAudioStream extends AudioStream {
 
     }
 
-    voidattachAudioCallback (audioCallback: (audioData) => void): void {
+    attachAudioCallback (audioCallback: (audioData) => void): void {
 
         super.attachAudioCallback(audioCallback);
 

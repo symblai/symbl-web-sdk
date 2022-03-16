@@ -26,16 +26,23 @@ export class ConnectionFactory {
                 StreamingAPIConnection.validateConfig(config);
                 if (!audioStream) {
                     try {
-                        const streamSource = await AudioStream.getMediaStream();
-                        const context = new AudioContext();
-                        const sourceNode = context.createMediaStreamSource(streamSource);
-                        switch((<StreamingAPIConnectionConfig>config).config.encoding?.toLowerCase()) {
+                        // const streamSource = await AudioStream.getMediaStream();
+                        // const context = new AudioContext();
+                        // const sourceNode = context.createMediaStreamSource(streamSource);
+                        let encoding;
+                        let symblConfig = (<StreamingAPIConnectionConfig>config);
+                        if (symblConfig.config && symblConfig.config.encoding) {
+                            encoding = symblConfig.config.encoding.toLowerCase();
+                        } else {
+                            encoding = "linear16";
+                        }
+                        switch(encoding) {
                             case "opus":
-                                audioStream = new OpusAudioStream(sourceNode, {} as OpusConfig);
+                                // audioStream = new OpusAudioStream(sourceNode, {} as OpusConfig);
                                 break;
                             case "linear16":
                             default:
-                                audioStream = new PCMAudioStream(sourceNode);
+                                audioStream = new PCMAudioStream();
                         }
                     } catch(e) {
                         throw e;
@@ -49,7 +56,6 @@ export class ConnectionFactory {
                 }
                 break;
             case "subscribe":
-                // SubscribeAPIConnection.validateConfig(config);
                 try {
                     connection = new SubscribeAPIConnection(<SubscribeAPIConnectionConfig>config);
                     return connection as SubscribeAPIConnection;

@@ -1,7 +1,8 @@
 import {AudioStream} from "./AudioStream";
+import {SymblEvent} from "../../events";
 
 export class PCMAudioStream extends AudioStream {
-    constructor(sourceNode: MediaStreamAudioSourceNode) {
+    constructor(sourceNode?: MediaStreamAudioSourceNode) {
         super(sourceNode);
     }
     
@@ -21,6 +22,7 @@ export class PCMAudioStream extends AudioStream {
         }
         try {
             // Send audio stream to websocket.
+            console.log("targetBuffer.buffer", targetBuffer.buffer);
             super.onProcessedAudio(targetBuffer.buffer);
 
         } catch (err) {
@@ -30,8 +32,14 @@ export class PCMAudioStream extends AudioStream {
     
     attachAudioProcessor() {
         if (this.processorNode) {
+            this.sourceNode.connect(this.gainNode);
+            this.gainNode.connect(this.processorNode);
+            this.processorNode.connect(this.audioContext.destination);
+            console.log('audio processor attached');
+            this.processorNode.onaudioprocess = audioData => this.processAudio(audioData);
 
-            this.processorNode.onaudioprocess = this.processAudio;
+        } else {
+            console.log('audio processor not attached');
 
         }
 
@@ -59,11 +67,16 @@ export class PCMAudioStream extends AudioStream {
 
     async attachAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
 
-        super.attachAudioDevice(
+        await super.attachAudioDevice(
             deviceId,
             mediaStream
         );
         this.attachAudioProcessor();
+        const event = new SymblEvent(
+            "audio_source_connected",
+            this.audioContext.sampleRate
+        );
+        this.dispatchEvent(event);
 
     }
 
@@ -79,12 +92,6 @@ export class PCMAudioStream extends AudioStream {
             deviceId,
             mediaStream
         );
-
-    }
-
-    attachAudioCallback (audioCallback: (audioData) => void): void {
-
-        super.attachAudioCallback(audioCallback);
 
     }
 

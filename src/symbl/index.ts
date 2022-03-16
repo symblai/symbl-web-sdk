@@ -133,6 +133,9 @@ export default class Symbl {
      * @param {object} appConfig - Symbl configuration object
      */
     async init(symblConfig: SymblConfig) : Promise<void> {
+        if (!symblConfig && this.symblConfig) {
+            symblConfig = this.symblConfig;
+        }
         try {
             this._validateSymblConfig(symblConfig);   
         } catch(e) {
@@ -140,36 +143,28 @@ export default class Symbl {
         }
 
         try {
-            const initConfig = {
-                appId: symblConfig.appId,
-                appSecret: symblConfig.appSecret,
-                accessToken: symblConfig.accessToken,
-                basePath: symblConfig.basePath || 'https://api.symbl.ai',
-                logLevel: symblConfig.logLevel
+            console.log('symblConfig', symblConfig);
+            const initConfig: any = {};
+
+            if (symblConfig.accessToken) {
+
+                initConfig.accessToken = symblConfig.accessToken;
+
+            } else {
+
+                initConfig.appId = symblConfig.appId;
+                initConfig.appSecret = symblConfig.appSecret;
+
             }
 
-            await this.sdk.init(initConfig);
-            // this.logger.info("Symbl: Successfully connected to Symbl");
+            initConfig.basePath = symblConfig.basePath || "https://api.symbl.ai";
+            console.log('this.sdk', symblConfig);
+            await this.sdk.init(symblConfig);
         } catch (err) {
+            console.log('error', err);
             throw new HttpError(err.message);
         }
     }
-
-          
-    // Get the media stream instance via the AudioStream interface
-    // static async getMediaStream(deviceId?) : Promise<MediaStream> {
-    //     // let stream = null;
-
-    //     // try {
-    //     //     stream = await navigator.mediaDevices.getUserMedia({
-    //     //         "audio": deviceId ? { deviceId } : true,
-    //     //         "video": false,
-    //     //     });
-    //     //     return stream
-    //     // } catch(err) {
-    //     //     throw new Error
-    //     // }
-    // }
     
     async createConnection(options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
         if (options.id) {

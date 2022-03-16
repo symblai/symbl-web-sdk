@@ -1,6 +1,6 @@
 import {EventTypes, SymblData} from "../types";
 import Logger from "../logger";
-import {SymblEvent} from "../events";
+import {SymblEvent, DelegatedEventTarget } from "../events";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
 export class BaseConnection extends EventTarget {

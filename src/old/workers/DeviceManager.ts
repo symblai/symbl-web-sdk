@@ -146,7 +146,7 @@ export default class DeviceManager {
      * Connects MediaStream device to Symbl Websocket endpoint
      * @param {object} connection - Symbl Streaming API Websocket connection
      */
-    async deviceConnect (connection: SymblRealtimeConnection): Promise<AudioContext> {
+    async deviceConnect (connection: any): Promise<AudioContext> {
 
         if (!this.isConnecting) {
 

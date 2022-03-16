@@ -32,7 +32,7 @@ export default class SymblWebEngine {
      */
     store: Store;
 
-    realtimeConfig: SymblRealtimeConfig;
+    realtimeConfig: any;
 
     /**
      * @ignore
@@ -47,7 +47,7 @@ export default class SymblWebEngine {
     /**
      * @ignore
      */
-    appConfig: SymblConfig;
+    appConfig: any;
 
     /**
      * @ignore
@@ -78,7 +78,7 @@ export default class SymblWebEngine {
      * Initializes SymblWebEngine with application configuration
      * @param {object} appConfig - Symbl configuration object
      */
-    async init (appConfig: SymblConfig): Promise<void> {
+    async init (appConfig: any): Promise<void> {
 
         const alphaNumericRegex = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i;
 
@@ -121,7 +121,7 @@ export default class SymblWebEngine {
 
         try {
 
-            const initConfig: SymblConfig = {};
+            const initConfig: any = {};
 
             if (appConfig.accessToken) {
 
@@ -157,8 +157,8 @@ export default class SymblWebEngine {
      * @param {object} options - Symbl realtime request config object
      * @param {boolean} connect - indicate whether connection is immediate
      */
-    async startRealtimeRequest (options: SymblRealtimeConfig, connect: boolean):
-        Promise<SymblRealtimeConnection> {
+    async startRealtimeRequest (options: any, connect: boolean):
+        Promise<any> {
 
         if (!options) {
 
@@ -230,8 +230,8 @@ export default class SymblWebEngine {
      * @param {object} options - Symbl realtime request config object
      * @param {boolean} connect - indicate whether connection is immediate
      */
-    async createStream (options: SymblRealtimeConfig, connect: boolean = true):
-        Promise<SymblRealtimeConnection> {
+    async createStream (options: any, connect: boolean = true):
+        Promise<any> {
 
         if (!options) {
 
@@ -301,7 +301,7 @@ export default class SymblWebEngine {
 
     }
 
-    async updateSourceNode(connection: SymblRealtimeConnection, sourceNode: MediaStreamAudioSourceNode) {
+    async updateSourceNode(connection: any, sourceNode: MediaStreamAudioSourceNode) {
         const deviceManager = this.getDeviceManager(connection);
         const encoding = this.realtimeConfig.config.encoding || this.realtimeConfig.config.speechRecognition.encoding;
         // await deviceManager.pauseStream();
@@ -326,7 +326,7 @@ export default class SymblWebEngine {
     /**
      * @ignore Applies the users' ondevicechange hanlder if present.
      */
-    setOnDeviceHandler(connection: SymblRealtimeConnection): void {
+    setOnDeviceHandler(connection: any): void {
         this.onDeviceChangeDefined = true;
         if (!this.realtimeConfig.handlers.ondevicechange) {
             if (this.appConfig.basePath === "https://api-labs.symbl.ai" || this.realtimeConfig.disconnectOnStopRequest === false) {
@@ -366,7 +366,7 @@ export default class SymblWebEngine {
      * Grabs the context from the current connection.
      * @param {object} connection - Symbl WebSocket Connection
      */
-    getContext(connection: SymblRealtimeConnection): AudioContext {
+    getContext(connection: any): AudioContext {
         return this.deviceManagerMap[connection.id].getContext();
     }
 
@@ -375,7 +375,7 @@ export default class SymblWebEngine {
      * Automatically reads the sample rate of the currently active device.
      * @param {object} connection - Symbl websocket connection
      */
-    async modifyRequest (connection: SymblRealtimeConnection): Promise<void> {
+    async modifyRequest (connection: any): Promise<void> {
 
         this.logger.debug('Symbl: Modifying request.');
         const deviceManager = this.getDeviceManager(connection);
@@ -401,7 +401,7 @@ export default class SymblWebEngine {
      * Reconnects the mic and unmutes the connection.
      * @param {object} connection - Symbl websocket connection
      */
-    async reconnect(connection: SymblRealtimeConnection): Promise<void> {
+    async reconnect(connection: any): Promise<void> {
         await this.getDeviceManager(connection).deviceConnect(connection);
         await this.unmute(connection);
     }
@@ -410,7 +410,7 @@ export default class SymblWebEngine {
      * Stops the realtime request and closes the websocket
      * @param {object} connection - Symbl websocket connection
      */
-    async stopRequest (connection: SymblRealtimeConnection): Promise<void> {
+    async stopRequest (connection: any): Promise<void> {
 
         if (!connection) {
 
@@ -465,7 +465,7 @@ export default class SymblWebEngine {
      /**
       * @ignore
       */
-      getDeviceManager(connection: SymblRealtimeConnection): DeviceManager | OpusDeviceManager  {
+      getDeviceManager(connection: any): DeviceManager | OpusDeviceManager  {
         return this.deviceManagerMap[connection.id];
       }
 
@@ -473,7 +473,7 @@ export default class SymblWebEngine {
      * Manually connects a device to the Symbl WebSocket endpoint
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
-    async connectDevice (connection: SymblRealtimeConnection): Promise<AudioContext> {
+    async connectDevice (connection: any): Promise<AudioContext> {
 
         if (!connection) {
 
@@ -517,7 +517,7 @@ export default class SymblWebEngine {
      * the disconnectonStopRequest flag is set.
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
-    async stop(connection: SymblRealtimeConnection): Promise<void> {
+    async stop(connection: any): Promise<void> {
         if (connection === undefined) {
             const err = "Connection is not defined.";
             this.logger.error(err);
@@ -545,7 +545,7 @@ export default class SymblWebEngine {
      * the disconnectonStopRequest flag is set.
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
-    async suspend(connection: SymblRealtimeConnection): Promise<void> {
+    async suspend(connection: any): Promise<void> {
         this.stop(connection);
     }
 
@@ -554,7 +554,7 @@ export default class SymblWebEngine {
      * the disconnectonStopRequest flag is set.
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
-    async start (connection: SymblRealtimeConnection): Promise<void> {
+    async start (connection: any): Promise<void> {
         if (connection === undefined) {
             const err = "Connection is not defined.";
             this.logger.error(err);
@@ -582,7 +582,7 @@ export default class SymblWebEngine {
      * is set to true.
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
-    async mute(connection?: SymblRealtimeConnection): Promise<void> {
+    async mute(connection?: any): Promise<void> {
         this.getDeviceManager(connection).setGain(0);
         if (this.realtimeConfig.disconnectOnStopRequest === false && connection) {
             await this.suspend(connection);
@@ -594,7 +594,7 @@ export default class SymblWebEngine {
      * is set to true.
      * @param {object} connection - Symbl realtime WebSocket connection object
      */
-    async unmute(connection?: SymblRealtimeConnection): Promise<void> {
+    async unmute(connection?: any): Promise<void> {
         this.getDeviceManager(connection).setGain(1);
         if (this.realtimeConfig.disconnectOnStopRequest === false && connection) {
             await this.start(connection);
