@@ -540,6 +540,7 @@ var AudioStream = function (_super) {
                     case 1:
                         _b.sent();
                         this.audioContext = new AudioContext();
+                        console.log('deatched audioContext', this.audioContext);
                         _b.label = 2;
                     case 2:
                         if (!mediaStream) return [3, 3];
@@ -685,9 +686,8 @@ exports["default"] = SymblError;
 
 
 exports.__esModule = true;
-exports.uuid = exports.uniquenessRegex = void 0;
+exports.uuid = void 0;
 var uuid_1 = __webpack_require__(59);
-exports.uniquenessRegex = /^[a-zA-Z0-9]{6,}$/;
 exports.uuid = uuid_1.v4;
 //# sourceMappingURL=index.js.map
 
@@ -1952,7 +1952,7 @@ var ConnectionFactory = function () {
     function ConnectionFactory() {}
     ConnectionFactory.prototype.instantiateConnection = function (connectionType, config, audioStream) {
         return __awaiter(this, void 0, void 0, function () {
-            var connection, ConnectionClass, _a, streamSource, context, sourceNode, encoding, symblConfig, e_1;
+            var connection, ConnectionClass, _a, streamSource, context, sourceNode, encoding, symblConfig, opusConfig, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -1984,7 +1984,16 @@ var ConnectionFactory = function () {
                         }
                         switch (encoding) {
                             case "opus":
-                                audioStream = new audio_1.OpusAudioStream(sourceNode, {});
+                                opusConfig = {
+                                    numberOfChannels: 1,
+                                    encoderSampleRate: 48000,
+                                    encoderFrameSize: 20,
+                                    maxFramesPerPage: 40,
+                                    encoderComplexity: 6,
+                                    streamPages: true,
+                                    rawOpus: true
+                                };
+                                audioStream = new audio_1.OpusAudioStream(sourceNode, opusConfig);
                                 break;
                             case "linear16":
                             default:
@@ -3073,21 +3082,41 @@ var OpusAudioStream = function (_super) {
         _super.prototype.onProcessedAudio.call(this, audioData);
     };
     OpusAudioStream.prototype.attachAudioProcessor = function (reInitialise) {
-        if (reInitialise) {
-            this.config.sourceNode = this.sourceNode;
-            this.opusEncoder = new symbl_opus_encdec_1.Recorder(this.config);
-        }
-        if (this.opusEncoder) {
-            this.opusEncoder.start();
-            this.opusEncoder.ondataavailable = this.processAudio;
-        }
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (reInitialise) {
+                            console.log('this.audioContext', this.audioContext);
+                            this.config.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+                            this.opusEncoder = new symbl_opus_encdec_1.Recorder(this.config);
+                        }
+                        if (!this.opusEncoder) return [3, 2];
+                        return [4, this.opusEncoder.start()];
+                    case 1:
+                        _a.sent();
+                        this.opusEncoder.ondataavailable = function (audioData) {
+                            return _this.processAudio(audioData);
+                        };
+                        _a.label = 2;
+                    case 2:
+                        return [2];
+                }
+            });
+        });
     };
     OpusAudioStream.prototype.attachAudioSourceElement = function (audioSourceDomElement) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                _super.prototype.attachAudioSourceElement.call(this, audioSourceDomElement);
-                this.attachAudioProcessor(true);
-                return [2];
+                switch (_a.label) {
+                    case 0:
+                        _super.prototype.attachAudioSourceElement.call(this, audioSourceDomElement);
+                        return [4, this.attachAudioProcessor(true)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -3105,9 +3134,16 @@ var OpusAudioStream = function (_super) {
     OpusAudioStream.prototype.attachAudioDevice = function (deviceId, mediaStream) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                _super.prototype.attachAudioDevice.call(this, deviceId, mediaStream);
-                this.attachAudioProcessor(true);
-                return [2];
+                switch (_a.label) {
+                    case 0:
+                        return [4, _super.prototype.attachAudioDevice.call(this, deviceId, mediaStream)];
+                    case 1:
+                        _a.sent();
+                        return [4, this.attachAudioProcessor(true)];
+                    case 2:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -3600,13 +3636,14 @@ exports.__esModule = true;
 
 
 exports.__esModule = true;
-exports.OPUS_SAMPLE_RATE_HERTZ = exports.LINEAR16_SAMPLE_RATE_HERTZ = exports.VALID_ENCODING = exports.VALID_INSIGHT_TYPES = exports.DEFAULT_ENCODING_TYPE = exports.DEFAULT_SAMPLE_RATE_HERTZ = void 0;
+exports.PASSWORD_REGEX = exports.OPUS_SAMPLE_RATE_HERTZ = exports.LINEAR16_SAMPLE_RATE_HERTZ = exports.VALID_ENCODING = exports.VALID_INSIGHT_TYPES = exports.DEFAULT_ENCODING_TYPE = exports.DEFAULT_SAMPLE_RATE_HERTZ = void 0;
 exports.DEFAULT_SAMPLE_RATE_HERTZ = 16000;
 exports.DEFAULT_ENCODING_TYPE = 'LINEAR16';
 exports.VALID_INSIGHT_TYPES = ['action_item', 'question'];
 exports.VALID_ENCODING = ['LINEAR16', 'OPUS'];
 exports.LINEAR16_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 44100, 48000];
 exports.OPUS_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 48000];
+exports.PASSWORD_REGEX = /^[a-zA-Z0-9-]{6,}$/;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -3943,13 +3980,13 @@ var __importDefault = undefined && undefined.__importDefault || function (mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
 };
 exports.__esModule = true;
-var client_sdk_min_1 = __webpack_require__(10);
 var error_1 = __webpack_require__(3);
-var logger_1 = __importDefault(__webpack_require__(1));
-var configs_1 = __webpack_require__(58);
+var types_1 = __webpack_require__(8);
 var utils_1 = __webpack_require__(7);
 var connection_1 = __webpack_require__(4);
-var types_1 = __webpack_require__(8);
+var logger_1 = __importDefault(__webpack_require__(1));
+var configs_1 = __webpack_require__(58);
+var client_sdk_min_1 = __webpack_require__(10);
 var Symbl = function () {
     function Symbl(symblConfig) {
         this.sdk = client_sdk_min_1.sdk;
@@ -3965,7 +4002,7 @@ var Symbl = function () {
     }
     Symbl.prototype._validateSymblConfig = function (symblConfig) {
         if (!symblConfig) {
-            throw new error_1.InvalidCredentialsError('No credentials were passed');
+            throw new error_1.InvalidCredentialsError("No credentials were passed");
         }
         var appId = symblConfig.appId,
             accessToken = symblConfig.accessToken,
@@ -3992,7 +4029,7 @@ var Symbl = function () {
             throw new error_1.InvalidCredentialsError("AppSecret is not valid");
         }
         if (accessToken) {
-            var tokenPayload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64').toString());
+            var tokenPayload = JSON.parse(Buffer.from(accessToken.split(".")[1], "base64").toString());
             var expiry = Math.floor(tokenPayload.exp - Date.now() / 1000);
             if (expiry <= 0) {
                 throw new error_1.AccessTokenExpiredError("Provided token as expired");
@@ -4017,7 +4054,7 @@ var Symbl = function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3,, 4]);
-                        console.log('symblConfig', symblConfig);
+                        console.log("symblConfig", symblConfig);
                         initConfig = {};
                         if (symblConfig.accessToken) {
                             initConfig.accessToken = symblConfig.accessToken;
@@ -4026,14 +4063,14 @@ var Symbl = function () {
                             initConfig.appSecret = symblConfig.appSecret;
                         }
                         initConfig.basePath = symblConfig.basePath || "https://api.symbl.ai";
-                        console.log('this.sdk', symblConfig);
+                        console.log("this.sdk", symblConfig);
                         return [4, this.sdk.init(symblConfig)];
                     case 2:
                         _a.sent();
                         return [3, 4];
                     case 3:
                         err_1 = _a.sent();
-                        console.log('error', err_1);
+                        console.log("error", err_1);
                         throw new error_1.HttpError(err_1.message);
                     case 4:
                         return [2];
@@ -4043,19 +4080,12 @@ var Symbl = function () {
     };
     Symbl.prototype.createConnection = function (options, audioStream) {
         return __awaiter(this, void 0, void 0, function () {
-            var regex, validSessionId, connection, e_1;
+            var connection, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (options.id) {
-                            regex = new RegExp(utils_1.uniquenessRegex);
-                            validSessionId = regex.test(options.id);
-                            if (!validSessionId) {
-                                throw new error_1.SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
-                            }
-                        } else {
+                        if (options.id) {} else {
                             options.id = (0, utils_1.uuid)();
-                            this.logger.warn("An id was not provided. " + options.id + " assigned instead.");
                         }
                         _a.label = 1;
                     case 1:
@@ -4107,7 +4137,7 @@ var Symbl = function () {
                 switch (_a.label) {
                     case 0:
                         if (!sessionId) {
-                            throw new error_1.RequiredParameterAbsentError('sessionId is required.');
+                            throw new error_1.RequiredParameterAbsentError("sessionId is required.");
                         }
                         _a.label = 1;
                     case 1:
