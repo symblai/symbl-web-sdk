@@ -1,8 +1,8 @@
 import { Recorder } from "symbl-opus-encdec";
 jest.mock("symbl-opus-encdec");
 import AudioContext from 'audio-context-mock';
-import Symbl from "../../../src2/symbl";
-import { OpusAudioStream } from '../../../src2/audio';
+import Symbl from "../../../src/symbl";
+import { OpusAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, context, mediaStream, sourceNode;

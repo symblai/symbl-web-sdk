@@ -1,12 +1,12 @@
-import Symbl from "../../../src2/symbl";
-import { uuid } from "../../../src2/utils";
-jest.mock("../../../src2/utils");
-import { PCMAudioStream } from "../../../src2/audio";
-import { StreamingAPIConnection } from '../../../src2/api';
+import Symbl from "../../../src/symbl";
+import { uuid } from "../../../src/utils";
+jest.mock("../../../src/utils");
+import { PCMAudioStream } from "../../../src/audio";
+import { StreamingAPIConnection } from '../../../src/api';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types"
-import { InvalidValueError, NotSupportedAudioEncodingError } from "../../../src2/error"
-import { VALID_INSIGHT_TYPES, VALID_ENCODING} from "../../../src2/constants";
+import { ConnectionState, ConnectionProcessingState } from "../../../src/types"
+import { InvalidValueError, NotSupportedAudioEncodingError } from "../../../src/error"
+import { VALID_INSIGHT_TYPES, VALID_ENCODING} from "../../../src/constants";
 
 const validConfig = {
         id: 'valid-id',

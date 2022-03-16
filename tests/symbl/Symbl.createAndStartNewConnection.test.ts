@@ -1,10 +1,10 @@
-import Symbl from "../../src2/symbl";
-import { ConnectionFactory, BaseConnection } from '../../src2/connection';
-import { StreamingAPIConnection  } from "../../src2/api";
+import Symbl from "../../src/symbl";
+import { ConnectionFactory, BaseConnection } from '../../src/connection';
+import { StreamingAPIConnection  } from "../../src/api";
 import { Recorder } from "symbl-opus-encdec";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
-import { ConnectionProcessingState, ConnectionState } from "../../src2/types";
-import { PCMAudioStream, OpusAudioStream } from '../../src2/audio';
+import { ConnectionProcessingState, ConnectionState } from "../../src/types";
+import { PCMAudioStream, OpusAudioStream } from '../../src/audio';
 import { APP_ID, APP_SECRET } from '../constants';
 
 /** define mocks */
@@ -12,7 +12,7 @@ jest.mock("symbl-opus-encdec");
 const startProcessingMock = jest.fn(() => {
     // (StreamingAPIConnection as any).processingState = ConnectionProcessingState.PROCESSING;
 })
-jest.mock("../../src2/api", () => {
+jest.mock("../../src/api", () => {
     return {
         StreamingAPIConnection: jest.fn().mockImplementation(() => {
             return {
@@ -30,7 +30,7 @@ jest.mock("../../src2/api", () => {
         })
     }
 });
-jest.mock('../../src2/connection', () => {
+jest.mock('../../src/connection', () => {
     return {
         ConnectionFactory: jest.fn().mockImplementation(() => {
             return {

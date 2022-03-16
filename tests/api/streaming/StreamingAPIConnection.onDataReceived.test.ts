@@ -1,10 +1,10 @@
-import Symbl from "../../../src2/symbl";
-import { BaseConnection } from '../../../src2/connection';
-import { StreamingAPIConnection } from '../../../src2/api';
-import { PCMAudioStream } from '../../../src2/audio';
+import Symbl from "../../../src/symbl";
+import { BaseConnection } from '../../../src/connection';
+import { StreamingAPIConnection } from '../../../src/api';
+import { PCMAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { SymblData } from '../../../src2/types';
-import { SymblEvent } from "../../../src2/events";
+import { SymblData } from '../../../src/types';
+import { SymblEvent } from "../../../src/events";
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, sourceNode;
 let audioStream

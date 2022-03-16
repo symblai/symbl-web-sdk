@@ -1,11 +1,11 @@
-import Symbl from "../../../src2/symbl";
+import Symbl from "../../../src/symbl";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")
-import { PCMAudioStream, OpusAudioStream } from "../../../src2/audio";
-import { SubscribeAPIConnection } from '../../../src2/api';
-import { NoConnectionError, HandshakeError } from "../../../src2/error";
-import { ConnectionState } from "../../../src2/types/connection";
-// jest.mock('../../src2/connection'); // ConnectionFactory is now a mock constructor
+import { PCMAudioStream, OpusAudioStream } from "../../../src/audio";
+import { SubscribeAPIConnection } from '../../../src/api';
+import { NoConnectionError, HandshakeError } from "../../../src/error";
+import { ConnectionState } from "../../../src/types/connection";
+// jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../../constants';
 
 

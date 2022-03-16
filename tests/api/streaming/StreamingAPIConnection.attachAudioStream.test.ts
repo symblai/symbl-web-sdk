@@ -1,8 +1,8 @@
-import Symbl from "../../../src2/symbl";
-import { PCMAudioStream, OpusAudioStream } from "../../../src2/audio";
-import { StreamingAPIConnection } from '../../../src2/api';
+import Symbl from "../../../src/symbl";
+import { PCMAudioStream, OpusAudioStream } from "../../../src/audio";
+import { StreamingAPIConnection } from '../../../src/api';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
+import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
 let audioStream, sourceNode;

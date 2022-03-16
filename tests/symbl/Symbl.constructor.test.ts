@@ -1,5 +1,5 @@
-import Symbl from "../../src2/symbl/index";
-import { InvalidCredentialsError, AccessTokenExpiredError } from "../../src2/error/symbl/index";
+import Symbl from "../../src/symbl/index";
+import { InvalidCredentialsError, AccessTokenExpiredError } from "../../src/error/symbl/index";
 import { APP_ID, APP_SECRET, ACCESS_TOKEN, EXPIRED_ACCESS_TOKEN } from '../constants';
 
 test(

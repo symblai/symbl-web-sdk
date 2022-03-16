@@ -1,6 +1,6 @@
-import Symbl from "../../../src2/symbl";
-import { StreamingAPIConnection } from '../../../src2/api';
-import { PCMAudioStream } from '../../../src2/audio';
+import Symbl from "../../../src/symbl";
+import { StreamingAPIConnection } from '../../../src/api';
+import { PCMAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;

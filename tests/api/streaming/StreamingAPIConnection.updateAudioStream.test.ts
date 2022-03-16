@@ -1,8 +1,8 @@
-import Symbl from "../../../src2/symbl";
-import { PCMAudioStream } from "../../../src2/audio";
-import { StreamingAPIConnection } from '../../../src2/api';
+import Symbl from "../../../src/symbl";
+import { PCMAudioStream } from "../../../src/audio";
+import { StreamingAPIConnection } from '../../../src/api';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types"
+import { ConnectionState, ConnectionProcessingState } from "../../../src/types"
 
 /* Design Doc Requirements
     updateAudioStream(audioStream: AudioStream)

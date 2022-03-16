@@ -1,8 +1,8 @@
 import AudioContext from 'audio-context-mock';
-import Symbl from "../../../src2/symbl";
-import { PCMAudioStream } from '../../../src2/audio';
+import Symbl from "../../../src/symbl";
+import { PCMAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { SymblEvent } from "../../../src2/events";
+import { SymblEvent } from "../../../src/events";
 
 let authConfig, symbl;
 let audioStream;

@@ -1,9 +1,9 @@
-import Symbl from "../../../src2/symbl";
-import { PCMAudioStream } from "../../../src2/audio";
-import { StreamingAPIConnection } from '../../../src2/api';
-import { NoConnectionError } from "../../../src2/error";
+import Symbl from "../../../src/symbl";
+import { PCMAudioStream } from "../../../src/audio";
+import { StreamingAPIConnection } from '../../../src/api';
+import { NoConnectionError } from "../../../src/error";
 import { APP_ID, APP_SECRET } from '../../constants';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
+import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, streamingAPIConnection;
 beforeEach(() => {

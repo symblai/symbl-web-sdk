@@ -1,7 +1,7 @@
 import AudioContext from 'audio-context-mock';
-import Symbl from "../../../src2/symbl";
-import { SymblEvent } from "../../../src2/events";
-import { OpusAudioStream } from '../../../src2/audio';
+import Symbl from "../../../src/symbl";
+import { SymblEvent } from "../../../src/events";
+import { OpusAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 
 let authConfig, symbl;

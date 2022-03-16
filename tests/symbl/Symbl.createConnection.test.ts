@@ -1,10 +1,10 @@
-import Symbl from "../../src2/symbl";
-import { ConnectionFactory, BaseConnection } from '../../src2/connection';
-import { PCMAudioStream, OpusAudioStream } from '../../src2/audio';
-import { StreamingAPIConnection  } from "../../src2/api";
-import { NotSupportedSampleRateError  } from "../../src2/error";
+import Symbl from "../../src/symbl";
+import { ConnectionFactory, BaseConnection } from '../../src/connection';
+import { PCMAudioStream, OpusAudioStream } from '../../src/audio';
+import { StreamingAPIConnection  } from "../../src/api";
+import { NotSupportedSampleRateError  } from "../../src/error";
 import { APP_ID, APP_SECRET } from '../constants';
-import { uniquenessRegex, uuid } from '../../src2/utils';
+import { uniquenessRegex, uuid } from '../../src/utils';
 
 // Validate `options` with the `StreamingAPIConnectionConfig` interface
 // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
@@ -16,13 +16,13 @@ import { uniquenessRegex, uuid } from '../../src2/utils';
 
 
 /** define mocks */
-jest.mock("../../src2/utils");
+jest.mock("../../src/utils");
 jest.mock("symbl-opus-encdec");
 const startProcessingMock = jest.fn(() => {
     // (StreamingAPIConnection as any).processingState = ConnectionProcessingState.PROCESSING;
 });
 const connectMock = jest.fn();
-jest.mock("../../src2/api", () => {
+jest.mock("../../src/api", () => {
     return {
         StreamingAPIConnection: jest.fn().mockImplementation(() => {
             return {
@@ -38,7 +38,7 @@ jest.mock("../../src2/api", () => {
         })
     }
 });
-jest.mock('../../src2/connection', () => {
+jest.mock('../../src/connection', () => {
     return {
         ConnectionFactory: jest.fn().mockImplementation(() => {
             return {

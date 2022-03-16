@@ -1,3 +1,3 @@
-import { AudioStream } from "../../src2/audio";
+import { AudioStream } from "../../src/audio";
 
 export default AudioStream;

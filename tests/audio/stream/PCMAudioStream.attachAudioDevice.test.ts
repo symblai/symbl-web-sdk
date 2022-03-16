@@ -10,12 +10,12 @@ import {AudioContext} from "standardized-audio-context-mock";
     }),
   };
  */
-import Symbl from "../../../src2/symbl";
+import Symbl from "../../../src/symbl";
 // import 
-import { PCMAudioStream, AudioStream } from '../../../src2/audio';
+import { PCMAudioStream, AudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { InvalidAudioInputDeviceError } from " ../../../src2/error";
-import { SymblEvent } from "../../../src2/events";
+import { InvalidAudioInputDeviceError } from " ../../../src/error";
+import { SymblEvent } from "../../../src/events";
 
 
 

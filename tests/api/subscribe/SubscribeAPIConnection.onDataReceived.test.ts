@@ -1,12 +1,12 @@
-import Symbl from "../../../src2/symbl";
-import { ConnectionFactory } from '../../../src2/connection';
-import { SubscribeAPIConnection } from '../../../src2/api/subscribe';
-import { PCMAudioStream, OpusAudioStream } from '../../../src2/audio';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
+import Symbl from "../../../src/symbl";
+import { ConnectionFactory } from '../../../src/connection';
+import { SubscribeAPIConnection } from '../../../src/api/subscribe';
+import { PCMAudioStream, OpusAudioStream } from '../../../src/audio';
+import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 import { APP_ID, APP_SECRET } from '../../constants';
-import Logger from "../../../src2/logger";
+import Logger from "../../../src/logger";
 import { Stream } from "stream";
-import { SymblData } from '../../../src2/types';
+import { SymblData } from '../../../src/types';
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
 let audioStream

@@ -1,15 +1,15 @@
-import Symbl from "../../../src2/symbl";
+import Symbl from "../../../src/symbl";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")
-import { ConnectionFactory } from '../../../src2/connection';
-import { StreamingAPIConnection } from "../../../src2/api";
-import { PCMAudioStream, OpusAudioStream } from '../../../src2/audio';
-import { ConnectionState, ConnectionProcessingState } from "../../../src2/types/connection"
+import { ConnectionFactory } from '../../../src/connection';
+import { StreamingAPIConnection } from "../../../src/api";
+import { PCMAudioStream, OpusAudioStream } from '../../../src/audio';
+import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 import { APP_ID, APP_SECRET } from '../../constants';
-import Logger from "../../../src2/logger";
+import Logger from "../../../src/logger";
 import { Stream } from "stream";
-import { SymblEvent } from "../../../src2/events";
-import { NoConnectionError, SymblError } from "../../../src2/error";
+import { SymblEvent } from "../../../src/events";
+import { NoConnectionError, SymblError } from "../../../src/error";
 
 /* Design Doc Requirements
     If the `connectionState` is not CONNECTED, throw `NoConnectionError` with appropriate error message

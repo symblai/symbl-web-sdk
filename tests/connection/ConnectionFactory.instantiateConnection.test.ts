@@ -1,16 +1,16 @@
 
-import Symbl from "../../src2/symbl";
-import { PCMAudioStream, OpusAudioStream } from "../../src2/audio";
-import { ConnectionFactory } from '../../src2/connection';
-import { StreamingAPIConnection, SubscribeAPIConnection } from '../../src2/api';
-// jest.mock('../../src2/connection'); // ConnectionFactory is now a mock constructor
+import Symbl from "../../src/symbl";
+import { PCMAudioStream, OpusAudioStream } from "../../src/audio";
+import { ConnectionFactory } from '../../src/connection';
+import { StreamingAPIConnection, SubscribeAPIConnection } from '../../src/api';
+// jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../constants';
-import { InvalidValueError } from '../../src2/error';
+import { InvalidValueError } from '../../src/error';
 import {
     SymblConnectionType,
     ConnectionState,
     ConnectionProcessingState
-} from "../../src2/types/connection";
+} from "../../src/types/connection";
 
 // Validate the `connectionType` to be a valid enum present in the `ConnectionType` enum
 // Validate the `config` against the specific type of `Connection` by calling `validateConfig` and return the instance if the config is valid

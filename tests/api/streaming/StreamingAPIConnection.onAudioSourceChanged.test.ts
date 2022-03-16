@@ -1,9 +1,9 @@
-import Symbl from "../../../src2/symbl";
-import { StreamingAPIConnection } from '../../../src2/api';
-import { PCMAudioStream } from '../../../src2/audio';
+import Symbl from "../../../src/symbl";
+import { StreamingAPIConnection } from '../../../src/api';
+import { PCMAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { SymblEvent } from "../../../src2/events";
-// import Logger from "../../src2/logger";
+import { SymblEvent } from "../../../src/events";
+// import Logger from "../../src/logger";
 // import { Stream } from "stream";
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;

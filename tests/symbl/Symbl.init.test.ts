@@ -1,5 +1,5 @@
-import Symbl from "../../src2/symbl/index";
-import { HttpError, InvalidCredentialsError } from '../../src2/error';
+import Symbl from "../../src/symbl/index";
+import { HttpError, InvalidCredentialsError } from '../../src/error';
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import { APP_ID, APP_SECRET } from '../constants';
 

@@ -1,12 +1,12 @@
-import Symbl from "../../../src2/symbl";
+import Symbl from "../../../src/symbl";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")
-import { PCMAudioStream, OpusAudioStream } from "../../../src2/audio";
-import { SubscribeAPIConnection } from '../../../src2/api';
-import { NoConnectionError } from "../../../src2/error";
-// jest.mock('../../src2/connection'); // ConnectionFactory is now a mock constructor
+import { PCMAudioStream, OpusAudioStream } from "../../../src/audio";
+import { SubscribeAPIConnection } from '../../../src/api';
+import { NoConnectionError } from "../../../src/error";
+// jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../../constants';
-import { ConnectionState } from "../../../src2/types/connection"
+import { ConnectionState } from "../../../src/types/connection"
 
 /* Requirements
     If the `connectionState` is already DISCONNECTED, log at warning level that a connection closure attempt is being made on an already closed connection.

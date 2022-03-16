@@ -1,9 +1,9 @@
-import Symbl from "../../src2/symbl";
-import { ConnectionFactory, BaseConnection } from '../../src2/connection';
-import { SubscribeAPIConnection } from '../../src2/api';
+import Symbl from "../../src/symbl";
+import { ConnectionFactory, BaseConnection } from '../../src/connection';
+import { SubscribeAPIConnection } from '../../src/api';
 import { APP_ID, APP_SECRET } from '../constants';
-import { uuid } from '../../src2/utils';
-import { RequiredParameterAbsentError } from "../../src2/error";
+import { uuid } from '../../src/utils';
+import { RequiredParameterAbsentError } from "../../src/error";
 
 
 // Validate `sessionId` and if not present, throw `RequiredParameterAbsentError`
@@ -13,11 +13,11 @@ import { RequiredParameterAbsentError } from "../../src2/error";
 
 
 /** define mocks */
-jest.mock("../../src2/utils");
+jest.mock("../../src/utils");
 const connectMock = jest.fn(() => {
     // (StreamingAPIConnection as any).processingState = ConnectionProcessingState.PROCESSING;
 })
-jest.mock("../../src2/api", () => {
+jest.mock("../../src/api", () => {
     return {
         SubscribeAPIConnection: jest.fn().mockImplementation(() => {
             return {
@@ -29,7 +29,7 @@ jest.mock("../../src2/api", () => {
         })
     }
 });
-jest.mock('../../src2/connection', () => {
+jest.mock('../../src/connection', () => {
     return {
         ConnectionFactory: jest.fn().mockImplementation(() => {
             return {
