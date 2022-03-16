@@ -1,35 +1,36 @@
-import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
-import { 
-    InvalidCredentialsError,
-    AccessTokenExpiredError,
-    InvalidValueError,
-    SessionIDNotUniqueError,
-    RequiredParameterAbsentError,
-    HttpError,
-    /*InvalidLogLevelError*/
-} from "../error";
-import Logger from "../logger";
-import { VALID_LOG_LEVELS } from "../utils/configs";
-import { is, assertType } from 'typescript-is'
-import { uniquenessRegex, uuid } from "../utils";
-import { ConnectionFactory } from "../connection";
-import { StreamingAPIConnection, SubscribeAPIConnection } from "../api";
-import { AudioStream } from "../audio";
 import {
-    SymblConnectionType,
-    TimeUnit,
-    SymblConfig,
-    StreamingAPIConnectionConfig
-} from "../types";
-/*
-const anotherNonConformer: unknown = { aString: 1337 }
-try {
-    assertType<SomeInterfaceOrType>(anotherNonConformer)
-} catch(error) {
-    console.log(error.message) // logs: "validation failed at anotherNonConformer.aString: expected a string"
-}
- */
+    AccessTokenExpiredError,
+    HttpError,
+    InvalidCredentialsError,
+    InvalidValueError,
+    RequiredParameterAbsentError,
+    SessionIDNotUniqueError
 
+    /* InvalidLogLevelError*/
+} from "../error";
+import {StreamingAPIConnection, SubscribeAPIConnection} from "../api";
+import {
+    StreamingAPIConnectionConfig,
+    SymblConfig,
+    SymblConnectionType,
+    TimeUnit
+} from "../types";
+import {assertType, is} from "typescript-is";
+import {uniquenessRegex, uuid} from "../utils";
+import {AudioStream} from "../audio";
+import {ConnectionFactory} from "../connection";
+import Logger from "../logger";
+import {VALID_LOG_LEVELS} from "../utils/configs";
+import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+
+/*
+ *Const anotherNonConformer: unknown = { aString: 1337 }
+ *try {
+ *    assertType<SomeInterfaceOrType>(anotherNonConformer)
+ *} catch(error) {
+ *    console.log(error.message) // logs: "validation failed at anotherNonConformer.aString: expected a string"
+ *}
+ */
 
 
 export default class Symbl {
@@ -43,19 +44,25 @@ export default class Symbl {
 
     private logger: Logger;
 
-    constructor(symblConfig?: SymblConfig) {
+    constructor (symblConfig?: SymblConfig) {
+
         if (symblConfig) {
 
             try {
-                this._validateSymblConfig(symblConfig);   
-            } catch(e) {
+
+                this._validateSymblConfig(symblConfig);
+
+            } catch (e) {
+
                 throw e;
+
             }
 
         }
-        
+
         this.symblConfig = symblConfig;
         this.logger = new Logger();
+
     }
 
     /**
@@ -63,87 +70,124 @@ export default class Symbl {
      * @param {SymblConfig} symblConfig - Symbl configuration object
      * @returns boolean
      */
-    _validateSymblConfig(symblConfig: SymblConfig): boolean {
+    _validateSymblConfig (symblConfig: SymblConfig): boolean {
 
         if (!symblConfig) {
-            throw new InvalidCredentialsError('No credentials were passed');
+
+            throw new InvalidCredentialsError("No credentials were passed");
+
         }
 
         const {appId, accessToken, appSecret, logLevel} = symblConfig;
 
         if (logLevel && VALID_LOG_LEVELS.indexOf(logLevel) === -1) {
-            // throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(', ')}`)
+            // Throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(', ')}`)
         }
 
         const alphaNumericRegex = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i;
 
         if (!appId && !appSecret && !accessToken) {
+
             throw new InvalidCredentialsError("Please provide an AppID & AppSecret or an AccessToken");
+
         }
 
         if (accessToken && (appId || appSecret)) {
+
             throw new InvalidCredentialsError("You must use `accessToken` or an `appId`/`appSecret` pair separately.");
+
         }
 
         if (!appId && !accessToken) {
+
             throw new InvalidCredentialsError("AppID is missing");
+
         }
-        
+
         if (appId &&
             (appId.length !== 64 || !appId.match(alphaNumericRegex))
         ) {
+
             throw new InvalidCredentialsError("AppID is not valid");
+
         }
-        
+
         if (appId && !appSecret && !accessToken) {
+
             throw new InvalidCredentialsError("AppSecret is missing");
+
         }
 
         if (appSecret &&
             (appSecret.length !== 128 || !appSecret.match(alphaNumericRegex))
         ) {
+
             throw new InvalidCredentialsError("AppSecret is not valid");
+
         }
 
         if (accessToken) {
-            const tokenPayload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64').toString());
+
+            const tokenPayload = JSON.parse(Buffer.from(
+                accessToken.split(".")[1],
+                "base64"
+            ).toString());
             const expiry = Math.floor(tokenPayload.exp - Date.now() / 1000);
             if (expiry <= 0) {
-                throw new AccessTokenExpiredError("Provided token as expired")
+
+                throw new AccessTokenExpiredError("Provided token as expired");
+
             }
+
         }
 
         return true;
+
     }
 
-    // validateStreamingAPIConnectionConfig(options: StreamingAPIConnectionConfig): boolean {
-    //     if (!options) {
+    /*
+     * ValidateStreamingAPIConnectionConfig(options: StreamingAPIConnectionConfig): boolean {
+     *     if (!options) {
+     */
 
     //     }
-        
-    //     if (!options.id) {
+
+    //     If (!options.id) {
 
     //     }
 
-    //     return true
-    // }
-   
+    /*
+     *     Return true
+     * }
+     */
+
     /**
      * Validates and initializes Symbl with application configuration
      * @param {object} appConfig - Symbl configuration object
      */
-    async init(symblConfig: SymblConfig) : Promise<void> {
+    async init (symblConfig: SymblConfig) : Promise<void> {
+
         if (!symblConfig && this.symblConfig) {
+
             symblConfig = this.symblConfig;
+
         }
         try {
-            this._validateSymblConfig(symblConfig);   
-        } catch(e) {
+
+            this._validateSymblConfig(symblConfig);
+
+        } catch (e) {
+
             throw e;
+
         }
 
         try {
-            console.log('symblConfig', symblConfig);
+
+            console.log(
+                "symblConfig",
+                symblConfig
+            );
             const initConfig: any = {};
 
             if (symblConfig.accessToken) {
@@ -158,93 +202,162 @@ export default class Symbl {
             }
 
             initConfig.basePath = symblConfig.basePath || "https://api.symbl.ai";
-            console.log('this.sdk', symblConfig);
+            console.log(
+                "this.sdk",
+                symblConfig
+            );
             await this.sdk.init(symblConfig);
+
         } catch (err) {
-            console.log('error', err);
+
+            console.log(
+                "error",
+                err
+            );
             throw new HttpError(err.message);
+
         }
+
     }
-    
-    async createConnection(options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+
+    async createConnection (options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+
         if (options.id) {
-            const regex = new RegExp(uniquenessRegex);
+
+            // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
+            const regex = new RegExp(
+                uniquenessRegex,
+                "u"
+            );
             const validSessionId = regex.test(options.id);
+
             if (!validSessionId) {
+
                 throw new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
+
             }
+
         } else {
+
+            // If no `id` is present in the options, log a warning and assign a `uuid`
             options.id = uuid();
+
         }
         try {
+
+            // Establish a new Streaming API Connection via the `ConnectionFactory`, creating an instance of the `StreamingAPIConnection`
             const connection = await new ConnectionFactory().instantiateConnection(
-                SymblConnectionType.STREAMING, options, audioStream);
+                SymblConnectionType.STREAMING,
+                options,
+                audioStream
+            );
+
+            // Invoke the `connect` function to establish an idle connection with Streaming API. (It will not process Audio in this state)
             await connection.connect();
             return connection as StreamingAPIConnection;
-        } catch(e) {
+
+        } catch (e) {
+
+            // If the Connection establishment fails, throw the appropriate error generated by the `StreamingAPIConnection` interface.
             console.error(e);
             throw e;
+
         }
 
-        // Validate `options` with the `StreamingAPIConnectionConfig` interface
-        // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
-        // If no `id` is present in the options, log a warning and assign a `uuid`
-        // Establish a new Streaming API Connection via the `ConnectionFactory`, creating an instance of the `StreamingAPIConnection`
-        // Invoke the `connect` function to establish an idle connection with Streaming API. (It will not process Audio in this state)
-        // If the Connection establishment fails, throw the appropriate error generated by the `StreamingAPIConnection` interface.
-        // Return the connection instance
+        /*
+         * Validate `options` with the `StreamingAPIConnectionConfig` interface
+         * Return the connection instance
+         */
 
-              
+
     }
-    
-    async createAndStartNewConnection(options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+
+    async createAndStartNewConnection (options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+
         try {
-            const connection = await this.createConnection(options, audioStream);
+
+            // Invoke `createConnection` with the above arguments.
+            const connection = await this.createConnection(
+                options,
+                audioStream
+            );
             await connection.startProcessing();
             return connection as StreamingAPIConnection;
-        } catch(e) {
+
+        } catch (e) {
+
+            // If the connection fails to get established, re-throw the error thrown by `StreamingAPIConnection` instance
+
             throw e;
+
         }
 
-        // Invoke `createConnection` with the above arguments.
-        // If the connection fails to get established, re-throw the error thrown by `StreamingAPIConnection` instance
-        // Invoke `startProcessing` on the instance of `StreamingAPIConnection`
-        // Return the connection instance
+        /*
+         * Invoke `startProcessing` on the instance of `StreamingAPIConnection`
+         * Return the connection instance
+         */
+
     }
-    
-    async subscribeToConnection(sessionId: string) : Promise<SubscribeAPIConnection> {
+
+    async subscribeToConnection (sessionId: string) : Promise<SubscribeAPIConnection> {
+
+        // Validate `sessionId` and if not present, throw `RequiredParameterAbsentError`
         if (!sessionId) {
-            throw new RequiredParameterAbsentError('sessionId is required.');
+
+            throw new RequiredParameterAbsentError("sessionId is required.");
+
         }
         try {
+
+            // Initialize the instance of `SubscribeAPIConnection` via the `ConnectionFactory` with the passed in `sessionId`
             const connection = await new ConnectionFactory().instantiateConnection(
-                SymblConnectionType.SUBSCRIBE, {} as StreamingAPIConnectionConfig);
+                SymblConnectionType.SUBSCRIBE,
+                {} as StreamingAPIConnectionConfig
+            );
             await connection.connect();
+            // If connection is successful, return the instance of the `SubscribeAPIConnection`
             return connection as SubscribeAPIConnection;
-        } catch(e) {
+
+        } catch (e) {
+
+            // If connection fails to get established, re-throw the error returned by `SubscribeAPIConnection`
             throw e;
+
         }
-        // Validate `sessionId` and if not present, throw `RequiredParameterAbsentError`
-        // Initialize the instance of `SubscribeAPIConnection` via the `ConnectionFactory` with the passed in `sessionId`
-        // If connection is successful, return the instance of the `SubscribeAPIConnection`
-        // If connection fails to get established, re-throw the error returned by `SubscribeAPIConnection`
+
     }
-    
-    static wait(time: number, unit = TimeUnit.MS) : Promise<void> {
-        if (time < 0) {
-            throw new InvalidValueError("`time` must be >= 0.");   
-        }
-        // if (unit )
-        return new Promise(res => {
-            setTimeout(() => {
-                res();
-            }, time);
-        });
+
+    static wait (time: number, unit = TimeUnit.MS) : Promise<void> {
+
         // Validate `time` as a positive integer greater than or equal to zero.
-        // Validate `unit` as a valid Enum of type `TimeUnit`
-        // In case the validation fails, return the appropriate error out of `RequiredParameterAbsentError` or `InvalidValueError`
-        // Default value of `unit` will be `TimeUnit.MS`
-        // Convert the time according to the unit passed in to milliseconds
-        // Execute `setTimeout` for that duration and return the Promise
+        if (time < 0) {
+
+            throw new InvalidValueError("`time` must be >= 0.");
+
+        }
+        // If (unit )
+        return new Promise((res) => {
+
+            setTimeout(
+                () => {
+
+                    res();
+
+                },
+                time
+            );
+
+        });
+
+        /*
+         * 
+         * Validate `unit` as a valid Enum of type `TimeUnit`
+         * In case the validation fails, return the appropriate error out of `RequiredParameterAbsentError` or `InvalidValueError`
+         * Default value of `unit` will be `TimeUnit.MS`
+         * Convert the time according to the unit passed in to milliseconds
+         * Execute `setTimeout` for that duration and return the Promise
+         */
+
     }
+
 }
