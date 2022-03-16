@@ -219,9 +219,8 @@ export default class Symbl {
         }
 
     }
-
-    async createConnection (options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
-
+    
+    async createConnection(options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
         if (options.id) {
 
             // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
@@ -236,16 +235,10 @@ export default class Symbl {
                 throw new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
 
             }
-
         } else {
-
-            // If no `id` is present in the options, log a warning and assign a `uuid`
             options.id = uuid();
-
         }
         try {
-
-            // Establish a new Streaming API Connection via the `ConnectionFactory`, creating an instance of the `StreamingAPIConnection`
             const connection = await new ConnectionFactory().instantiateConnection(
                 SymblConnectionType.STREAMING,
                 options,

@@ -30,7 +30,7 @@ export class OpusAudioStream extends AudioStream {
 
         if (reInitialise) {
 
-            this.config.sourceNode = <MediaStreamAudioSourceNode> this.sourceNode;
+            this.config.sourceNode = this.context.createMediaStreamSource(this.mediaStream);
             this.opusEncoder = new Recorder(this.config);
 
         }
@@ -69,7 +69,7 @@ export class OpusAudioStream extends AudioStream {
             deviceId,
             mediaStream
         );
-        this.attachAudioProcessor();
+        this.attachAudioProcessor(true);
 
     }
 

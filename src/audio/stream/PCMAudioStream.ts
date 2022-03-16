@@ -22,7 +22,6 @@ export class PCMAudioStream extends AudioStream {
         }
         try {
             // Send audio stream to websocket.
-            console.log("targetBuffer.buffer", targetBuffer.buffer);
             super.onProcessedAudio(targetBuffer.buffer);
 
         } catch (err) {
@@ -35,7 +34,6 @@ export class PCMAudioStream extends AudioStream {
             this.sourceNode.connect(this.gainNode);
             this.gainNode.connect(this.processorNode);
             this.processorNode.connect(this.audioContext.destination);
-            console.log('audio processor attached');
             this.processorNode.onaudioprocess = audioData => this.processAudio(audioData);
 
         } else {

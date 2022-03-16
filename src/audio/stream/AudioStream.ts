@@ -51,12 +51,10 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     static async getMediaStream (deviceId = "default"): Promise<MediaStream> {
-        console.log('gum');
         const stream = await navigator.mediaDevices.getUserMedia({
             "audio": true,
             "video": false
         });
-        console.log('stream', stream);
         const devices = await navigator.mediaDevices.enumerateDevices();
         const inputDevices = devices.filter((dev) => dev.kind === "audioinput");
         if (inputDevices.length === 0) {
@@ -65,11 +63,8 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
         if (deviceId) {
-            console.log("deviceId", deviceId);
             let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
-            console.log('foundDevice', foundDevice);
             if (!foundDevice) {
-                console.log("inputDevices.length", inputDevices.length);
                 if (deviceId === "default" && inputDevices.length) {
                     foundDevice = inputDevices[0];
                 } else {
@@ -134,21 +129,7 @@ export class AudioStream extends DelegatedEventTarget {
             ].includes(audioSourceDomElement.nodeName)) {
 
                 const source = audioSourceDomElement.firstChild;
-                console.log(
-                    "here",
-                    source
-                );
-                console.log(
-                    "element",
-                    audioSourceDomElement
-                );
-                console.log(
-                    "element.src",
-                    audioSourceDomElement.src
-                );
                 if (source && source.nodeName !== "SOURCE") {
-
-                    console.log("here1");
                     throw new InvalidAudioElementError("Child element must be a source element.");
 
                 } else if (source && source.nodeName === "SOURCE") {
@@ -193,8 +174,6 @@ export class AudioStream extends DelegatedEventTarget {
         try {
 
             // ValidateElement(audioSourceDomElement);
-
-            console.log(this.audioContext.state);
             if (this.audioContext && this.audioContext.state === "running") {
 
                 await this.detachAudioSourceElement();
@@ -275,7 +254,6 @@ export class AudioStream extends DelegatedEventTarget {
         try {
 
             if (this.audioContext && this.audioContext.state === "running") {
-                console.log('detaching');
                 await this.detachAudioDevice();
                 this.audioContext = new AudioContext();
             }
@@ -382,10 +360,7 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     attachAudioCallback (audioCallback: (audioData) => void): void {
-        console.log('attaching audio callback', audioCallback);
-        console.log('this', this);
         this.audioCallback = audioCallback;
-        console.log('attaching audio callback2', this.audioCallback);
 
     }
 
@@ -406,9 +381,7 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     onProcessedAudio (audioData: unknown): void {
-        console.log('onProcessedAudio', this);
         if (this.stream) {
-            console.log('audioData', audioData);
             this.stream.sendAudio(audioData);
 
         } else {

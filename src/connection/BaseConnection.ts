@@ -3,7 +3,7 @@ import Logger from "../logger";
 import {SymblEvent, DelegatedEventTarget } from "../events";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
-export class BaseConnection extends EventTarget {
+export class BaseConnection extends DelegatedEventTarget {
 
     private sessionId: string;
 
@@ -16,6 +16,7 @@ export class BaseConnection extends EventTarget {
         super();
 
         this.sessionId = sessionId;
+        this.logger = new Logger();
         // Add function bindings here
 
     }
@@ -30,48 +31,38 @@ export class BaseConnection extends EventTarget {
     }
 
     async emitEvents (data: any /* SymblData*/): Promise<void> {
-
-        let eventName;
-        console.log(
-            "data.type",
-            data.type
-        );
-        switch (data.type) {
-
-        case "recognition_result":
-            eventName = "speech_recognition";
-            break;
-        case "action_item":
-        case "follow_up":
-        case "question":
-        case "topic":
-        case "tracker":
-            eventName = data.type;
-            break;
-        default:
-            // Do nothing
-
-            /*
-             * Case "message":
-             *  todo
-             */
-
+        const eventNameMapper = (data) => {
+            const eventNameMap = {
+                "message_response": "message",
+                "topic_response": "topic",
+                "tracker_response": "tracker",
+                "insight_response": null,
+                "message": data.message ? data.message.type : null,
+            };
+            let eventType = eventNameMap[data.type];
+            if (eventType === "recognition_result") {
+                eventType = "speech_recognition";
+            }
+            return eventType;
         }
-        console.log(
-            "eventName",
-            eventName
-        );
+        const eventName = eventNameMapper(data);
+        
         if (eventName) {
-
-            console.log("dispatchEvent");
             this.dispatchEvent(new SymblEvent(
                 eventName,
                 data
             ));
 
+        } else if (!eventName && data.type === "insight_response") {
+            for (let insight of data.insights) {
+                this.dispatchEvent(new SymblEvent(
+                    insight.type,
+                    insight
+                ));
+            }
         } else {
 
-            this.logger.warn("The data received was invalid");
+            this.logger.warn("The data had no type", data);
 
         }
 

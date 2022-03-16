@@ -26,9 +26,9 @@ export class ConnectionFactory {
                 StreamingAPIConnection.validateConfig(config);
                 if (!audioStream) {
                     try {
-                        // const streamSource = await AudioStream.getMediaStream();
-                        // const context = new AudioContext();
-                        // const sourceNode = context.createMediaStreamSource(streamSource);
+                        const streamSource = await AudioStream.getMediaStream();
+                        const context = new AudioContext();
+                        const sourceNode = context.createMediaStreamSource(streamSource);
                         let encoding;
                         let symblConfig = (<StreamingAPIConnectionConfig>config);
                         if (symblConfig.config && symblConfig.config.encoding) {
@@ -38,11 +38,11 @@ export class ConnectionFactory {
                         }
                         switch(encoding) {
                             case "opus":
-                                // audioStream = new OpusAudioStream(sourceNode, {} as OpusConfig);
+                                audioStream = new OpusAudioStream(sourceNode, {} as OpusConfig);
                                 break;
                             case "linear16":
                             default:
-                                audioStream = new PCMAudioStream();
+                                audioStream = new PCMAudioStream(sourceNode);
                         }
                     } catch(e) {
                         throw e;

@@ -58,7 +58,7 @@ export class StreamingAPIConnection extends BaseConnection {
         super(config.id);
         this.config = config;
         this.config.handlers = {
-            onDataReceived: this.onDataReceived
+            onDataReceived: data => this.onDataReceived(data)
         };
         this.audioStream = audioStream;
         

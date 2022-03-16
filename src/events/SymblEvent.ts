@@ -22,17 +22,14 @@ export class DelegatedEventTarget implements EventTarget {
 
 }
 
-export class SymblEvent extends CustomEvent<SymblData> {
+export class SymblEvent {
 
     constructor (eventType: EventTypes, data?: unknown) {
 
         const detail: CustomEventInit = {
             "detail": data
         };
-        super(
-            eventType,
-            detail
-        );
+        return new CustomEvent<SymblData>(eventType, detail);
 
     }
 
@@ -40,6 +37,7 @@ export class SymblEvent extends CustomEvent<SymblData> {
 
 export class NetworkEvent extends SymblEvent {
 
+ 
 }
 
 // New CustomEvent('topic', topic);

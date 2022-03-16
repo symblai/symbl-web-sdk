@@ -3,7 +3,8 @@ import consola from 'consola'
 
 export default class Logger {
     
-    logger: typeof consola = consola;
+    // logger: typeof consola = consola;
+    logger = console;
 
     logLevel: string;
 
@@ -31,7 +32,7 @@ export default class Logger {
             options.level = level;
             this.logLevel = level;
         }
-        this.logger = consola.create(options);
+        // this.logger = consola.create(options);
 
     }
 
@@ -52,7 +53,7 @@ export default class Logger {
      */
     trace (msg, meta = {}): void {
 
-        this.logger.trace.apply(
+        this.logger?.trace.apply(
             null,
             [msg, meta]
         );
@@ -64,7 +65,7 @@ export default class Logger {
      */
     debug (msg, meta = {}): void {
 
-        this.logger.debug.apply(
+        this.logger?.debug.apply(
             null,
             [msg, meta]
         );
@@ -76,7 +77,7 @@ export default class Logger {
      */
     log (msg, meta = {}): void {
 
-        this.logger.log.apply(
+        this.logger?.log.apply(
             null,
             [msg, meta]
         );
@@ -88,7 +89,7 @@ export default class Logger {
      */
     info (msg, meta = {}): void {
 
-        this.logger.info.apply(
+        this.logger?.info.apply(
             null,
             [msg, meta]
         );
@@ -100,7 +101,7 @@ export default class Logger {
      */
     warn (msg, meta = {}): void {
 
-        this.logger.warn.apply(
+        this.logger?.warn.apply(
             null,
             [msg, meta]
         );
@@ -112,7 +113,7 @@ export default class Logger {
      */
     error (msg, meta = {}): void {
 
-        this.logger.error.apply(
+        this.logger?.error.apply(
             null,
             [msg, meta]
         );

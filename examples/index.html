@@ -14,9 +14,8 @@
             }
         } else {
             config = {
-                appId: '33646b47504f7237676d4e72475a7a38436f45395277595272597545686c4479',
-                appSecret: '36474839764c6361706676514566695f3670555f66515a752d347443572d44343231796f73465672315679523437394e726b66763432647053336c3872724c49',
-                basePath: 'https://airmeet-7add0e03a0e4118fce603f74e64e293bad5fe005.symbl.ai'
+                appId: '68686b6b505a41456c43707042313855554c494e78575171506a38354f6c3850',
+                appSecret: '596d6c567431347776553536766259506e4e6757494f6933506e4a532d79444a6a3455755377425a45456d5855717248716b326d42485555634f794173694a68',
             }
 
         }
@@ -27,7 +26,7 @@
             const connectionConfig = {
               id: btoa(Math.random()) + "s9d8f98s",
               // sourceNode: source,
-              reconnectOnError: true,
+              // reconnectOnError: true,
               disconnectOnStopRequest: false,
               disconnectOnStopRequestTimeout: 200,
               noConnectionTimeout: 20,
@@ -37,8 +36,8 @@
                 confidenceThreshold: 0.7,
                 timezoneOffset: 480, // Offset in minutes from UTC
                 languageCode: 'en-US',
-                // encoding: 'opus',
-                encoding: 'LINEAR16',
+                encoding: 'opus',
+                // encoding: 'LINEAR16',
                 sampleRateHertz: 48000,
               },
               handlers: {},
@@ -61,6 +60,102 @@
             await context.close();
             const connection = await symblSdk.createConnection(connectionConfig);
             await connection.startProcessing();
+
+            connection.on('conversation_created', (data) => {
+                console.log('conversation_created', data);
+            });
+
+            connection.on('connected', (data) => {
+                console.log('connected', data);
+            });
+
+            connection.on('disconnected', (data) => {
+                console.log('disconnected', data);
+            });
+
+            connection.on('started_listening', (data) => {
+                console.log('started_listening', data);
+            });
+
+            connection.on('stopped_listening', (data) => {
+                console.log('stopped_listening', data);
+            });
+            
+            connection.on('processing_started', (data) => {
+                console.log('processing_started', data);
+            });
+            
+            connection.on('recognition_started', (data) => {
+                console.log('recognition_started', data);
+            });
+            
+            connection.on('processing_stopped', (data) => {
+                console.log('processing_stopped', data);
+            });
+            
+            connection.on('recognition_stopped', (data) => {
+                console.log('recognition_stopped', data);
+            });
+            
+            connection.on('conversation_created', (data) => {
+                console.log('conversation_created', data);
+            });
+            
+            connection.on('conversation_completed', (data) => {
+                console.log('conversation_completed', data);
+            });
+            
+            connection.on('session_modified', (data) => {
+                console.log('session_modified', data);
+            });
+            
+            connection.on('audio_stream_updated', (data) => {
+                console.log('audio_stream_updated', data);
+            });
+            
+            connection.on('error', (data) => {
+                console.log('error', data);
+            });
+            
+            connection.on('topic', (data) => {
+                console.log('topic', data);
+            });
+            
+            connection.on('tracker', (data) => {
+                console.log('tracker', data);
+            });
+            
+            connection.on('action_item', (data) => {
+                console.log('action_item', data);
+            });
+            
+            connection.on('follow_up', (data) => {
+                console.log('follow_up', data);
+            });
+            
+            connection.on('question', (data) => {
+                console.log('question', data);
+            });
+            
+            connection.on('audio_source_connected', (data) => {
+                console.log('audio_source_connected', data);
+            });
+            
+            connection.on('audio_source_disconnected', (data) => {
+                console.log('audio_source_disconnected', data);
+            });
+            
+            connection.on('offline', (data) => {
+                console.log('offline', data);
+            });
+            
+            // connection.on('message', (data) => {
+            //     console.log('message', data);
+            // });
+            
+            // connection.on('speech_recognition', (data) => {
+            //     console.log('speech_recognition', data);
+            // });
         })
         .catch(err => console.error('Error in initialization.', err));
     };

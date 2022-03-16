@@ -1,8 +1,8 @@
 import Logger from "../logger";
-import {NetworkEvent} from "../events";
+import {NetworkEvent, DelegatedEventTarget} from "../events";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
-export class NetworkConnectivityDetector extends EventTarget {
+export class NetworkConnectivityDetector extends DelegatedEventTarget {
 
     private sdk: sdk;
 
