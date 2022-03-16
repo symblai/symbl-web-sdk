@@ -5,8 +5,8 @@ import { PCMAudioStream } from "../../../src2/audio";
 import { StreamingAPIConnection } from '../../../src2/api';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src2/types"
-import { InvalidValueError } from "../../../src2/error"
-import { VALID_INSIGHT_TYPES} from "../../../src2/constants";
+import { InvalidValueError, NotSupportedAudioEncodingError } from "../../../src2/error"
+import { VALID_INSIGHT_TYPES, VALID_ENCODING} from "../../../src2/constants";
 
 const validConfig = {
         id: 'valid-id',
@@ -207,21 +207,22 @@ describe('streamingAPIConnection.validateConfig', () => {
         }
     );
 
-    /*
-    // config with invalid insightTypes
-    // config with non-numerical confidenceThreshold
-    // config with non-string meetingTitle;
-    // config with invalid encoding type
-    // config with non-numerical sampleRateHertz
-    config with non-string userId
-    config with non-string name
-    config with handlers present
-    config with non-boolean reconnectOnError
-    config with non-boolean disconnectOnStopRequest
-    config with non-numerical disconnectOnStopRequestTimeout
-    config without paired disconnectonStopRequest configs
-    config with non-numerical noConnectionTimeout
-    */
+    test(
+        `config with invalid id`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                id: 12345
+            }
+
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig argument 'id' field should be a type string.`)
+            );
+        }
+    );
+
     test(
         `config with invalid insightTypes`,
         async () => {
@@ -229,10 +230,11 @@ describe('streamingAPIConnection.validateConfig', () => {
                 ...validConfig,
                 insightTypes: ["action_item", "question", "invalid_type"]
             }
+
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES}`)
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES, VALID_ENCODING}`)
             );
         }
     );
@@ -249,7 +251,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                // new InvalidValueError(``)
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.`)
             );
         }
     );
@@ -258,7 +260,7 @@ describe('streamingAPIConnection.validateConfig', () => {
         `config with non-string meetingTitle;`,
         async () => {
             const invalidConfig = {
-                // ...validConfig,
+                ...validConfig,
                 config: {
                     meetingTitle: 123
                 }
@@ -266,13 +268,13 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                // new InvalidValueError(``)
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'config.meetingTitle' field should be a type string.`)
             );
         }
     );
 
     test(
-        `config with invalid encoding type;`,
+        `config with invalid encoding: Not a type string`,
         async () => {
             const invalidConfig = {
                 ...validConfig,
@@ -283,7 +285,24 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                // new InvalidValueError(``)
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'config.encoding' field should be a type string.`)
+            );
+        }
+    );
+
+    test(
+        `config with invalid encoding: Not included in list of supported encodings`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                config: {
+                    encoding: 'INVALID16'
+                }
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${VALID_ENCODING}.`)
             );
         }
     );
@@ -301,7 +320,172 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                // new InvalidValueError(``)
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.`)
+            );
+        }
+    );
+
+    test(
+        `config with a LINEAR16 encoding && 'sampleRateHertz' numerical value that is NOT supported.`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                config: {
+                    encoding: 'LINEAR16',
+                    sampleRateHertz: 99999
+                }
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
+            );
+        }
+    );
+
+    test(
+        `config with an Opus encoding && 'sampleRateHertz' numerical value that is NOT supported.`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                config: {
+                    encoding: 'Opus',
+                    sampleRateHertz: 99999
+                }
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${OPUS_SAMPLE_RATE_HERTZ}.`)
+            );
+        }
+    );
+
+    test(
+        `config with invalid speaker.userId`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                speaker: {
+                    userId: 123,
+                    name: 'valid-name'
+                }
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'speaker.userId' field should be a type string.`)
+            );
+        }
+    );
+
+    test(
+        `config with invalid speaker.name`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                speaker: {
+                    userId: 'valid-userId',
+                    name: 123
+                }
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'speaker.name' field should be a type string.`)
+            );
+        }
+    );
+
+    test(
+        `config with invalid type for 'reconnectOnError`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                reconnectOnError: 'non-numerical-invalid-type'
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'reconnectOnError' field should be a type boolean.`)
+            );
+        }
+    );
+
+    test(
+        `config with invalid type for 'disconnectOnStopRequest'`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                disconnectOnStopRequest: 'non-boolean-invalid-type',
+                disconnectOnStopRequestTimeout: 3000
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.`)
+            );
+        }
+    );
+
+    test(
+        `config with 'disconnectOnStopRequest' set to false, but 'disconnectOnStopRequest' is an invalid type.`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                disconnectOnStopRequest: false,
+                disconnectOnStopRequestTimeout: 'non-numerical-invalid-type'
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 3600.`)
+            );
+        }
+    );
+
+    test(
+        `config with 'disconnectOnStopRequest' set to false, but 'disconnectOnStopRequest' is out of range (0 - 3600).`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                disconnectOnStopRequest: false,
+                disconnectOnStopRequestTimeout: 9999
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 3600.`)
+            );
+        }
+    );
+
+    test(
+        `config with invalid type for 'noConnectionTimeout'.`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                noConnectionTimeout: 'non-numerical-invalid-type',
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'noConnectionTimeout' optional field should be a type number.`)
+            );
+        }
+    );
+
+    test(
+        `config with 'noConnectionTimeout' that is out of range (0 - 3600)`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                noConnectionTimeout: 9999,
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'noConnectionTimeout' optional field should be a type number.`)
             );
         }
     );
