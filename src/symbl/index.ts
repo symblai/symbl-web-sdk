@@ -16,7 +16,7 @@ import {
     TimeUnit
 } from "../types";
 import {assertType, is} from "typescript-is";
-import {uniquenessRegex, uuid} from "../utils";
+import {uuid} from "../utils";
 import {AudioStream} from "../audio";
 import {ConnectionFactory} from "../connection";
 import Logger from "../logger";
@@ -224,17 +224,17 @@ export default class Symbl {
         if (options.id) {
 
             // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
-            const regex = new RegExp(
-                uniquenessRegex,
-                "u"
-            );
-            const validSessionId = regex.test(options.id);
+            // const regex = new RegExp(
+            //     uniquenessRegex,
+            //     "u"
+            // );
+            // const validSessionId = regex.test(options.id);
 
-            if (!validSessionId) {
+            // if (!validSessionId) {
 
-                throw new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
+            //     throw new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
 
-            }
+            // }
         } else {
             options.id = uuid();
         }
