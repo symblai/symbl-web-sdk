@@ -287,7 +287,6 @@ export default class Symbl {
         } catch (e) {
 
             // If the connection fails to get established, re-throw the error thrown by `StreamingAPIConnection` instance
-
             throw e;
 
         }
@@ -332,12 +331,14 @@ export default class Symbl {
         // Validate `time` as a positive integer greater than or equal to zero.
         if (time < 0) {
 
+            // In case the validation fails, return the appropriate error out of `RequiredParameterAbsentError` or `InvalidValueError`
             throw new InvalidValueError("`time` must be >= 0.");
 
         }
         // If (unit )
         return new Promise((res) => {
 
+            // Execute `setTimeout` for the duration in ms provided and return the Promise
             setTimeout(
                 () => {
 
@@ -350,12 +351,9 @@ export default class Symbl {
         });
 
         /*
-         * 
          * Validate `unit` as a valid Enum of type `TimeUnit`
-         * In case the validation fails, return the appropriate error out of `RequiredParameterAbsentError` or `InvalidValueError`
          * Default value of `unit` will be `TimeUnit.MS`
          * Convert the time according to the unit passed in to milliseconds
-         * Execute `setTimeout` for that duration and return the Promise
          */
 
     }
