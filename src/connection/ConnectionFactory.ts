@@ -38,7 +38,16 @@ export class ConnectionFactory {
                         }
                         switch(encoding) {
                             case "opus":
-                                audioStream = new OpusAudioStream(sourceNode, {} as OpusConfig);
+                                const opusConfig: any = {
+                                    numberOfChannels: 1,
+                                    encoderSampleRate: 48000,
+                                    encoderFrameSize: 20,
+                                    maxFramesPerPage: 40,
+                                    encoderComplexity: 6,
+                                    streamPages: true,
+                                    rawOpus: true
+                                };
+                                audioStream = new OpusAudioStream(sourceNode, opusConfig);
                                 break;
                             case "linear16":
                             default:

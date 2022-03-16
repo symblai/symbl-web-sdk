@@ -24,38 +24,7 @@
         symblSdk.init(config)
         .then(async () => {
             const connectionConfig = {
-              id: btoa(Math.random()) + "s9d8f98s",
-              // sourceNode: source,
-              // reconnectOnError: true,
-              disconnectOnStopRequest: false,
-              disconnectOnStopRequestTimeout: 200,
-              noConnectionTimeout: 20,
-              insightTypes: ['action_item', 'question'],
-              config: {
-                meetingTitle: 'My Test Meeting',
-                confidenceThreshold: 0.7,
-                timezoneOffset: 480, // Offset in minutes from UTC
-                languageCode: 'en-US',
-                encoding: 'opus',
-                // encoding: 'LINEAR16',
-                sampleRateHertz: 48000,
-              },
-              handlers: {},
-              trackers: [
-                {
-                    name: "Goodness",
-                    vocabulary: [
-                        "This is awesome",
-                        "I like it",
-                        "I love this"
-                    ]
-                }
-              ],
-              speaker: {
-                // Optional, if not specified, will simply not send an email in the end.
-                userId: 'christopherstokes@symbl.ai', // Update with valid email
-                name: 'Chris Stokes'
-              }
+          
             };
             await context.close();
             const connection = await symblSdk.createConnection(connectionConfig);

@@ -256,6 +256,7 @@ export class AudioStream extends DelegatedEventTarget {
             if (this.audioContext && this.audioContext.state === "running") {
                 await this.detachAudioDevice();
                 this.audioContext = new AudioContext();
+                console.log('deatched audioContext', this.audioContext);
             }
 
             // const devices: any = await navigator.mediaDevices.enumerateDevices();

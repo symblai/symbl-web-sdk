@@ -26,19 +26,18 @@ export class OpusAudioStream extends AudioStream {
 
     }
 
-    attachAudioProcessor (reInitialise?: boolean): void {
+    async attachAudioProcessor (reInitialise?: boolean): Promise<void> {
 
         if (reInitialise) {
-
-            this.config.sourceNode = this.context.createMediaStreamSource(this.mediaStream);
+            this.config.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
             this.opusEncoder = new Recorder(this.config);
 
         }
 
         if (this.opusEncoder) {
 
-            this.opusEncoder.start();
-            this.opusEncoder.ondataavailable = this.processAudio;
+            await this.opusEncoder.start();
+            this.opusEncoder.ondataavailable = audioData => this.processAudio(audioData);
 
         }
 
@@ -47,7 +46,7 @@ export class OpusAudioStream extends AudioStream {
     async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
 
         super.attachAudioSourceElement(audioSourceDomElement);
-        this.attachAudioProcessor(true);
+        await this.attachAudioProcessor(true);
 
     }
 
@@ -65,11 +64,11 @@ export class OpusAudioStream extends AudioStream {
 
     async attachAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
 
-        super.attachAudioDevice(
+        await super.attachAudioDevice(
             deviceId,
             mediaStream
         );
-        this.attachAudioProcessor(true);
+        await this.attachAudioProcessor(true);
 
     }
 
