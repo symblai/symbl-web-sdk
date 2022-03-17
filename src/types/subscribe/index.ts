@@ -1,5 +1,6 @@
 interface SubscribeAPIConnectionConfig2 {
-    sessionId: string;
+    sessionId?: string;
+    id?: string;
 }
 
 export {

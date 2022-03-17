@@ -95,7 +95,8 @@ interface StreamingAPIConnectionConfig {
 }
 
 interface SubscribeAPIConnectionConfig {
-    id: string;
+    id?: string;
+    sessionId?: string;
 }
 
 type ConnectionConfig = StreamingAPIConnectionConfig | SubscribeAPIConnectionConfig | StreamingAPIStartRequest;

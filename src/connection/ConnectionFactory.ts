@@ -84,9 +84,8 @@ export class ConnectionFactory {
             try {
 
                 connection = new StreamingAPIConnection(
-<
-                        SubscribeAPIConnectionConfig > config,
-audioStream
+                     < SubscribeAPIConnectionConfig > config,
+                    audioStream
                 );
 
                 // Return the instantiated `Connection` type

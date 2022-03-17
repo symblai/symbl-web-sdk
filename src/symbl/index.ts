@@ -11,11 +11,11 @@ import {
 import {StreamingAPIConnection, SubscribeAPIConnection} from "../api";
 import {
     StreamingAPIConnectionConfig,
+    SubscribeAPIConnectionConfig,
     SymblConfig,
     SymblConnectionType,
     TimeUnit
 } from "../types";
-import {assertType, is} from "typescript-is";
 import {AudioStream} from "../audio";
 import {ConnectionFactory} from "../connection";
 import Logger from "../logger";
@@ -23,14 +23,6 @@ import {VALID_LOG_LEVELS} from "../utils/configs";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import {uuid} from "../utils";
 
-/*
- *Const anotherNonConformer: unknown = { aString: 1337 }
- *try {
- *    assertType<SomeInterfaceOrType>(anotherNonConformer)
- *} catch(error) {
- *    console.log(error.message) // logs: "validation failed at anotherNonConformer.aString: expected a string"
- *}
- */
 
 
 export default class Symbl {
@@ -320,7 +312,7 @@ export default class Symbl {
             // Initialize the instance of `SubscribeAPIConnection` via the `ConnectionFactory` with the passed in `sessionId`
             const connection = await new ConnectionFactory().instantiateConnection(
                 SymblConnectionType.SUBSCRIBE,
-                {} as StreamingAPIConnectionConfig
+                {sessionId} as SubscribeAPIConnectionConfig
             );
 
             // Invoke the `connect` method to start the connection to the Subscribe API

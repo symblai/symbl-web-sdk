@@ -20,6 +20,8 @@ export class SubscribeAPIConnection extends BaseConnection {
         
         this.config = config;
         // Add function bindings here
+
+        this.onDataReceived = this.onDataReceived.bind(this);
     }
     
     static async validateConfig(config: SubscribeAPIConnectionConfig) : Promise<SubscribeAPIConnectionConfig> {
@@ -36,7 +38,11 @@ export class SubscribeAPIConnection extends BaseConnection {
         } else {
             try {
                 this.connectionState = ConnectionState.CONNECTING;
-                await this.sdk.subscribeToStream(this.config.id);
+                await this.sdk.subscribeToStream(this.config.sessionId || this.config.id, {
+                    handlers: {
+                        onMessage: this.onDataReceived
+                    }
+                });
                 this.connectionState = ConnectionState.CONNECTED;
                 this._isConnected = true;
                 this.dispatchEvent(new SymblEvent("connected"));
