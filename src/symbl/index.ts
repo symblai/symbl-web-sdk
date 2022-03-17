@@ -16,12 +16,12 @@ import {
     TimeUnit
 } from "../types";
 import {assertType, is} from "typescript-is";
-import {uuid} from "../utils";
 import {AudioStream} from "../audio";
 import {ConnectionFactory} from "../connection";
 import Logger from "../logger";
 import {VALID_LOG_LEVELS} from "../utils/configs";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+import {uuid} from "../utils";
 
 /*
  *Const anotherNonConformer: unknown = { aString: 1337 }
@@ -184,7 +184,7 @@ export default class Symbl {
 
         try {
 
-            console.log(
+            Logger.log(
                 "symblConfig",
                 symblConfig
             );
