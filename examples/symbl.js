@@ -112,6 +112,31 @@ exports.AccessTokenExpiredError = AccessTokenExpiredError_1["default"];
 "use strict";
 
 
+var __createBinding = undefined && undefined.__createBinding || (Object.create ? function (o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function get() {
+            return m[k];
+        } });
+} : function (o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+});
+var __exportStar = undefined && undefined.__exportStar || function (m, exports) {
+    for (var p in m) {
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+    }
+};
+exports.__esModule = true;
+__exportStar(__webpack_require__(16), exports);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 exports.__esModule = true;
 var Logger = function () {
     function Logger(logLevel) {
@@ -173,31 +198,6 @@ var Logger = function () {
     return Logger;
 }();
 exports["default"] = Logger;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __createBinding = undefined && undefined.__createBinding || (Object.create ? function (o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function get() {
-            return m[k];
-        } });
-} : function (o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-});
-var __exportStar = undefined && undefined.__exportStar || function (m, exports) {
-    for (var p in m) {
-        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-    }
-};
-exports.__esModule = true;
-__exportStar(__webpack_require__(16), exports);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -370,8 +370,8 @@ var __importDefault = undefined && undefined.__importDefault || function (mod) {
 exports.__esModule = true;
 exports.AudioStream = void 0;
 var error_1 = __webpack_require__(3);
-var logger_1 = __importDefault(__webpack_require__(1));
-var events_1 = __webpack_require__(2);
+var logger_1 = __importDefault(__webpack_require__(2));
+var events_1 = __webpack_require__(1);
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var AudioStream = function (_super) {
     __extends(AudioStream, _super);
@@ -389,6 +389,16 @@ var AudioStream = function (_super) {
         if (!_this.audioContext) {
             _this.audioContext = new AudioContext();
         }
+        _this.attachAudioSourceElement = _this.attachAudioSourceElement.bind(_this);
+        _this.detachAudioSourceElement = _this.detachAudioSourceElement.bind(_this);
+        _this.updateAudioSourceElement = _this.updateAudioSourceElement.bind(_this);
+        _this.attachAudioDevice = _this.attachAudioDevice.bind(_this);
+        _this.detachAudioDevice = _this.detachAudioDevice.bind(_this);
+        _this.updateAudioDevice = _this.updateAudioDevice.bind(_this);
+        _this.attachAudioCallback = _this.attachAudioCallback.bind(_this);
+        _this.attachAudioProcessor = _this.attachAudioProcessor.bind(_this);
+        _this.processAudio = _this.processAudio.bind(_this);
+        _this.onProcessedAudio = _this.onProcessedAudio.bind(_this);
         return _this;
     }
     AudioStream.getMediaStream = function (deviceId) {
@@ -610,9 +620,6 @@ var AudioStream = function (_super) {
     AudioStream.prototype.attachAudioCallback = function (audioCallback) {
         this.audioCallback = audioCallback;
     };
-    AudioStream.prototype.attachStream = function (stream) {
-        this.stream = stream;
-    };
     AudioStream.prototype.attachAudioProcessor = function () {
         throw new TypeError("Not implemented!");
     };
@@ -620,11 +627,10 @@ var AudioStream = function (_super) {
         throw new TypeError("Not implemented!");
     };
     AudioStream.prototype.onProcessedAudio = function (audioData) {
-        if (this.stream) {
-            this.stream.sendAudio(audioData);
+        if (this.audioCallback) {
+            this.audioCallback(audioData);
         } else {}
     };
-    AudioStream.prototype.test = function () {};
     return AudioStream;
 }(events_1.DelegatedEventTarget);
 exports.AudioStream = AudioStream;
@@ -661,7 +667,7 @@ var __importDefault = undefined && undefined.__importDefault || function (mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
 };
 exports.__esModule = true;
-var index_1 = __importDefault(__webpack_require__(1));
+var index_1 = __importDefault(__webpack_require__(2));
 var SymblError = function (_super) {
     __extends(SymblError, _super);
     function SymblError(message, name) {
@@ -1091,8 +1097,8 @@ __exportStar(__webpack_require__(9), exports);
 __exportStar(__webpack_require__(11), exports);
 __exportStar(__webpack_require__(4), exports);
 __exportStar(__webpack_require__(3), exports);
-__exportStar(__webpack_require__(2), exports);
 __exportStar(__webpack_require__(1), exports);
+__exportStar(__webpack_require__(2), exports);
 __exportStar(__webpack_require__(7), exports);
 var symbl_1 = __importDefault(__webpack_require__(52));
 exports.Symbl = symbl_1["default"];
@@ -1264,11 +1270,11 @@ var StreamingAPIConnection = function (_super) {
         _this.connectionType = types_1.SymblConnectionType.STREAMING;
         _this.config = config;
         _this.config.handlers = {
-            onDataReceived: function onDataReceived(data) {
-                return _this.onDataReceived(data);
-            }
+            onDataReceived: _this.onDataReceived
         };
         _this.audioStream = audioStream;
+        _this.onDataReceived = _this.onDataReceived.bind(_this);
+        _this.sendAudio = _this.sendAudio.bind(_this);
         return _this;
     }
     StreamingAPIConnection.validateConfig = function (config) {
@@ -1538,7 +1544,6 @@ var StreamingAPIConnection = function (_super) {
         });
     };
     StreamingAPIConnection.prototype.sendAudio = function (audioData) {
-        console.log('audioData', audioData);
         this.stream.sendAudio(audioData);
     };
     StreamingAPIConnection.prototype.sendJSON = function (data) {
@@ -1552,7 +1557,7 @@ var StreamingAPIConnection = function (_super) {
     StreamingAPIConnection.prototype.registerAudioStreamCallback = function () {
         if (this.audioStream) {
             console.log('registerAudioStreamCallback', this.stream);
-            this.audioStream.attachStream(this.stream);
+            this.audioStream.attachAudioCallback(this.sendAudio);
         }
     };
     StreamingAPIConnection.prototype.attachAudioStream = function (audioStream) {
@@ -1705,8 +1710,8 @@ var __importDefault = undefined && undefined.__importDefault || function (mod) {
 };
 exports.__esModule = true;
 exports.BaseConnection = void 0;
-var logger_1 = __importDefault(__webpack_require__(1));
-var events_1 = __webpack_require__(2);
+var events_1 = __webpack_require__(1);
+var logger_1 = __importDefault(__webpack_require__(2));
 var client_sdk_min_1 = __webpack_require__(10);
 var BaseConnection = function (_super) {
     __extends(BaseConnection, _super);
@@ -1716,33 +1721,56 @@ var BaseConnection = function (_super) {
         _this.logger = new logger_1["default"]();
         _this.sessionId = sessionId;
         _this.logger = new logger_1["default"]();
+        _this.on = _this.on.bind(_this);
+        _this.emitEvents = _this.emitEvents.bind(_this);
+        _this.connect = _this.connect.bind(_this);
+        _this.disconnect = _this.disconnect.bind(_this);
+        _this.onDataReceived = _this.onDataReceived.bind(_this);
+        _this.getSessionId = _this.getSessionId.bind(_this);
         return _this;
     }
     BaseConnection.prototype.on = function (eventName, callback) {
-        this.addEventListener(eventName, callback);
+        this.addEventListener(eventName, function (data) {
+            return callback(data.detail);
+        });
     };
     BaseConnection.prototype.emitEvents = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var eventNameMapper, eventName, _i, _a, insight;
+            var eventNameMapper, eventData, _i, _a, insight;
             return __generator(this, function (_b) {
                 eventNameMapper = function eventNameMapper(data) {
                     var eventNameMap = {
-                        "message_response": "message",
-                        "topic_response": "topic",
-                        "tracker_response": "tracker",
-                        "insight_response": null,
-                        "message": data.message ? data.message.type : null
+                        "message_response": {
+                            name: "message",
+                            data: data.messages
+                        },
+                        "topic_response": {
+                            name: "topic",
+                            data: data.topics
+                        },
+                        "insight_response": {
+                            name: null,
+                            data: data
+                        },
+                        "message": {
+                            name: data.message ? data.message.type : null,
+                            data: data
+                        },
+                        "tracker_response": {
+                            name: "tracker",
+                            data: data.trackers
+                        }
                     };
                     var eventType = eventNameMap[data.type];
-                    if (eventType === "recognition_result") {
-                        eventType = "speech_recognition";
+                    if (eventType.name === "recognition_result") {
+                        eventType.name = "speech_recognition";
                     }
                     return eventType;
                 };
-                eventName = eventNameMapper(data);
-                if (eventName) {
-                    this.dispatchEvent(new events_1.SymblEvent(eventName, data));
-                } else if (!eventName && data.type === "insight_response") {
+                eventData = eventNameMapper(data);
+                if (eventData.name) {
+                    this.dispatchEvent(new events_1.SymblEvent(eventData.name, eventData.data.message ? eventData.data.message : eventData.data));
+                } else if (!eventData.name && data.type === "insight_response") {
                     for (_i = 0, _a = data.insights; _i < _a.length; _i++) {
                         insight = _a[_i];
                         this.dispatchEvent(new events_1.SymblEvent(insight.type, insight));
@@ -2870,7 +2898,7 @@ var __generator = undefined && undefined.__generator || function (thisArg, body)
 exports.__esModule = true;
 exports.PCMAudioStream = void 0;
 var AudioStream_1 = __webpack_require__(5);
-var events_1 = __webpack_require__(2);
+var events_1 = __webpack_require__(1);
 var PCMAudioStream = function (_super) {
     __extends(PCMAudioStream, _super);
     function PCMAudioStream(sourceNode) {
@@ -2889,14 +2917,11 @@ var PCMAudioStream = function (_super) {
         }
     };
     PCMAudioStream.prototype.attachAudioProcessor = function () {
-        var _this = this;
         if (this.processorNode) {
             this.sourceNode.connect(this.gainNode);
             this.gainNode.connect(this.processorNode);
             this.processorNode.connect(this.audioContext.destination);
-            this.processorNode.onaudioprocess = function (audioData) {
-                return _this.processAudio(audioData);
-            };
+            this.processorNode.onaudioprocess = this.processAudio;
         } else {
             console.log('audio processor not attached');
         }
@@ -3083,12 +3108,10 @@ var OpusAudioStream = function (_super) {
     };
     OpusAudioStream.prototype.attachAudioProcessor = function (reInitialise) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         if (reInitialise) {
-                            console.log('this.audioContext', this.audioContext);
                             this.config.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
                             this.opusEncoder = new symbl_opus_encdec_1.Recorder(this.config);
                         }
@@ -3096,9 +3119,7 @@ var OpusAudioStream = function (_super) {
                         return [4, this.opusEncoder.start()];
                     case 1:
                         _a.sent();
-                        this.opusEncoder.ondataavailable = function (audioData) {
-                            return _this.processAudio(audioData);
-                        };
+                        this.opusEncoder.ondataavailable = this.processAudio;
                         _a.label = 2;
                     case 2:
                         return [2];
@@ -3639,11 +3660,11 @@ exports.__esModule = true;
 exports.PASSWORD_REGEX = exports.OPUS_SAMPLE_RATE_HERTZ = exports.LINEAR16_SAMPLE_RATE_HERTZ = exports.VALID_ENCODING = exports.VALID_INSIGHT_TYPES = exports.DEFAULT_ENCODING_TYPE = exports.DEFAULT_SAMPLE_RATE_HERTZ = void 0;
 exports.DEFAULT_SAMPLE_RATE_HERTZ = 16000;
 exports.DEFAULT_ENCODING_TYPE = 'LINEAR16';
-exports.VALID_INSIGHT_TYPES = ['action_item', 'question'];
+exports.VALID_INSIGHT_TYPES = ['action_item', 'question', 'follow_up'];
 exports.VALID_ENCODING = ['LINEAR16', 'OPUS'];
 exports.LINEAR16_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 44100, 48000];
 exports.OPUS_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 48000];
-exports.PASSWORD_REGEX = /^[a-zA-Z0-9-]{6,}$/;
+exports.PASSWORD_REGEX = /^[a-zA-Z0-9-]{6,64}$/;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -3784,7 +3805,7 @@ var __generator = undefined && undefined.__generator || function (thisArg, body)
 exports.__esModule = true;
 exports.SubscribeAPIConnection = void 0;
 var connection_1 = __webpack_require__(4);
-var events_1 = __webpack_require__(2);
+var events_1 = __webpack_require__(1);
 var types_1 = __webpack_require__(8);
 var SubscribeAPIConnection = function (_super) {
     __extends(SubscribeAPIConnection, _super);
@@ -3982,11 +4003,11 @@ var __importDefault = undefined && undefined.__importDefault || function (mod) {
 exports.__esModule = true;
 var error_1 = __webpack_require__(3);
 var types_1 = __webpack_require__(8);
-var utils_1 = __webpack_require__(7);
 var connection_1 = __webpack_require__(4);
-var logger_1 = __importDefault(__webpack_require__(1));
+var logger_1 = __importDefault(__webpack_require__(2));
 var configs_1 = __webpack_require__(58);
 var client_sdk_min_1 = __webpack_require__(10);
+var utils_1 = __webpack_require__(7);
 var Symbl = function () {
     function Symbl(symblConfig) {
         this.sdk = client_sdk_min_1.sdk;
@@ -3999,6 +4020,11 @@ var Symbl = function () {
         }
         this.symblConfig = symblConfig;
         this.logger = new logger_1["default"]();
+        this._validateSymblConfig = this._validateSymblConfig.bind(this);
+        this.init = this.init.bind(this);
+        this.createConnection = this.createConnection.bind(this);
+        this.createAndStartNewConnection = this.createAndStartNewConnection.bind(this);
+        this.subscribeToConnection = this.subscribeToConnection.bind(this);
     }
     Symbl.prototype._validateSymblConfig = function (symblConfig) {
         if (!symblConfig) {
@@ -4054,7 +4080,6 @@ var Symbl = function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3,, 4]);
-                        console.log("symblConfig", symblConfig);
                         initConfig = {};
                         if (symblConfig.accessToken) {
                             initConfig.accessToken = symblConfig.accessToken;
@@ -4086,6 +4111,12 @@ var Symbl = function () {
                     case 0:
                         if (options.id) {} else {
                             options.id = (0, utils_1.uuid)();
+                        }
+                        if (!options.config) {
+                            options.config = {};
+                        }
+                        if (!options.config.sampleRateHertz) {
+                            options.config.sampleRateHertz = 48000;
                         }
                         _a.label = 1;
                     case 1:

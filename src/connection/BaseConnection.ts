@@ -19,13 +19,20 @@ export class BaseConnection extends DelegatedEventTarget {
         this.logger = new Logger();
         // Add function bindings here
 
+        this.on = this.on.bind(this);
+        this.emitEvents = this.emitEvents.bind(this);
+        this.connect = this.connect.bind(this);
+        this.disconnect = this.disconnect.bind(this);
+        this.onDataReceived = this.onDataReceived.bind(this);
+        this.getSessionId = this.getSessionId.bind(this);
+
     }
 
     on (eventName: EventTypes, callback: (event: SymblEvent) => void): void {
 
         this.addEventListener(
             eventName,
-            callback
+            (data) => callback(data.detail)
         );
 
     }
@@ -35,33 +42,48 @@ export class BaseConnection extends DelegatedEventTarget {
         const eventNameMapper = (data) => {
 
             const eventNameMap = {
-                "message_response": "message",
-                "topic_response": "topic",
-                "insight_response": null,
-                "message": data.message
-                    ? data.message.type
-                    : null,
-                "tracker_response": "tracker"
+                "message_response": {
+                    name: "message",
+                    data: data.messages
+                },
+                "topic_response": {
+                    name: "topic",
+                    data: data.topics,
+                },
+                "insight_response": {
+                    name: null,
+                    data,
+                },
+                "message": {
+                    name: data.message
+                        ? data.message.type
+                        : null,
+                    data
+                },
+                "tracker_response": {
+                    name: "tracker",
+                    data: data.trackers
+                }
             };
             let eventType = eventNameMap[data.type];
-            if (eventType === "recognition_result") {
+            if (eventType.name === "recognition_result") {
 
-                eventType = "speech_recognition";
+                eventType.name = "speech_recognition";
 
             }
             return eventType;
 
         };
-        const eventName = eventNameMapper(data);
+        const eventData = eventNameMapper(data);
 
-        if (eventName) {
+        if (eventData.name) {
 
             this.dispatchEvent(new SymblEvent(
-                eventName,
-                data
+                eventData.name,
+                eventData.data.message ? eventData.data.message : eventData.data
             ));
 
-        } else if (!eventName && data.type === "insight_response") {
+        } else if (!eventData.name && data.type === "insight_response") {
 
             for (const insight of data.insights) {
 

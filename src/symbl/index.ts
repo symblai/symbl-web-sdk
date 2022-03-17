@@ -63,6 +63,11 @@ export default class Symbl {
         this.symblConfig = symblConfig;
         this.logger = new Logger();
 
+        this._validateSymblConfig = this._validateSymblConfig.bind(this);
+        this.init = this.init.bind(this);
+        this.createConnection = this.createConnection.bind(this);
+        this.createAndStartNewConnection = this.createAndStartNewConnection.bind(this);
+        this.subscribeToConnection = this.subscribeToConnection.bind(this);
     }
 
     /**
@@ -184,10 +189,10 @@ export default class Symbl {
 
         try {
 
-            Logger.log(
-                "symblConfig",
-                symblConfig
-            );
+            // Logger.log(
+            //     "symblConfig",
+            //     symblConfig
+            // );
             const initConfig: any = {};
 
             if (symblConfig.accessToken) {
@@ -243,6 +248,12 @@ export default class Symbl {
             options.id = uuid();
 
         }
+        if (!options.config) {
+            options.config = {};
+        }
+        if (!options.config.sampleRateHertz) {
+            options.config.sampleRateHertz = 48000;
+        }
         try {
 
             const connection = await new ConnectionFactory().instantiateConnection(
@@ -280,7 +291,11 @@ export default class Symbl {
                 options,
                 audioStream
             );
+
+            // Invoke `startProcessing` on the instance of `StreamingAPIConnection`
             await connection.startProcessing();
+
+            // Return the connection instance
             return connection as StreamingAPIConnection;
 
         } catch (e) {
@@ -289,11 +304,6 @@ export default class Symbl {
             throw e;
 
         }
-
-        /*
-         * Invoke `startProcessing` on the instance of `StreamingAPIConnection`
-         * Return the connection instance
-         */
 
     }
 
@@ -312,7 +322,10 @@ export default class Symbl {
                 SymblConnectionType.SUBSCRIBE,
                 {} as StreamingAPIConnectionConfig
             );
+
+            // Invoke the `connect` method to start the connection to the Subscribe API
             await connection.connect();
+
             // If connection is successful, return the instance of the `SubscribeAPIConnection`
             return connection as SubscribeAPIConnection;
 
@@ -354,7 +367,6 @@ export default class Symbl {
             throw new InvalidValueError("`time` must be >= 0.");
 
         }
-        // If (unit )
         return new Promise((res) => {
 
             // Execute `setTimeout` for the duration in ms provided and return the Promise

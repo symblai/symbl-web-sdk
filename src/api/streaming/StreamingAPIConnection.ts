@@ -58,11 +58,14 @@ export class StreamingAPIConnection extends BaseConnection {
         super(config.id);
         this.config = config;
         this.config.handlers = {
-            onDataReceived: data => this.onDataReceived(data)
+            onDataReceived: this.onDataReceived
         };
         this.audioStream = audioStream;
         
         // Add function bindings here
+        this.onDataReceived = this.onDataReceived.bind(this);
+        this.sendAudio = this.sendAudio.bind(this);
+
     }
 
     /*
@@ -328,7 +331,6 @@ export class StreamingAPIConnection extends BaseConnection {
     }
     
     sendAudio(audioData: ArrayBuffer | Uint8Array | Uint16Array) {
-        console.log('audioData', audioData);
         this.stream.sendAudio(audioData);
     }   
     
@@ -340,8 +342,8 @@ export class StreamingAPIConnection extends BaseConnection {
     private registerAudioStreamCallback() {
         if (this.audioStream) {
             console.log('registerAudioStreamCallback', this.stream);
-            // this.audioStream.attachAudioCallback(this.sendAudio);
-            this.audioStream.attachStream(this.stream);
+            this.audioStream.attachAudioCallback(this.sendAudio);
+            // this.audioStream.attachStream(this.stream);
         }
     }
     

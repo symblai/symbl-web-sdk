@@ -29,6 +29,7 @@ export class OpusAudioStream extends AudioStream {
     async attachAudioProcessor (reInitialise?: boolean): Promise<void> {
 
         if (reInitialise) {
+
             this.config.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
             this.opusEncoder = new Recorder(this.config);
 
@@ -37,7 +38,7 @@ export class OpusAudioStream extends AudioStream {
         if (this.opusEncoder) {
 
             await this.opusEncoder.start();
-            this.opusEncoder.ondataavailable = audioData => this.processAudio(audioData);
+            this.opusEncoder.ondataavailable = this.processAudio;
 
         }
 

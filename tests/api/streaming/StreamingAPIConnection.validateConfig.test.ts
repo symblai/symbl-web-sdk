@@ -5,8 +5,8 @@ import { PCMAudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types"
-import { InvalidValueError, NotSupportedAudioEncodingError } from "../../../src/error"
-import { VALID_INSIGHT_TYPES, VALID_ENCODING} from "../../../src/constants";
+import { InvalidValueError, NotSupportedAudioEncodingError, NotSupportedSampleRateError } from "../../../src/error"
+import { VALID_INSIGHT_TYPES, VALID_ENCODING, OPUS_SAMPLE_RATE_HERTZ, LINEAR16_SAMPLE_RATE_HERTZ} from "../../../src/constants";
 
 const validConfig = {
         id: 'valid-id',
@@ -28,17 +28,17 @@ const validConfig = {
 }
 
 describe('streamingAPIConnection.validateConfig', () => {
-    let authConfig, symbl, audioStream;
-    beforeAll(() => {
-        authConfig = {
-            appId: APP_ID,
-            appSecret: APP_SECRET
-        };
-        symbl = new Symbl(authConfig);
-        const audioContext = new AudioContext();
-        const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-        audioStream = new PCMAudioStream(sourceNode);
-    });
+    // let authConfig, symbl, audioStream;
+    // beforeEach(() => {
+    //     // authConfig = {
+    //     //     appId: APP_ID,
+    //     //     appSecret: APP_SECRET
+    //     // };
+    //     // symbl = new Symbl(authConfig);
+    //     const audioContext = new AudioContext();
+    //     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
+    //     audioStream = new PCMAudioStream(sourceNode);
+    // });
 
         // Perform validations for received config
         // Explicit validations on required fields to be passed in the `StreamingAPIConnectionConfig`
@@ -234,7 +234,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES, VALID_ENCODING}`)
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES}`)
             );
         }
     );
@@ -279,7 +279,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             const invalidConfig = {
                 ...validConfig,
                 config: {
-                    encoding: 'INVALID16'
+                    encoding: 3
                 }
             }
             await expect(async () => {
