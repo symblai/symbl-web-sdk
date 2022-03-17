@@ -79,3 +79,16 @@ test(
  		expect(validSessionId).toBeFalsy();
 	}
 );
+
+test(
+    "Any characters used other than alphanumeric or hyphen should fail",
+    async () => {
+        const regex = new RegExp(
+            PASSWORD_REGEX,
+            "u"
+        );
+        const validSessionId = regex.test("a-b$cd");
+
+ 		expect(validSessionId).toBeFalsy();
+	}
+);
