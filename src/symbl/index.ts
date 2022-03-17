@@ -219,26 +219,32 @@ export default class Symbl {
         }
 
     }
-    
-    async createConnection(options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+
+    async createConnection (options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+
         if (options.id) {
 
-            // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
-            // const regex = new RegExp(
-            //     uniquenessRegex,
-            //     "u"
-            // );
-            // const validSessionId = regex.test(options.id);
+            /*
+             * Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
+             * const regex = new RegExp(
+             *     uniquenessRegex,
+             *     "u"
+             * );
+             * const validSessionId = regex.test(options.id);
+             */
 
-            // if (!validSessionId) {
+            // If (!validSessionId) {
 
-            //     throw new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
+            //     Throw new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
 
             // }
         } else {
+
             options.id = uuid();
+
         }
         try {
+
             const connection = await new ConnectionFactory().instantiateConnection(
                 SymblConnectionType.STREAMING,
                 options,
@@ -319,10 +325,30 @@ export default class Symbl {
 
     }
 
-    static wait (time: number, unit = TimeUnit.MS) : Promise<void> {
+    static wait (time: number, unit: string = TimeUnit.MS) : Promise<void> {
+
+        let timeout;
+
+        // Validate `unit` as a valid Enum of type `TimeUnit`
+        switch (unit) {
+
+        case TimeUnit.S:
+            // Convert the time according to the unit passed in to milliseconds
+            timeout = time * 1000;
+            break;
+        case TimeUnit.M:
+            timeout = time * 60000;
+            break;
+        case TimeUnit.MS:
+            timeout = time;
+            break;
+        default:
+            throw new InvalidValueError("Please provide a valid time unit of 'ms', 's', or 'm'");
+
+        }
 
         // Validate `time` as a positive integer greater than or equal to zero.
-        if (time < 0) {
+        if (timeout < 0) {
 
             // In case the validation fails, return the appropriate error out of `RequiredParameterAbsentError` or `InvalidValueError`
             throw new InvalidValueError("`time` must be >= 0.");
@@ -338,16 +364,10 @@ export default class Symbl {
                     res();
 
                 },
-                time
+                timeout
             );
 
         });
-
-        /*
-         * Validate `unit` as a valid Enum of type `TimeUnit`
-         * Default value of `unit` will be `TimeUnit.MS`
-         * Convert the time according to the unit passed in to milliseconds
-         */
 
     }
 

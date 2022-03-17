@@ -1,5 +1,7 @@
 enum TimeUnit {
-    MS = "ms"
+    MS = "ms",
+    S = "s",
+    M = "m"
 }
 
 export {
