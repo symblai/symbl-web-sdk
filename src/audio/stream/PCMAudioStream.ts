@@ -34,7 +34,7 @@ export class PCMAudioStream extends AudioStream {
             this.sourceNode.connect(this.gainNode);
             this.gainNode.connect(this.processorNode);
             this.processorNode.connect(this.audioContext.destination);
-            this.processorNode.onaudioprocess = audioData => this.processAudio(audioData);
+            this.processorNode.onaudioprocess = this.processAudio;
 
         } else {
             console.log('audio processor not attached');

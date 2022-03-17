@@ -43,6 +43,17 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
+        this.attachAudioSourceElement = this.attachAudioSourceElement.bind(this);
+        this.detachAudioSourceElement = this.detachAudioSourceElement.bind(this);
+        this.updateAudioSourceElement = this.updateAudioSourceElement.bind(this);
+        this.attachAudioDevice = this.attachAudioDevice.bind(this);
+        this.detachAudioDevice = this.detachAudioDevice.bind(this);
+        this.updateAudioDevice = this.updateAudioDevice.bind(this);
+        this.attachAudioCallback = this.attachAudioCallback.bind(this);
+        this.attachAudioProcessor = this.attachAudioProcessor.bind(this);
+        this.processAudio = this.processAudio.bind(this);
+        this.onProcessedAudio = this.onProcessedAudio.bind(this);
+
         /*
          * If the `AudioContext` present in the `MediaStreamAudioSourceNode` is `running` or `suspended` then re-use that instance or recreate otherwise.
          * Add function bindings here
@@ -252,7 +263,7 @@ export class AudioStream extends DelegatedEventTarget {
     async attachAudioDevice (deviceId: string = "default", mediaStream?: MediaStream): Promise<void> {
 
         try {
-
+            // If can reinitialize audio context with new device, not nece
             if (this.audioContext && this.audioContext.state === "running") {
                 await this.detachAudioDevice();
                 this.audioContext = new AudioContext();
@@ -365,10 +376,6 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
-    attachStream(stream: any) {
-        this.stream = stream;
-    }
-
     protected attachAudioProcessor (): void {
 
         throw new TypeError("Not implemented!");
@@ -382,20 +389,14 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     onProcessedAudio (audioData: unknown): void {
-        if (this.stream) {
-            this.stream.sendAudio(audioData);
+        if (this.audioCallback) {
+            this.audioCallback(audioData);
 
         } else {
 
             // this.logger.warn("No audio callback attached. Audio not being proceessed.");
 
         }
-
-    }
-
-    test (): void {
-
-        // Not implemented
 
     }
 

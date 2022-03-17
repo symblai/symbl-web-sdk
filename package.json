@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "0.8.6",
+  "version": "1.0.0-beta",
   "description": "Symbl.ai Web SDK for accessing Symbl.ai APIs directly from the web browser.",
   "homepage": "https://github.com/symblai/symbl-web-sdk",
   "repository": {
@@ -60,6 +60,7 @@
     "build:ts": "rm -rf ./build-tsc && tsc",
     "build": "npm run build:ts && webpack --config webpack.config.js --mode production",
     "publish-next": "npm install && npm run build && npm publish --access public --tag next",
+    "publish-beta": "npm install && npm run build && npm publish --access public --tag beta",
     "publish-prod": "npm install && npm run build && npm publish --access public"
   },
   "author": "",
