@@ -1,8 +1,14 @@
+/*
+[UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "TypeError: Cannot read property 'stop' of undefined".] {
+    code: 'ERR_UNHANDLED_REJECTION'
+*/
+
 import Symbl from "../../../src/symbl";
 import { StreamingAPIConnection } from '../../../src/api';
 import { PCMAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { SymblEvent } from "../../../src/events";
+import { ConnectionState, ConnectionProcessingState } from "../../../src/types"
 // import Logger from "../../src/logger";
 // import { Stream } from "stream";
 
@@ -39,6 +45,8 @@ test(
     are both true and event type is \`audio_source_disconnected\` set \`restartProcessing\`
     to true and call \`stopProcessing\``,
     async () => {
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
         streamingAPIConnection._isConnected = true;
         streamingAPIConnection._isProcessing = true;
         const stopSpy = jest.spyOn(streamingAPIConnection, 'stopProcessing');
