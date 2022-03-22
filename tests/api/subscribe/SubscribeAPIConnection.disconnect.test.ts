@@ -1,3 +1,13 @@
+/*
+ tests/api/subscribe/SubscribeAPIConnection.disconnect.test.ts:98:14 - error TS2554: Expected 0 arguments, but got 1.
+
+    98             (<any>newSubscribeAPIConnection).connectionState = ConnectionState.CONNECTED;
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    tests/api/subscribe/SubscribeAPIConnection.disconnect.test.ts:98:46 - error TS2339: Property 'connectionState' does not exist on type 'never'.
+
+    98             (<any>newSubscribeAPIConnection).connectionState = ConnectionState.CONNECTED;
+*/
+
 import Symbl from "../../../src/symbl";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")

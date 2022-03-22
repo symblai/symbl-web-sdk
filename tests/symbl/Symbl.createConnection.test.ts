@@ -4,7 +4,7 @@ import { PCMAudioStream, OpusAudioStream } from '../../src/audio';
 import { StreamingAPIConnection  } from "../../src/api";
 import { NotSupportedSampleRateError  } from "../../src/error";
 import { APP_ID, APP_SECRET } from '../constants';
-import { uniquenessRegex, uuid } from '../../src/utils';
+import { uuid } from '../../src/utils';
 
 // Validate `options` with the `StreamingAPIConnectionConfig` interface
 // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`

@@ -1,3 +1,9 @@
+/* 
+PCMAudioStream.attachAudioProcessor - Test that audio processor was not attached successfully
+
+    TypeError: Cannot read property 'onaudioprocess' of undefined
+*/
+
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { PCMAudioStream } from '../../../src/audio';

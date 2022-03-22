@@ -1,3 +1,5 @@
+/* AppID is invalid? Double checked and it is definitely updated. */
+
 import Symbl from "../../src/symbl/index";
 import { HttpError, InvalidCredentialsError } from '../../src/error';
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";

@@ -1,3 +1,9 @@
+/*
+[UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "TypeError: Cannot read property 'connect' of null".] {
+  code: 'ERR_UNHANDLED_REJECTION'
+}
+*/
+
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { PCMAudioStream } from '../../../src/audio';

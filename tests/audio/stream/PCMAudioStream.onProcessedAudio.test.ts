@@ -1,3 +1,12 @@
+/*
+PCMAudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.
+
+    Error: expect(jest.fn()).toBeCalledTimes(expected)
+
+    Expected number of calls: 1
+    Received number of calls: 0
+*/
+
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { PCMAudioStream } from '../../../src/audio';

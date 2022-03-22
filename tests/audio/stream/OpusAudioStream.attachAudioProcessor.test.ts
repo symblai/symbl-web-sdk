@@ -1,3 +1,19 @@
+/*
+OpusAudioStream.attachAudioProcessor - Test that audio processor was attached successfully
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: [Function bound processAudio]
+    Received: [Function mockConstructor]
+
+OpusAudioStream.attachAudioProcessor - Test that audio processor was reinitialized successfully
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: [Function bound processAudio]
+    Received: [Function mockConstructor]
+*/
+
 import { Recorder } from "symbl-opus-encdec";
 jest.mock("symbl-opus-encdec");
 import AudioContext from 'audio-context-mock';

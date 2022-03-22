@@ -1,3 +1,10 @@
+/*
+PCMAudioStream.attachAudioSourceElement - Ensure that `audio_source_connected` is emitted
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+*/
+
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { SymblEvent } from "../../../src/events";

@@ -1,3 +1,5 @@
+/* no tests */
+
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { PCMAudioStream } from '../../../src/audio';
