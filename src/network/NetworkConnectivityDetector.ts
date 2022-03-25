@@ -1,5 +1,5 @@
-import Logger from "../logger";
 import {NetworkEvent, DelegatedEventTarget} from "../events";
+import Logger from "../logger";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
 export class NetworkConnectivityDetector extends DelegatedEventTarget {
@@ -18,7 +18,7 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
 
         super();
         this.sdk = sdk;
-        this.sdk.setNetworkConnectivityDispatcher(this);
+        // this.sdk.setNetworkConnectivityDispatcher(this);
         // Add function bindings here
 
     }
