@@ -22,7 +22,7 @@ import Logger from "../logger";
 import {VALID_LOG_LEVELS} from "../utils/configs";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import {uuid} from "../utils";
-
+import {ID_REGEX} from "../constants";
 
 
 export default class Symbl {
@@ -60,6 +60,7 @@ export default class Symbl {
         this.createConnection = this.createConnection.bind(this);
         this.createAndStartNewConnection = this.createAndStartNewConnection.bind(this);
         this.subscribeToConnection = this.subscribeToConnection.bind(this);
+
     }
 
     /**
@@ -181,10 +182,12 @@ export default class Symbl {
 
         try {
 
-            // Logger.log(
-            //     "symblConfig",
-            //     symblConfig
-            // );
+            /*
+             * Logger.log(
+             *     "symblConfig",
+             *     symblConfig
+             * );
+             */
             const initConfig: any = {};
 
             if (symblConfig.accessToken) {
@@ -221,30 +224,34 @@ export default class Symbl {
 
         if (options.id) {
 
-            /*
-             * Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
-             * const regex = new RegExp(
-             *     uniquenessRegex,
-             *     "u"
-             * );
-             * const validSessionId = regex.test(options.id);
-             */
 
-            // If (!validSessionId) {
+            // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
+            const regex = new RegExp(
+                ID_REGEX,
+                "u"
+            );
+            const validSessionId = regex.test(options.id);
 
-            //     Throw new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
+            if (!validSessionId) {
 
-            // }
+                throw new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
+
+            }
+
         } else {
 
             options.id = uuid();
 
         }
         if (!options.config) {
+
             options.config = {};
+
         }
         if (!options.config.sampleRateHertz) {
+
             options.config.sampleRateHertz = 48000;
+
         }
         try {
 
