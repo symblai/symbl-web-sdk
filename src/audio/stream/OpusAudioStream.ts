@@ -6,17 +6,33 @@ export class OpusAudioStream extends AudioStream {
 
     private opusEncoder: Recorder;
 
-    private config: OpusConfig
+    private config: OpusConfig = {
+        "encoderComplexity": 6,
+        "encoderFrameSize": 20,
+        "encoderSampleRate": 48000,
+        "maxFramesPerPage": 40,
+        "numberOfChannels": 1,
+        "rawOpus": true,
+        "streamPages": true
+    }
 
-    constructor (sourceNode: MediaStreamAudioSourceNode, config: OpusConfig) {
+    constructor (sourceNode?: MediaStreamAudioSourceNode, config?: OpusConfig) {
 
         super(sourceNode);
 
         // Validate `config` and throw appropriate error if the validation fails
-        this.config = config;
-
-        this.config.sourceNode = <MediaStreamAudioSourceNode>sourceNode;
-        this.opusEncoder = new Recorder(this.config);
+        this.mediaStreamPromise.then(() => {
+            if (config) {
+                this.config = config;
+            }
+            this.config.sourceNode = <MediaStreamAudioSourceNode>this.sourceNode;
+            this.opusEncoder = new Recorder(this.config);
+        })
+        this.processAudio = this.processAudio.bind(this);
+        this.attachAudioProcessor = this.attachAudioProcessor.bind(this);
+        this.attachAudioSourceElement = this.attachAudioSourceElement.bind(this);
+        this.attachAudioDevice = this.attachAudioDevice.bind(this);
+        this.attachAudioCallback = this.attachAudioCallback.bind(this);
 
     }
 

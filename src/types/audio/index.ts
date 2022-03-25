@@ -5,8 +5,8 @@ interface OpusConfig {
     maxFramesPerPage: number;
     encoderComplexity: number;
     streamPages: boolean;
-    sourceNode: MediaStreamAudioSourceNode;
     rawOpus: boolean;
+    sourceNode?: MediaStreamAudioSourceNode;
 };
 
 export {

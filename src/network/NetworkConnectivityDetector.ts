@@ -29,7 +29,7 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
 
     }
 
-    private async onlineDetector (): Promise<void> {
+    public async onlineDetector (): Promise<void> {
 
         this.maxRetries = 1200;
         this.checkInterval = 3000;
@@ -59,8 +59,6 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
                                 clearInterval(this.connectivityCheckIntervalRef);
 
                             }
-
-                            this.logger.debug("Connection online!");
 
                         } else {
 

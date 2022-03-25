@@ -4,7 +4,12 @@ global.URL.createObjectURL = jest.fn();
 Recorder.isRecordingSupported = jest.fn(() => true)
 
 const myAudioTrack = {
-    "applyConstraints": jest.fn()
+    "applyConstraints": jest.fn(),
+    "getSettings": jest.fn(() => {
+    	return {
+    		sampleRate: 48000
+    	}
+    })
 };
 
 Object.defineProperty(window, 'AudioContext', {
@@ -32,7 +37,7 @@ Object.defineProperty(window, 'MediaStream', {
 		return {
 			getAudioTracks: jest.fn(() => {
 				return [myAudioTrack]
-			})	
+			})
 		}
 	})
 });

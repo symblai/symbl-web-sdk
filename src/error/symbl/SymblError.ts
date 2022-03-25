@@ -1,4 +1,6 @@
 import Logger from "../../logger/index";
+import { SymblEvent } from "../../events";
+
 
 export default class SymblError extends Error {
 
@@ -11,6 +13,8 @@ export default class SymblError extends Error {
         this.name = name;
         this.logger.error(message);
         this.logger.trace(message);
+        const delegate = document.createDocumentFragment();
+        delegate.dispatchEvent.apply(delegate, [new SymblEvent('error', this)]);
 
     }
 

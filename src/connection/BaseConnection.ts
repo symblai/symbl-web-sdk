@@ -1,7 +1,16 @@
 import {DelegatedEventTarget, SymblEvent} from "../events";
-import {EventTypes, SymblData} from "../types";
+import {
+    EventTypes,
+    SymblData,
+    RealtimeSpeechData,
+    RealtimeMessageData,
+    RealtimeInsightData,
+    RealtimeTopicData,
+} from "../types";
 import Logger from "../logger";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+import registerNetworkConnectivityDetector from "../network"
+import { InvalidValueError } from "../error";
 
 export class BaseConnection extends DelegatedEventTarget {
 
@@ -25,6 +34,7 @@ export class BaseConnection extends DelegatedEventTarget {
         this.disconnect = this.disconnect.bind(this);
         this.onDataReceived = this.onDataReceived.bind(this);
         this.getSessionId = this.getSessionId.bind(this);
+        registerNetworkConnectivityDetector(this.sdk)
 
     }
 
@@ -39,20 +49,24 @@ export class BaseConnection extends DelegatedEventTarget {
 
     async emitEvents (data: any /* SymblData*/): Promise<void> {
 
+        if (data.type === "error") {
+            throw new InvalidValueError(data.detail);
+        }
+
         const eventNameMapper = (data) => {
 
             const eventNameMap = {
                 "message_response": {
                     name: "message",
-                    data: data.messages
+                    data: data.messages as RealtimeMessageData[]
                 },
                 "topic_response": {
                     name: "topic",
-                    data: data.topics,
+                    data: data.topics as RealtimeTopicData[]
                 },
                 "insight_response": {
                     name: null,
-                    data,
+                    data: data as RealtimeInsightData,
                 },
                 "message": {
                     name: data.message
@@ -65,10 +79,11 @@ export class BaseConnection extends DelegatedEventTarget {
                     data: data.trackers
                 }
             };
-            let eventType = eventNameMap[data.type];
+            let eventType = eventNameMap[data.type] || {};
             if (eventType.name === "recognition_result") {
 
                 eventType.name = "speech_recognition";
+                eventType.data = eventType.data as RealtimeSpeechData;
 
             }
             return eventType;

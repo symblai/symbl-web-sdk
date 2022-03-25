@@ -22,6 +22,8 @@ export class AudioStream extends DelegatedEventTarget {
 
     protected stream: any;
 
+    protected mediaStreamPromise: any = Promise.resolve();
+
     constructor (sourceNode?: MediaStreamAudioSourceNode) {
 
         super();
@@ -36,11 +38,14 @@ export class AudioStream extends DelegatedEventTarget {
             }
             this.mediaStream = this.sourceNode.mediaStream;
 
-        }
-        if (!this.audioContext) {
-
-            this.audioContext = new AudioContext();
-
+        } else {
+            this.mediaStreamPromise = AudioStream.getMediaStream();
+            this.mediaStreamPromise.then(mediaStream => {
+                this.mediaStream = mediaStream;
+                const sampleRate = this.mediaStream.getAudioTracks()[0].getSettings().sampleRate;
+                this.audioContext = new AudioContext({ sampleRate });
+                this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+            });
         }
 
         this.attachAudioSourceElement = this.attachAudioSourceElement.bind(this);
@@ -95,6 +100,24 @@ export class AudioStream extends DelegatedEventTarget {
 
         return stream;
 
+    }
+
+    getSampleRate(): number {
+        return this.audioContext.sampleRate;
+    }
+
+    async suspendAudioContext() {
+        if (this.audioContext.state === "running") {
+            await this.audioContext.suspend();
+        } else {
+            this.logger.warn("Audio context is not running.");
+        }
+    }
+
+    async resumeAudioContext() {
+        if (this.audioContext.state === "suspended") {
+            await this.audioContext.resume();
+        }
     }
 
     async attachAudioSourceElement (audioSourceDomElement: any): Promise<void> {
@@ -263,38 +286,27 @@ export class AudioStream extends DelegatedEventTarget {
     async attachAudioDevice (deviceId: string = "default", mediaStream?: MediaStream): Promise<void> {
 
         try {
-            // If can reinitialize audio context with new device, not nece
-            if (this.audioContext && this.audioContext.state === "running") {
-                await this.detachAudioDevice();
-                this.audioContext = new AudioContext();
-                console.log('deatched audioContext', this.audioContext);
-            }
-
-            // const devices: any = await navigator.mediaDevices.enumerateDevices();
-            // const device = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId);
-            // if (!device) {
-
-            //     throw new InvalidAudioInputDeviceError(`Invalid input deviceId: ${deviceId}`);
-
+            // TODO:
+            // If can reinitialize audio context with new device, not necessary
+            // if (this.audioContext && this.audioContext.state === "running") {
+            //     await this.detachAudioDevice();
+            //     this.audioContext = new AudioContext();
             // }
+
+
+            // If a media stream is passed in attach to the AudioStream
             if (mediaStream) {
 
                 this.mediaStream = mediaStream;
 
+            // Else if a media stream is not already attached create a new one.
             } else if (!this.mediaStream) {
 
                 this.mediaStream = await AudioStream.getMediaStream(deviceId);
 
             }
 
-
-            await this.mediaStream.getAudioTracks()[0].applyConstraints({
-                "sampleRate": {
-                    "ideal": this.audioContext.sampleRate
-                }
-            });
-
-
+            // Create the sourceNode, processorNode and gainNode using the Audio Context.
             this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
             this.processorNode = this.audioContext.createScriptProcessor(
                 1024,
@@ -308,16 +320,6 @@ export class AudioStream extends DelegatedEventTarget {
             throw e;
 
         }
-
-        /*
-         * If `mediaStream` is passed in, use it to invoke the `createMediaStreamSource` function later in the flow
-         * Else, Validate the `deviceId` passed in corresponds to a valid Audio device and is connected.
-         * Failure to do so should result in the `InvalidAudioInputDeviceError`
-         * Once the `deviceId` is validated, we get the audio device against the `deviceId` and create the MediaStream
-         * If exisiting `audioContext` is active, emit `audio_source_disconnected`
-         * Re-create `sourceNode` and `scriptProcessor` and re-assign the class variables
-         * Emit `audio_source_connected` event with the new `sampleRate`
-         */
 
     }
 
@@ -358,20 +360,18 @@ export class AudioStream extends DelegatedEventTarget {
 
     updateAudioDevice (deviceId: string, mediaStream?: MediaStream): void {
 
+        // Invoke `detachAudioDevice` function
         this.detachAudioDevice();
+
+        // Invoke `attachAudioDevice` function with the new `deviceId` and optional `mediaStream`
         this.attachAudioDevice(
             deviceId,
             mediaStream
         );
-
-        /*
-         * Invoke `detachAudioDevice` function
-         * Invoke `attachAudioDevice` function with the new `deviceId` and optional `mediaStream`
-         */
-
     }
 
     attachAudioCallback (audioCallback: (audioData) => void): void {
+
         this.audioCallback = audioCallback;
 
     }
@@ -389,12 +389,13 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     onProcessedAudio (audioData: unknown): void {
+
         if (this.audioCallback) {
             this.audioCallback(audioData);
 
         } else {
 
-            // this.logger.warn("No audio callback attached. Audio not being proceessed.");
+            this.logger.warn("No audio callback attached. Audio not being proceessed.");
 
         }
 

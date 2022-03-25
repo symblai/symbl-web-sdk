@@ -6,6 +6,13 @@
     <title>Symbl Web SDK example</title>
     <script src="symbl.js"></script>
     <script>
+    let symblSdk, connection, id;
+    function uuidv4() {
+      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    }
+
     const authenticate = async (withToken) => {
         let config;
         if (withToken) {
@@ -20,11 +27,12 @@
 
         }
         const context = new AudioContext();
-        const symblSdk = new symbl.Symbl(config);
+        symblSdk = new symbl.Symbl(config);
+        id = uuidv4();
         symblSdk.init(config)
         .then(async () => {
             const connectionConfig = {
-              // id: btoa(Math.random()) + "s9d8f98s",
+              id,
               // sourceNode: source,
               // reconnectOnError: true,
               disconnectOnStopRequest: false,
@@ -36,8 +44,8 @@
                 confidenceThreshold: 0.7,
                 timezoneOffset: 480, // Offset in minutes from UTC
                 languageCode: 'en-US',
-                encoding: 'opus',
-                // encoding: 'LINEAR16',
+                encoding: 'OPUS',
+                // encoding: 'linear16',
                 sampleRateHertz: 48000,
               },
               handlers: {},
@@ -58,8 +66,14 @@
               }
             };
             await context.close();
-            const connection = await symblSdk.createConnection(connectionConfig);
+            connection = await symblSdk.createConnection(connectionConfig);
             await connection.startProcessing();
+
+            const subscription = await symblSdk.subscribeToConnection(id);
+
+            subscription.on("subscribed", () => {
+                alert('subscribed');
+            });
 
             connection.on('conversation_created', (data) => {
                 console.log('conversation_created', data);
@@ -159,6 +173,14 @@
         })
         .catch(err => console.error('Error in initialization.', err));
     };
+
+    const stopProcessing = () => {
+        connection.stopProcessing();
+    }
+
+    const startProcessing = () => {
+        connection.startProcessing();
+    }
 </script>
 </head>
 
@@ -171,6 +193,16 @@
     </div>
     <div>
         <button onclick="javascript: authenticate(true)">Authenticate with accessToken</button>
+    </div>
+
+    <p>Stop Processing</p>
+    <div>
+        <button onclick="javascript: stopProcessing()">Stop Processing</button>
+    </div>
+
+    <p>Start Processing</p>
+    <div>
+        <button onclick="javascript: startProcessing()">Start Processing</button>
     </div>
 </div>
 

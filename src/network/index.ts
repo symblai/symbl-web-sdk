@@ -1,37 +1,40 @@
-// import { NetworkConnectivityDetector } from "./NetworkConnectivityDetector";
-// import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+import { NetworkConnectivityDetector } from "./NetworkConnectivityDetector";
+import Logger from "../logger";
+import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
-// let offlineEventListenerRegistered = false, onlineEventListenerRegistered = false;
-// let networkConnectivityDetector: NetworkConnectivityDetector;
+let offlineEventListenerRegistered = false, onlineEventListenerRegistered = false;
+let networkConnectivityDetector: NetworkConnectivityDetector;
 
-// const registerNetworkConnectivityDetector = (sdk: sdk) => {
-//     if (window) {
-//         if (!networkConnectivityDetector) {
-//             networkConnectivityDetector = new NetworkConnectivityDetector(sdk);
-//         }
+const registerNetworkConnectivityDetector = (sdk: sdk) => {
+	let connectivityCheckIntervalRef;
+	const logger = new Logger();
+    if (window) {
+        if (!networkConnectivityDetector) {
+            networkConnectivityDetector = new NetworkConnectivityDetector(sdk);
+        }
   
-//         if (!offlineEventListenerRegistered) {
-//             window.addEventListener('offline', (e) => {
-//                 sdk.setOffline(true);
-//                 if (connectivityCheckIntervalRef)
-//                     clearInterval(connectivityCheckIntervalRef);
+        if (!offlineEventListenerRegistered) {
+            window.addEventListener('offline', (e) => {
+                sdk.setOffline(true);
+                if (connectivityCheckIntervalRef)
+                    clearInterval(connectivityCheckIntervalRef);
     
-//                 logger.debug(`Connection offline`);
-//             });
+                logger.debug(`Connection offline`);
+            });
             
-//             offlineEventListenerRegistered = true;
-//         }
+            offlineEventListenerRegistered = true;
+        }
 
-//         if (!onlineEventListenerRegistered) {
-//             window.addEventListener('online', (e) => {
-//                 networkConnectivityDetector.onlineDetector();
-//             });
+        if (!onlineEventListenerRegistered) {
+            window.addEventListener('online', (e) => {
+                networkConnectivityDetector.onlineDetector();
+            });
             
-//             onlineEventListenerRegistered = true;
-//         }
+            onlineEventListenerRegistered = true;
+        }
 
-//         networkConnectivityDetector.onlineDetector();
-//     }
-// } 
+        networkConnectivityDetector.onlineDetector();
+    }
+} 
 
-// export default registerNetworkConnectivityDetector;
+export default registerNetworkConnectivityDetector;

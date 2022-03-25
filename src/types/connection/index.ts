@@ -15,6 +15,11 @@ enum SymblConnectionType {
     SUBSCRIBE = "subscribe"
 };
 
+enum SymblAudioStreamType {
+    OPUS = "OPUS",
+    PCM = "LINEAR16",
+}
+
 enum ConnectionState {
     CONNECTING,
     CONNECTED,
@@ -103,6 +108,7 @@ type ConnectionConfig = StreamingAPIConnectionConfig | SubscribeAPIConnectionCon
 
 export {
     SymblConnectionType,
+    SymblAudioStreamType,
     ConnectionState,
     ConnectionProcessingState,
     ConnectionConfig,

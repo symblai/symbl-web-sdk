@@ -22,6 +22,7 @@ import Logger from "../logger";
 import {VALID_LOG_LEVELS} from "../utils/configs";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import {uuid} from "../utils";
+import registerNetworkConnectivityDetector from "../network";
 import {ID_REGEX} from "../constants";
 
 
@@ -61,6 +62,7 @@ export default class Symbl {
         this.createAndStartNewConnection = this.createAndStartNewConnection.bind(this);
         this.subscribeToConnection = this.subscribeToConnection.bind(this);
 
+        registerNetworkConnectivityDetector(this.sdk);
     }
 
     /**
@@ -220,10 +222,10 @@ export default class Symbl {
 
     }
 
-    async createConnection (options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
-
-        if (options.id) {
-
+    async createConnection (sessionId: string, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+        const options: StreamingAPIConnectionConfig = {};
+        if (sessionId) {
+            options.id = sessionId;
 
             // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
             const regex = new RegExp(
@@ -243,21 +245,11 @@ export default class Symbl {
             options.id = uuid();
 
         }
-        if (!options.config) {
-
-            options.config = {};
-
-        }
-        if (!options.config.sampleRateHertz) {
-
-            options.config.sampleRateHertz = 48000;
-
-        }
         try {
 
             const connection = await new ConnectionFactory().instantiateConnection(
                 SymblConnectionType.STREAMING,
-                options,
+                sessionId,
                 audioStream
             );
 
@@ -273,11 +265,6 @@ export default class Symbl {
 
         }
 
-        /*
-         * Validate `options` with the `StreamingAPIConnectionConfig` interface
-         * Return the connection instance
-         */
-
 
     }
 
@@ -287,12 +274,12 @@ export default class Symbl {
 
             // Invoke `createConnection` with the above arguments.
             const connection = await this.createConnection(
-                options,
+                options ? options.id : null,
                 audioStream
             );
 
             // Invoke `startProcessing` on the instance of `StreamingAPIConnection`
-            await connection.startProcessing();
+            await connection.startProcessing(options);
 
             // Return the connection instance
             return connection as StreamingAPIConnection;
@@ -319,7 +306,7 @@ export default class Symbl {
             // Initialize the instance of `SubscribeAPIConnection` via the `ConnectionFactory` with the passed in `sessionId`
             const connection = await new ConnectionFactory().instantiateConnection(
                 SymblConnectionType.SUBSCRIBE,
-                {sessionId} as SubscribeAPIConnectionConfig
+                sessionId
             );
 
             // Invoke the `connect` method to start the connection to the Subscribe API

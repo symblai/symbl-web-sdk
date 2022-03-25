@@ -41,12 +41,15 @@ beforeAll(() => {
 });
 
 test(
-    `Make sure emitEvents is called when invoking onDataReceived`,
+    `Make sure dispatchEvent is called when invoking onDataReceived`,
     async () => {
         const emitSpy = jest.spyOn(streamingAPIConnection, 'dispatchEvent');
         const loggerSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
         const data: any = {
-            type: "recognition_result"
+            type: "message",
+            message: {
+                type: "recognition_result"
+            }
         };
         await streamingAPIConnection.onDataReceived(data);
         expect(emitSpy).toBeCalledTimes(1);
@@ -56,7 +59,7 @@ test(
 );
 
 test(
-    `Ensure warning is called if invalid data type is passed.`,
+    `Ensure warning is called if invalid data is passed.`,
     async () => {
         const emitSpy = jest.spyOn(streamingAPIConnection, 'dispatchEvent');
         const loggerSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
@@ -66,5 +69,21 @@ test(
         await streamingAPIConnection.onDataReceived(data);
         expect(emitSpy).toBeCalledTimes(0);
         expect(loggerSpy).toBeCalledTimes(1);
+    }
+);
+
+test(
+    `Ensure error is thrown if error type is received.`,
+    async () => {
+        const data: any = {
+            type: "error",
+            detail: "This is an error"
+        };
+        // try {
+            await expect(async () => await streamingAPIConnection.onDataReceived(data)).rejects.toThrow();
+
+        // } catch(e) {
+        //     throw e;
+        // }
     }
 );
