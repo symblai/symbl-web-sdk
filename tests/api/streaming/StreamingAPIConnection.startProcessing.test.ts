@@ -29,7 +29,7 @@ beforeEach(() => {
     const audioContext = new AudioContext();
     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
     const audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream); 
+    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig.id, audioStream); 
     streamingAPIConnection.stream = {
         start: jest.fn(() => {
             return new Promise(res => {
@@ -50,40 +50,25 @@ beforeEach(() => {
 // Return from function
 
 test(
-    "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call - no startRequestData",
+    "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call",
     (done) => {
         streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
         streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
         const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
-        streamingAPIConnection.startProcessing().then(() => {
+        const validationSpy = jest.spyOn(StreamingAPIConnection, 'validateConfig');
+        const attachStreamSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream');
+        streamingAPIConnection.startProcessing(validConnectionConfig).then(() => {
             expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
             expect(streamingAPIConnection.isProcessing()).toBe(true);
             expect(streamSpy).toBeCalledTimes(1);
+            expect(validationSpy).toBeCalledTimes(1);
+            expect(validationSpy).toBeCalledWith(validConnectionConfig);
+            expect(attachStreamSpy).toBeCalledTimes(1);
             done();
         });
-        expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
     }
 );
 
-test(
-    "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call - with startRequestData",
-    done => {
-        const startRequestData = {
-            type: "start_request"
-        }
-        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
-        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
-        const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
-        streamingAPIConnection.startProcessing(startRequestData).then(() => {
-            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
-            expect(streamingAPIConnection.isProcessing()).toBe(true);
-            expect(streamSpy).toBeCalledTimes(1);
-            expect(streamSpy).toBeCalledWith(startRequestData);
-            done();
-        });
-        expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.ATTEMPTING);
-    }
-);
 
 test(
     "StreamingAPIConnection.startProcessing - Testing an unsuccessful startProcessing call",
@@ -131,7 +116,7 @@ test(
         streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
         streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
         const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
-        await expect(async() => await streamingAPIConnection.startProcessing()).rejects.toThrow();
+        await expect(async() => await streamingAPIConnection.startProcessing(validConnectionConfig)).rejects.toThrow();
         expect(startSpy).toBeCalledTimes(0);
     }
 );
@@ -142,7 +127,7 @@ test(
         streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
         streamingAPIConnection.processingState = ConnectionProcessingState.ATTEMPTING;
         const warnSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
-        await streamingAPIConnection.startProcessing();
+        await streamingAPIConnection.startProcessing(validConnectionConfig);
         expect(warnSpy).toBeCalledTimes(1);
         const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
         expect(startSpy).toBeCalledTimes(0);
@@ -155,7 +140,7 @@ test(
         streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
         streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
         const warnSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
-        await streamingAPIConnection.startProcessing();
+        await streamingAPIConnection.startProcessing(validConnectionConfig);
         expect(warnSpy).toBeCalledTimes(1);
         const startSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
         expect(startSpy).toBeCalledTimes(0);
