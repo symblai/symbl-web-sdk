@@ -82,7 +82,7 @@ var symbl =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 13);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -127,7 +127,7 @@ var __exportStar = undefined && undefined.__exportStar || function (m, exports) 
     }
 };
 exports.__esModule = true;
-__exportStar(__webpack_require__(17), exports);
+__exportStar(__webpack_require__(19), exports);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -250,12 +250,95 @@ var __exportStar = undefined && undefined.__exportStar || function (m, exports) 
     }
 };
 exports.__esModule = true;
-__exportStar(__webpack_require__(16), exports);
-__exportStar(__webpack_require__(19), exports);
+__exportStar(__webpack_require__(41), exports);
+__exportStar(__webpack_require__(42), exports);
+__exportStar(__webpack_require__(43), exports);
+__exportStar(__webpack_require__(44), exports);
+__exportStar(__webpack_require__(45), exports);
+__exportStar(__webpack_require__(46), exports);
+__exportStar(__webpack_require__(47), exports);
+__exportStar(__webpack_require__(48), exports);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __createBinding = undefined && undefined.__createBinding || (Object.create ? function (o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function get() {
+            return m[k];
+        } });
+} : function (o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+});
+var __exportStar = undefined && undefined.__exportStar || function (m, exports) {
+    for (var p in m) {
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+    }
+};
+exports.__esModule = true;
+__exportStar(__webpack_require__(18), exports);
+__exportStar(__webpack_require__(40), exports);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __extends = undefined && undefined.__extends || function () {
+    var _extendStatics = function extendStatics(d, b) {
+        _extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
+            d.__proto__ = b;
+        } || function (d, b) {
+            for (var p in b) {
+                if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+            }
+        };
+        return _extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        _extendStatics(d, b);
+        function __() {
+            this.constructor = d;
+        }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+}();
+var __importDefault = undefined && undefined.__importDefault || function (mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+};
+exports.__esModule = true;
+var index_1 = __importDefault(__webpack_require__(2));
+var events_1 = __webpack_require__(1);
+var SymblError = function (_super) {
+    __extends(SymblError, _super);
+    function SymblError(message, name) {
+        var _this = _super.call(this, message) || this;
+        _this.logger = new index_1["default"]();
+        _this.message = message;
+        _this.name = name;
+        _this.logger.error(message);
+        _this.logger.trace(message);
+        var delegate = document.createDocumentFragment();
+        delegate.dispatchEvent.apply(delegate, [new events_1.SymblEvent('error', _this)]);
+        return _this;
+    }
+    return SymblError;
+}(Error);
+exports["default"] = SymblError;
+//# sourceMappingURL=SymblError.js.map
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -668,58 +751,7 @@ exports.AudioStream = AudioStream;
 //# sourceMappingURL=AudioStream.js.map
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __extends = undefined && undefined.__extends || function () {
-    var _extendStatics = function extendStatics(d, b) {
-        _extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
-            d.__proto__ = b;
-        } || function (d, b) {
-            for (var p in b) {
-                if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
-            }
-        };
-        return _extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        _extendStatics(d, b);
-        function __() {
-            this.constructor = d;
-        }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-}();
-var __importDefault = undefined && undefined.__importDefault || function (mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-};
-exports.__esModule = true;
-var index_1 = __importDefault(__webpack_require__(2));
-var events_1 = __webpack_require__(1);
-var SymblError = function (_super) {
-    __extends(SymblError, _super);
-    function SymblError(message, name) {
-        var _this = _super.call(this, message) || this;
-        _this.logger = new index_1["default"]();
-        _this.message = message;
-        _this.name = name;
-        _this.logger.error(message);
-        _this.logger.trace(message);
-        var delegate = document.createDocumentFragment();
-        delegate.dispatchEvent.apply(delegate, [new events_1.SymblEvent('error', _this)]);
-        return _this;
-    }
-    return SymblError;
-}(Error);
-exports["default"] = SymblError;
-//# sourceMappingURL=SymblError.js.map
-
-/***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -727,40 +759,8 @@ exports["default"] = SymblError;
 
 exports.__esModule = true;
 exports.uuid = void 0;
-var uuid_1 = __webpack_require__(61);
+var uuid_1 = __webpack_require__(62);
 exports.uuid = uuid_1.v4;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __createBinding = undefined && undefined.__createBinding || (Object.create ? function (o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function get() {
-            return m[k];
-        } });
-} : function (o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-});
-var __exportStar = undefined && undefined.__exportStar || function (m, exports) {
-    for (var p in m) {
-        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-    }
-};
-exports.__esModule = true;
-__exportStar(__webpack_require__(43), exports);
-__exportStar(__webpack_require__(44), exports);
-__exportStar(__webpack_require__(45), exports);
-__exportStar(__webpack_require__(46), exports);
-__exportStar(__webpack_require__(47), exports);
-__exportStar(__webpack_require__(48), exports);
-__exportStar(__webpack_require__(49), exports);
-__exportStar(__webpack_require__(50), exports);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -785,8 +785,8 @@ var __exportStar = undefined && undefined.__exportStar || function (m, exports) 
     }
 };
 exports.__esModule = true;
-__exportStar(__webpack_require__(14), exports);
-__exportStar(__webpack_require__(52), exports);
+__exportStar(__webpack_require__(16), exports);
+__exportStar(__webpack_require__(53), exports);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -1087,7 +1087,7 @@ var __importDefault = undefined && undefined.__importDefault || function (mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
 };
 exports.__esModule = true;
-var NetworkConnectivityDetector_1 = __webpack_require__(18);
+var NetworkConnectivityDetector_1 = __webpack_require__(20);
 var logger_1 = __importDefault(__webpack_require__(2));
 var offlineEventListenerRegistered = false,
     onlineEventListenerRegistered = false;
@@ -1141,11 +1141,57 @@ var __exportStar = undefined && undefined.__exportStar || function (m, exports) 
     }
 };
 exports.__esModule = true;
-__exportStar(__webpack_require__(20), exports);
+__exportStar(__webpack_require__(13), exports);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __createBinding = undefined && undefined.__createBinding || (Object.create ? function (o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function get() {
+            return m[k];
+        } });
+} : function (o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+});
+var __exportStar = undefined && undefined.__exportStar || function (m, exports) {
+    for (var p in m) {
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+    }
+};
+exports.__esModule = true;
+__exportStar(__webpack_require__(7), exports);
+__exportStar(__webpack_require__(49), exports);
+__exportStar(__webpack_require__(50), exports);
+__exportStar(__webpack_require__(52), exports);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.ID_REGEX = exports.OPUS_SAMPLE_RATE_HERTZ = exports.LINEAR16_SAMPLE_RATE_HERTZ = exports.VALID_ENCODING = exports.VALID_INSIGHT_TYPES = exports.DEFAULT_ENCODING_TYPE = exports.DEFAULT_SAMPLE_RATE_HERTZ = void 0;
+exports.DEFAULT_SAMPLE_RATE_HERTZ = 16000;
+exports.DEFAULT_ENCODING_TYPE = 'LINEAR16';
+exports.VALID_INSIGHT_TYPES = ['action_item', 'question', 'follow_up'];
+exports.VALID_ENCODING = ['LINEAR16', 'OPUS'];
+exports.LINEAR16_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 44100, 48000];
+exports.OPUS_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 48000];
+exports.ID_REGEX = /^[a-zA-Z0-9-]{6,64}$/;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1172,17 +1218,17 @@ exports.__esModule = true;
 exports.Symbl = void 0;
 __exportStar(__webpack_require__(9), exports);
 __exportStar(__webpack_require__(12), exports);
-__exportStar(__webpack_require__(4), exports);
+__exportStar(__webpack_require__(5), exports);
 __exportStar(__webpack_require__(3), exports);
 __exportStar(__webpack_require__(1), exports);
 __exportStar(__webpack_require__(2), exports);
-__exportStar(__webpack_require__(7), exports);
-var symbl_1 = __importDefault(__webpack_require__(54));
+__exportStar(__webpack_require__(8), exports);
+var symbl_1 = __importDefault(__webpack_require__(55));
 exports.Symbl = symbl_1["default"];
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1203,11 +1249,11 @@ var __exportStar = undefined && undefined.__exportStar || function (m, exports) 
     }
 };
 exports.__esModule = true;
-__exportStar(__webpack_require__(15), exports);
+__exportStar(__webpack_require__(17), exports);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1318,12 +1364,13 @@ var __generator = undefined && undefined.__generator || function (thisArg, body)
 };
 exports.__esModule = true;
 exports.StreamingAPIConnection = void 0;
-var connection_1 = __webpack_require__(4);
-var utils_1 = __webpack_require__(7);
+var connection_1 = __webpack_require__(5);
+var audio_1 = __webpack_require__(12);
+var utils_1 = __webpack_require__(8);
 var events_1 = __webpack_require__(1);
-var types_1 = __webpack_require__(8);
+var types_1 = __webpack_require__(4);
 var error_1 = __webpack_require__(3);
-var constants_1 = __webpack_require__(51);
+var constants_1 = __webpack_require__(14);
 var validateInsightTypes = function validateInsightTypes(insightTypes) {
     if (!Array.isArray(insightTypes)) {
         return false;
@@ -1338,17 +1385,19 @@ var validateInsightTypes = function validateInsightTypes(insightTypes) {
 };
 var StreamingAPIConnection = function (_super) {
     __extends(StreamingAPIConnection, _super);
-    function StreamingAPIConnection(config, audioStream) {
-        var _this = _super.call(this, config.id) || this;
+    function StreamingAPIConnection(sessionId, audioStream) {
+        var _this = _super.call(this, sessionId) || this;
         _this.connectionState = types_1.ConnectionState.DISCONNECTED;
         _this.processingState = types_1.ConnectionProcessingState.NOT_PROCESSING;
         _this._isProcessing = false;
         _this._isConnected = false;
         _this.restartProcessing = false;
         _this.connectionType = types_1.SymblConnectionType.STREAMING;
-        _this.config = config;
-        _this.config.handlers = {
-            onDataReceived: _this.onDataReceived
+        _this.config = {
+            id: sessionId,
+            handlers: {
+                onDataReceived: _this.onDataReceived
+            }
         };
         _this.audioStream = audioStream;
         _this.onDataReceived = _this.onDataReceived.bind(_this);
@@ -1424,7 +1473,7 @@ var StreamingAPIConnection = function (_super) {
         if (!!disconnectOnStopRequest && typeof disconnectOnStopRequest !== 'boolean') {
             throw new error_1.InvalidValueError("StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.");
         }
-        if (disconnectOnStopRequest === false) {
+        if (disconnectOnStopRequest === false && disconnectOnStopRequestTimeout) {
             if (typeof disconnectOnStopRequestTimeout !== 'number' || disconnectOnStopRequestTimeout < 0 || disconnectOnStopRequestTimeout > 3600) {
                 throw new error_1.InvalidValueError("StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 3600.");
             }
@@ -1438,41 +1487,33 @@ var StreamingAPIConnection = function (_super) {
     };
     StreamingAPIConnection.prototype.connect = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var copyConfig, _a, e_1;
+            var _a, e_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         if (!(this.connectionState === types_1.ConnectionState.CONNECTED)) return [3, 1];
                         this.logger.warn('A connection attempt is being made on an already open connection.');
-                        return [3, 5];
+                        return [3, 4];
                     case 1:
-                        _b.trys.push([1, 4,, 5]);
+                        _b.trys.push([1, 3,, 4]);
                         this.connectionState = types_1.ConnectionState.CONNECTING;
-                        if (this.config.config && this.config.config.encoding) {
-                            this.config.config.encoding = this.config.config.encoding.toUpperCase();
-                        }
-                        copyConfig = Object.assign({}, this.config);
                         _a = this;
-                        return [4, this.sdk.createStream(copyConfig)];
+                        return [4, this.sdk.createStream(this.config)];
                     case 2:
                         _a.stream = _b.sent();
-                        this.attachAudioStream(this.audioStream);
-                        return [4, this.audioStream.attachAudioDevice()];
-                    case 3:
-                        _b.sent();
                         this.connectionState = types_1.ConnectionState.CONNECTED;
                         this._isConnected = true;
                         window.setTimeout(function () {
                             _this.dispatchEvent(new events_1.SymblEvent('connected'));
                         }, 1);
                         return [2, this];
-                    case 4:
+                    case 3:
                         e_1 = _b.sent();
                         this.connectionState = types_1.ConnectionState.TERMINATED;
                         this._isConnected = false;
-                        return [3, 5];
-                    case 5:
+                        return [3, 4];
+                    case 4:
                         return [2];
                 }
             });
@@ -1512,44 +1553,52 @@ var StreamingAPIConnection = function (_super) {
             });
         });
     };
-    StreamingAPIConnection.prototype.startProcessing = function (startRequestData) {
+    StreamingAPIConnection.prototype.startProcessing = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, copiedData, e_3;
+            var encoding, audioStream, copiedOptions, e_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         if (this.connectionState !== types_1.ConnectionState.CONNECTED) {
                             throw new error_1.NoConnectionError('No connection available. You need to call `.connect()` before you can start processing.');
                         }
-                        if (startRequestData) {
+                        if (options) {
                             try {
-                                StreamingAPIConnection.validateConfig(startRequestData);
+                                StreamingAPIConnection.validateConfig(options);
                             } catch (e) {
                                 throw e;
                             }
                         }
-                        if (!(this.processingState === types_1.ConnectionProcessingState.PROCESSING || this.processingState === types_1.ConnectionProcessingState.ATTEMPTING)) return [3, 1];
-                        this.logger.warn('An attempt to `startProcessing` on a connection that is already processing or has already initiated the call');
-                        return [3, 5];
+                        encoding = options.config && options.config.encoding ? options.config.encoding : types_1.SymblAudioStreamType.PCM;
+                        audioStream = new audio_1.AudioStreamFactory().instantiateStream(encoding.toUpperCase());
+                        this.attachAudioStream(this.audioStream);
+                        return [4, this.audioStream.attachAudioDevice()];
                     case 1:
-                        _a.trys.push([1, 4,, 5]);
-                        this.processingState = types_1.ConnectionProcessingState.ATTEMPTING;
-                        data = startRequestData ? startRequestData : this.config;
-                        copiedData = Object.assign({}, data);
-                        return [4, this.audioStream.resumeAudioContext()];
-                    case 2:
                         _a.sent();
-                        return [4, this.stream.start(copiedData)];
+                        if (!(this.processingState === types_1.ConnectionProcessingState.PROCESSING || this.processingState === types_1.ConnectionProcessingState.ATTEMPTING)) return [3, 2];
+                        this.logger.warn('An attempt to `startProcessing` on a connection that is already processing or has already initiated the call');
+                        return [3, 6];
+                    case 2:
+                        _a.trys.push([2, 5,, 6]);
+                        this.processingState = types_1.ConnectionProcessingState.ATTEMPTING;
+                        if (options.config && !options.config.sampleRateHertz) {
+                            options.config.sampleRateHertz = this.audioStream.getSampleRate();
+                        }
+                        copiedOptions = Object.assign({}, options);
+                        return [4, this.audioStream.resumeAudioContext()];
                     case 3:
+                        _a.sent();
+                        return [4, this.stream.start(copiedOptions)];
+                    case 4:
                         _a.sent();
                         this.processingState = types_1.ConnectionProcessingState.PROCESSING;
                         this._isProcessing = true;
                         this.dispatchEvent(new events_1.SymblEvent('processing_started'));
-                        return [3, 5];
-                    case 4:
+                        return [3, 6];
+                    case 5:
                         e_3 = _a.sent();
                         throw e_3;
-                    case 5:
+                    case 6:
                         return [2, this];
                 }
             });
@@ -1588,7 +1637,7 @@ var StreamingAPIConnection = function (_super) {
                         _a.label = 6;
                     case 6:
                         _a.trys.push([6, 8,, 9]);
-                        return [4, this.startProcessing()];
+                        return [4, this.startProcessing(this.config)];
                     case 7:
                         _a.sent();
                         return [3, 9];
@@ -1608,7 +1657,7 @@ var StreamingAPIConnection = function (_super) {
                 this.stopProcessing();
             } else if (!this._isProcessing && audioSourceChangedEvent.type === 'audio_source_connected' && this.restartProcessing) {
                 this.restartProcessing = false;
-                this.startProcessing();
+                this.startProcessing(this.config);
             }
         } else {
             this.restartProcessing = false;
@@ -1623,8 +1672,13 @@ var StreamingAPIConnection = function (_super) {
     StreamingAPIConnection.prototype.onDataReceived = function (data) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                _super.prototype.emitEvents.call(this, data);
-                return [2];
+                switch (_a.label) {
+                    case 0:
+                        return [4, _super.prototype.emitEvents.call(this, data)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -1632,12 +1686,7 @@ var StreamingAPIConnection = function (_super) {
         this.stream.sendAudio(audioData);
     };
     StreamingAPIConnection.prototype.sendJSON = function (data) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                this.stream.sendAudio(JSON.stringify(data));
-                return [2];
-            });
-        });
+        this.stream.sendAudio(JSON.stringify(data));
     };
     StreamingAPIConnection.prototype.registerAudioStreamCallback = function () {
         if (this.audioStream) {
@@ -1680,7 +1729,7 @@ exports.StreamingAPIConnection = StreamingAPIConnection;
 //# sourceMappingURL=StreamingAPIConnection.js.map
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1798,6 +1847,7 @@ var events_1 = __webpack_require__(1);
 var logger_1 = __importDefault(__webpack_require__(2));
 var client_sdk_min_1 = __webpack_require__(10);
 var network_1 = __importDefault(__webpack_require__(11));
+var error_1 = __webpack_require__(3);
 var BaseConnection = function (_super) {
     __extends(BaseConnection, _super);
     function BaseConnection(sessionId) {
@@ -1824,6 +1874,9 @@ var BaseConnection = function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var eventNameMapper, eventData, _i, _a, insight;
             return __generator(this, function (_b) {
+                if (data.type === "error") {
+                    throw new error_1.InvalidValueError(data.detail);
+                }
                 eventNameMapper = function eventNameMapper(data) {
                     var eventNameMap = {
                         "message_response": {
@@ -1847,9 +1900,10 @@ var BaseConnection = function (_super) {
                             data: data.trackers
                         }
                     };
-                    var eventType = eventNameMap[data.type];
+                    var eventType = eventNameMap[data.type] || {};
                     if (eventType.name === "recognition_result") {
                         eventType.name = "speech_recognition";
+                        eventType.data = eventType.data;
                     }
                     return eventType;
                 };
@@ -1890,7 +1944,7 @@ exports.BaseConnection = BaseConnection;
 //# sourceMappingURL=BaseConnection.js.map
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1967,7 +2021,7 @@ exports.NetworkEvent = NetworkEvent;
 //# sourceMappingURL=SymblEvent.js.map
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2155,193 +2209,6 @@ var NetworkConnectivityDetector = function (_super) {
 }(events_1.DelegatedEventTarget);
 exports.NetworkConnectivityDetector = NetworkConnectivityDetector;
 //# sourceMappingURL=NetworkConnectivityDetector.js.map
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __awaiter = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
-    }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = undefined && undefined.__generator || function (thisArg, body) {
-    var _ = { label: 0, sent: function sent() {
-            if (t[0] & 1) throw t[1];return t[1];
-        }, trys: [], ops: [] },
-        f,
-        y,
-        t,
-        g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function () {
-        return this;
-    }), g;
-    function verb(n) {
-        return function (v) {
-            return step([n, v]);
-        };
-    }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) {
-            try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0:case 1:
-                        t = op;break;
-                    case 4:
-                        _.label++;return { value: op[1], done: false };
-                    case 5:
-                        _.label++;y = op[1];op = [0];continue;
-                    case 7:
-                        op = _.ops.pop();_.trys.pop();continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                            _ = 0;continue;
-                        }
-                        if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                            _.label = op[1];break;
-                        }
-                        if (op[0] === 6 && _.label < t[1]) {
-                            _.label = t[1];t = op;break;
-                        }
-                        if (t && _.label < t[2]) {
-                            _.label = t[2];_.ops.push(op);break;
-                        }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop();continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) {
-                op = [6, e];y = 0;
-            } finally {
-                f = t = 0;
-            }
-        }if (op[0] & 5) throw op[1];return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-exports.__esModule = true;
-exports.ConnectionFactory = void 0;
-var audio_1 = __webpack_require__(12);
-var api_1 = __webpack_require__(9);
-var error_1 = __webpack_require__(3);
-var AudioContext = window.AudioContext || window.webkitAudioContext;
-var ConnectionFactory = function () {
-    function ConnectionFactory() {}
-    ConnectionFactory.prototype.instantiateConnection = function (connectionType, config, audioStream) {
-        return __awaiter(this, void 0, void 0, function () {
-            var ConnectionClass, connection, encoding, symblConfig, opusConfig;
-            return __generator(this, function (_a) {
-                switch (connectionType) {
-                    case "streaming":
-                        api_1.StreamingAPIConnection.validateConfig(config);
-                        if (!audioStream) {
-                            try {
-                                encoding = void 0;
-                                symblConfig = config;
-                                if (symblConfig.config && symblConfig.config.encoding) {
-                                    encoding = symblConfig.config.encoding.toLowerCase();
-                                } else {
-                                    encoding = "linear16";
-                                }
-                                switch (encoding) {
-                                    case "opus":
-                                        opusConfig = {
-                                            "encoderComplexity": 6,
-                                            "encoderFrameSize": 20,
-                                            "encoderSampleRate": 48000,
-                                            "maxFramesPerPage": 40,
-                                            "numberOfChannels": 1,
-                                            "rawOpus": true,
-                                            "streamPages": true
-                                        };
-                                        audioStream = new audio_1.OpusAudioStream(null, opusConfig);
-                                        break;
-                                    case "linear16":
-                                    default:
-                                        audioStream = new audio_1.PCMAudioStream();
-                                }
-                            } catch (e) {
-                                throw e;
-                            }
-                        }
-                        try {
-                            connection = new api_1.StreamingAPIConnection(config, audioStream);
-                            return [2, connection];
-                        } catch (e) {
-                            throw e;
-                        }
-                    case "subscribe":
-                        try {
-                            connection = new api_1.SubscribeAPIConnection(config);
-                            return [2, connection];
-                        } catch (e) {
-                            throw e;
-                        }
-                    default:
-                        throw new error_1.InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'.");
-                }
-                return [2];
-            });
-        });
-    };
-    return ConnectionFactory;
-}();
-exports.ConnectionFactory = ConnectionFactory;
-//# sourceMappingURL=ConnectionFactory.js.map
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __createBinding = undefined && undefined.__createBinding || (Object.create ? function (o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function get() {
-            return m[k];
-        } });
-} : function (o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-});
-var __exportStar = undefined && undefined.__exportStar || function (m, exports) {
-    for (var p in m) {
-        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-    }
-};
-exports.__esModule = true;
-__exportStar(__webpack_require__(5), exports);
-__exportStar(__webpack_require__(40), exports);
-__exportStar(__webpack_require__(41), exports);
-//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 21 */
@@ -3048,6 +2915,256 @@ exports.NoConnectionError = NoConnectionError;
 "use strict";
 
 
+var __awaiter = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+        return value instanceof P ? value : new P(function (resolve) {
+            resolve(value);
+        });
+    }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) {
+            try {
+                step(generator.next(value));
+            } catch (e) {
+                reject(e);
+            }
+        }
+        function rejected(value) {
+            try {
+                step(generator["throw"](value));
+            } catch (e) {
+                reject(e);
+            }
+        }
+        function step(result) {
+            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = undefined && undefined.__generator || function (thisArg, body) {
+    var _ = { label: 0, sent: function sent() {
+            if (t[0] & 1) throw t[1];return t[1];
+        }, trys: [], ops: [] },
+        f,
+        y,
+        t,
+        g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+        return this;
+    }), g;
+    function verb(n) {
+        return function (v) {
+            return step([n, v]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) {
+            try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0:case 1:
+                        t = op;break;
+                    case 4:
+                        _.label++;return { value: op[1], done: false };
+                    case 5:
+                        _.label++;y = op[1];op = [0];continue;
+                    case 7:
+                        op = _.ops.pop();_.trys.pop();continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                            _ = 0;continue;
+                        }
+                        if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                            _.label = op[1];break;
+                        }
+                        if (op[0] === 6 && _.label < t[1]) {
+                            _.label = t[1];t = op;break;
+                        }
+                        if (t && _.label < t[2]) {
+                            _.label = t[2];_.ops.push(op);break;
+                        }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop();continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) {
+                op = [6, e];y = 0;
+            } finally {
+                f = t = 0;
+            }
+        }if (op[0] & 5) throw op[1];return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+exports.__esModule = true;
+exports.ConnectionFactory = void 0;
+var types_1 = __webpack_require__(4);
+var api_1 = __webpack_require__(9);
+var error_1 = __webpack_require__(3);
+var AudioContext = window.AudioContext || window.webkitAudioContext;
+var ConnectionFactory = function () {
+    function ConnectionFactory() {}
+    ConnectionFactory.prototype.instantiateConnection = function (connectionType, sessionId, audioStream) {
+        return __awaiter(this, void 0, void 0, function () {
+            var ConnectionClass, connection;
+            return __generator(this, function (_a) {
+                switch (connectionType) {
+                    case types_1.SymblConnectionType.STREAMING:
+                        try {
+                            connection = new api_1.StreamingAPIConnection(sessionId, audioStream);
+                            return [2, connection];
+                        } catch (e) {
+                            throw e;
+                        }
+                    case types_1.SymblConnectionType.SUBSCRIBE:
+                        try {
+                            connection = new api_1.SubscribeAPIConnection(sessionId);
+                            return [2, connection];
+                        } catch (e) {
+                            throw e;
+                        }
+                    default:
+                        throw new error_1.InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'.");
+                }
+                return [2];
+            });
+        });
+    };
+    return ConnectionFactory;
+}();
+exports.ConnectionFactory = ConnectionFactory;
+//# sourceMappingURL=ConnectionFactory.js.map
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.ConnectionProcessingState = exports.ConnectionState = exports.SymblAudioStreamType = exports.SymblConnectionType = void 0;
+var SymblConnectionType;
+(function (SymblConnectionType) {
+    SymblConnectionType["STREAMING"] = "streaming";
+    SymblConnectionType["SUBSCRIBE"] = "subscribe";
+})(SymblConnectionType || (SymblConnectionType = {}));
+exports.SymblConnectionType = SymblConnectionType;
+;
+var SymblAudioStreamType;
+(function (SymblAudioStreamType) {
+    SymblAudioStreamType["OPUS"] = "OPUS";
+    SymblAudioStreamType["PCM"] = "LINEAR16";
+})(SymblAudioStreamType || (SymblAudioStreamType = {}));
+exports.SymblAudioStreamType = SymblAudioStreamType;
+var ConnectionState;
+(function (ConnectionState) {
+    ConnectionState[ConnectionState["CONNECTING"] = 0] = "CONNECTING";
+    ConnectionState[ConnectionState["CONNECTED"] = 1] = "CONNECTED";
+    ConnectionState[ConnectionState["DISCONNECTING"] = 2] = "DISCONNECTING";
+    ConnectionState[ConnectionState["DISCONNECTED"] = 3] = "DISCONNECTED";
+    ConnectionState[ConnectionState["TERMINATED"] = 4] = "TERMINATED";
+})(ConnectionState || (ConnectionState = {}));
+exports.ConnectionState = ConnectionState;
+;
+var ConnectionProcessingState;
+(function (ConnectionProcessingState) {
+    ConnectionProcessingState[ConnectionProcessingState["PROCESSING"] = 0] = "PROCESSING";
+    ConnectionProcessingState[ConnectionProcessingState["ATTEMPTING"] = 1] = "ATTEMPTING";
+    ConnectionProcessingState[ConnectionProcessingState["NOT_PROCESSING"] = 2] = "NOT_PROCESSING";
+    ConnectionProcessingState[ConnectionProcessingState["STOPPING"] = 3] = "STOPPING";
+})(ConnectionProcessingState || (ConnectionProcessingState = {}));
+exports.ConnectionProcessingState = ConnectionProcessingState;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+//# sourceMappingURL=types.js.map
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.TimeUnit = void 0;
+var TimeUnit;
+(function (TimeUnit) {
+    TimeUnit["MS"] = "ms";
+    TimeUnit["S"] = "s";
+    TimeUnit["M"] = "m";
+})(TimeUnit || (TimeUnit = {}));
+exports.TimeUnit = TimeUnit;
+//# sourceMappingURL=TimeUnit.js.map
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+//# sourceMappingURL=handlers.js.map
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var __extends = undefined && undefined.__extends || function () {
     var _extendStatics = function extendStatics(d, b) {
         _extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
@@ -3153,7 +3270,7 @@ var __generator = undefined && undefined.__generator || function (thisArg, body)
 };
 exports.__esModule = true;
 exports.PCMAudioStream = void 0;
-var AudioStream_1 = __webpack_require__(5);
+var AudioStream_1 = __webpack_require__(7);
 var events_1 = __webpack_require__(1);
 var PCMAudioStream = function (_super) {
     __extends(PCMAudioStream, _super);
@@ -3237,7 +3354,7 @@ exports.PCMAudioStream = PCMAudioStream;
 //# sourceMappingURL=PCMAudioStream.js.map
 
 /***/ }),
-/* 41 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3348,14 +3465,25 @@ var __generator = undefined && undefined.__generator || function (thisArg, body)
 };
 exports.__esModule = true;
 exports.OpusAudioStream = void 0;
-var AudioStream_1 = __webpack_require__(5);
-var symbl_opus_encdec_1 = __webpack_require__(42);
+var AudioStream_1 = __webpack_require__(7);
+var symbl_opus_encdec_1 = __webpack_require__(51);
 var OpusAudioStream = function (_super) {
     __extends(OpusAudioStream, _super);
     function OpusAudioStream(sourceNode, config) {
         var _this = _super.call(this, sourceNode) || this;
+        _this.config = {
+            "encoderComplexity": 6,
+            "encoderFrameSize": 20,
+            "encoderSampleRate": 48000,
+            "maxFramesPerPage": 40,
+            "numberOfChannels": 1,
+            "rawOpus": true,
+            "streamPages": true
+        };
         _this.mediaStreamPromise.then(function () {
-            _this.config = config;
+            if (config) {
+                _this.config = config;
+            }
             _this.config.sourceNode = _this.sourceNode;
             _this.opusEncoder = new symbl_opus_encdec_1.Recorder(_this.config);
         });
@@ -3451,7 +3579,7 @@ exports.OpusAudioStream = OpusAudioStream;
 //# sourceMappingURL=OpusAudioStream.js.map
 
 /***/ }),
-/* 42 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3800,140 +3928,128 @@ if(true){
 
 
 /***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.ConnectionProcessingState = exports.ConnectionState = exports.SymblConnectionType = void 0;
-var SymblConnectionType;
-(function (SymblConnectionType) {
-    SymblConnectionType["STREAMING"] = "streaming";
-    SymblConnectionType["SUBSCRIBE"] = "subscribe";
-})(SymblConnectionType || (SymblConnectionType = {}));
-exports.SymblConnectionType = SymblConnectionType;
-;
-var ConnectionState;
-(function (ConnectionState) {
-    ConnectionState[ConnectionState["CONNECTING"] = 0] = "CONNECTING";
-    ConnectionState[ConnectionState["CONNECTED"] = 1] = "CONNECTED";
-    ConnectionState[ConnectionState["DISCONNECTING"] = 2] = "DISCONNECTING";
-    ConnectionState[ConnectionState["DISCONNECTED"] = 3] = "DISCONNECTED";
-    ConnectionState[ConnectionState["TERMINATED"] = 4] = "TERMINATED";
-})(ConnectionState || (ConnectionState = {}));
-exports.ConnectionState = ConnectionState;
-;
-var ConnectionProcessingState;
-(function (ConnectionProcessingState) {
-    ConnectionProcessingState[ConnectionProcessingState["PROCESSING"] = 0] = "PROCESSING";
-    ConnectionProcessingState[ConnectionProcessingState["ATTEMPTING"] = 1] = "ATTEMPTING";
-    ConnectionProcessingState[ConnectionProcessingState["NOT_PROCESSING"] = 2] = "NOT_PROCESSING";
-    ConnectionProcessingState[ConnectionProcessingState["STOPPING"] = 3] = "STOPPING";
-})(ConnectionProcessingState || (ConnectionProcessingState = {}));
-exports.ConnectionProcessingState = ConnectionProcessingState;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-//# sourceMappingURL=types.js.map
-
-/***/ }),
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.TimeUnit = void 0;
-var TimeUnit;
-(function (TimeUnit) {
-    TimeUnit["MS"] = "ms";
-    TimeUnit["S"] = "s";
-    TimeUnit["M"] = "m";
-})(TimeUnit || (TimeUnit = {}));
-exports.TimeUnit = TimeUnit;
-//# sourceMappingURL=TimeUnit.js.map
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-//# sourceMappingURL=handlers.js.map
-
-/***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 49 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.PASSWORD_REGEX = exports.OPUS_SAMPLE_RATE_HERTZ = exports.LINEAR16_SAMPLE_RATE_HERTZ = exports.VALID_ENCODING = exports.VALID_INSIGHT_TYPES = exports.DEFAULT_ENCODING_TYPE = exports.DEFAULT_SAMPLE_RATE_HERTZ = void 0;
-exports.DEFAULT_SAMPLE_RATE_HERTZ = 16000;
-exports.DEFAULT_ENCODING_TYPE = 'LINEAR16';
-exports.VALID_INSIGHT_TYPES = ['action_item', 'question', 'follow_up'];
-exports.VALID_ENCODING = ['LINEAR16', 'OPUS'];
-exports.LINEAR16_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 44100, 48000];
-exports.OPUS_SAMPLE_RATE_HERTZ = [8000, 16000, 24000, 48000];
-exports.PASSWORD_REGEX = /^[a-zA-Z0-9-]{6,64}$/;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
 /* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __awaiter = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+        return value instanceof P ? value : new P(function (resolve) {
+            resolve(value);
+        });
+    }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) {
+            try {
+                step(generator.next(value));
+            } catch (e) {
+                reject(e);
+            }
+        }
+        function rejected(value) {
+            try {
+                step(generator["throw"](value));
+            } catch (e) {
+                reject(e);
+            }
+        }
+        function step(result) {
+            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = undefined && undefined.__generator || function (thisArg, body) {
+    var _ = { label: 0, sent: function sent() {
+            if (t[0] & 1) throw t[1];return t[1];
+        }, trys: [], ops: [] },
+        f,
+        y,
+        t,
+        g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+        return this;
+    }), g;
+    function verb(n) {
+        return function (v) {
+            return step([n, v]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) {
+            try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0:case 1:
+                        t = op;break;
+                    case 4:
+                        _.label++;return { value: op[1], done: false };
+                    case 5:
+                        _.label++;y = op[1];op = [0];continue;
+                    case 7:
+                        op = _.ops.pop();_.trys.pop();continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                            _ = 0;continue;
+                        }
+                        if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                            _.label = op[1];break;
+                        }
+                        if (op[0] === 6 && _.label < t[1]) {
+                            _.label = t[1];t = op;break;
+                        }
+                        if (t && _.label < t[2]) {
+                            _.label = t[2];_.ops.push(op);break;
+                        }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop();continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) {
+                op = [6, e];y = 0;
+            } finally {
+                f = t = 0;
+            }
+        }if (op[0] & 5) throw op[1];return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+exports.__esModule = true;
+exports.AudioStreamFactory = void 0;
+var _1 = __webpack_require__(13);
+var types_1 = __webpack_require__(4);
+var error_1 = __webpack_require__(3);
+var AudioContext = window.AudioContext || window.webkitAudioContext;
+var AudioStreamFactory = function () {
+    function AudioStreamFactory() {}
+    AudioStreamFactory.prototype.instantiateStream = function (streamType) {
+        return __awaiter(this, void 0, void 0, function () {
+            var audioStream;
+            return __generator(this, function (_a) {
+                switch (streamType.toUpperCase()) {
+                    case types_1.SymblAudioStreamType.OPUS:
+                        audioStream = new _1.OpusAudioStream();
+                        break;
+                    case types_1.SymblAudioStreamType.PCM:
+                        audioStream = new _1.PCMAudioStream();
+                        break;
+                    default:
+                        throw new error_1.InvalidValueError("`streamType` must be one of " + types_1.SymblAudioStreamType.OPUS + " or " + types_1.SymblAudioStreamType.PCM + ".");
+                }
+                return [2, audioStream];
+            });
+        });
+    };
+    return AudioStreamFactory;
+}();
+exports.AudioStreamFactory = AudioStreamFactory;
+//# sourceMappingURL=AudioStreamFactory.js.map
+
+/***/ }),
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3954,11 +4070,11 @@ var __exportStar = undefined && undefined.__exportStar || function (m, exports) 
     }
 };
 exports.__esModule = true;
-__exportStar(__webpack_require__(53), exports);
+__exportStar(__webpack_require__(54), exports);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4069,27 +4185,19 @@ var __generator = undefined && undefined.__generator || function (thisArg, body)
 };
 exports.__esModule = true;
 exports.SubscribeAPIConnection = void 0;
-var connection_1 = __webpack_require__(4);
+var connection_1 = __webpack_require__(5);
 var events_1 = __webpack_require__(1);
-var types_1 = __webpack_require__(8);
+var types_1 = __webpack_require__(4);
 var SubscribeAPIConnection = function (_super) {
     __extends(SubscribeAPIConnection, _super);
-    function SubscribeAPIConnection(config) {
-        var _this = _super.call(this, config.id) || this;
+    function SubscribeAPIConnection(sessionId) {
+        var _this = _super.call(this, sessionId) || this;
         _this.connectionState = types_1.ConnectionState.DISCONNECTED;
         _this._isConnected = false;
         _this.connectionType = types_1.SymblConnectionType.SUBSCRIBE;
-        _this.config = config;
         _this.onDataReceived = _this.onDataReceived.bind(_this);
         return _this;
     }
-    SubscribeAPIConnection.validateConfig = function (config) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2, config];
-            });
-        });
-    };
     SubscribeAPIConnection.prototype.connect = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, e_1;
@@ -4182,7 +4290,7 @@ exports.SubscribeAPIConnection = SubscribeAPIConnection;
 //# sourceMappingURL=SubscribeAPIConnection.js.map
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4276,13 +4384,14 @@ var __importDefault = undefined && undefined.__importDefault || function (mod) {
 };
 exports.__esModule = true;
 var error_1 = __webpack_require__(3);
-var types_1 = __webpack_require__(8);
-var connection_1 = __webpack_require__(4);
+var types_1 = __webpack_require__(4);
+var connection_1 = __webpack_require__(5);
 var logger_1 = __importDefault(__webpack_require__(2));
-var configs_1 = __webpack_require__(60);
+var configs_1 = __webpack_require__(61);
 var client_sdk_min_1 = __webpack_require__(10);
-var utils_1 = __webpack_require__(7);
+var utils_1 = __webpack_require__(8);
 var network_1 = __importDefault(__webpack_require__(11));
+var constants_1 = __webpack_require__(14);
 var Symbl = function () {
     function Symbl(symblConfig) {
         this.sdk = client_sdk_min_1.sdk;
@@ -4379,25 +4488,27 @@ var Symbl = function () {
             });
         });
     };
-    Symbl.prototype.createConnection = function (options, audioStream) {
+    Symbl.prototype.createConnection = function (sessionId, audioStream) {
         return __awaiter(this, void 0, void 0, function () {
-            var connection, e_1;
+            var options, regex, validSessionId, connection, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (options.id) {} else {
+                        options = {};
+                        if (sessionId) {
+                            options.id = sessionId;
+                            regex = new RegExp(constants_1.ID_REGEX, "u");
+                            validSessionId = regex.test(options.id);
+                            if (!validSessionId) {
+                                throw new error_1.SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID.");
+                            }
+                        } else {
                             options.id = (0, utils_1.uuid)();
-                        }
-                        if (!options.config) {
-                            options.config = {};
-                        }
-                        if (!options.config.sampleRateHertz) {
-                            options.config.sampleRateHertz = 48000;
                         }
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 4,, 5]);
-                        return [4, new connection_1.ConnectionFactory().instantiateConnection(types_1.SymblConnectionType.STREAMING, options, audioStream)];
+                        return [4, new connection_1.ConnectionFactory().instantiateConnection(types_1.SymblConnectionType.STREAMING, sessionId, audioStream)];
                     case 2:
                         connection = _a.sent();
                         return [4, connection.connect()];
@@ -4421,10 +4532,10 @@ var Symbl = function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3,, 4]);
-                        return [4, this.createConnection(options, audioStream)];
+                        return [4, this.createConnection(options ? options.id : null, audioStream)];
                     case 1:
                         connection = _a.sent();
-                        return [4, connection.startProcessing()];
+                        return [4, connection.startProcessing(options)];
                     case 2:
                         _a.sent();
                         return [2, connection];
@@ -4449,7 +4560,7 @@ var Symbl = function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 4,, 5]);
-                        return [4, new connection_1.ConnectionFactory().instantiateConnection(types_1.SymblConnectionType.SUBSCRIBE, { sessionId: sessionId })];
+                        return [4, new connection_1.ConnectionFactory().instantiateConnection(types_1.SymblConnectionType.SUBSCRIBE, sessionId)];
                     case 2:
                         connection = _a.sent();
                         return [4, connection.connect()];
@@ -4496,10 +4607,10 @@ var Symbl = function () {
 }();
 exports["default"] = Symbl;
 //# sourceMappingURL=index.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(55).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(56).Buffer))
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4513,9 +4624,9 @@ exports["default"] = Symbl;
 
 
 
-var base64 = __webpack_require__(57)
-var ieee754 = __webpack_require__(58)
-var isArray = __webpack_require__(59)
+var base64 = __webpack_require__(58)
+var ieee754 = __webpack_require__(59)
+var isArray = __webpack_require__(60)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -6293,10 +6404,10 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(56)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(57)))
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports) {
 
 var g;
@@ -6322,7 +6433,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6479,7 +6590,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports) {
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
@@ -6570,7 +6681,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -6581,7 +6692,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6593,7 +6704,7 @@ exports.VALID_LOG_LEVELS = ['error', 'warn', 'debug', 'info', 'log', 'trace'];
 //# sourceMappingURL=configs.js.map
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

@@ -271,7 +271,6 @@ export class StreamingAPIConnection extends BaseConnection {
         } else {
             try {
                 this.processingState = ConnectionProcessingState.ATTEMPTING;
-                
                 if (options.config && !options.config.sampleRateHertz) {
                     options.config.sampleRateHertz = this.audioStream.getSampleRate();
                 }
