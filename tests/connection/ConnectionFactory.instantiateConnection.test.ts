@@ -33,30 +33,20 @@ beforeAll(() => {
 test(
     "ConnectionFactory.instantiateConnection - Create an instance of StreamingAPIConnection - No AudioStream passed in",
     async () => {
-
-        try {
-            const factory = new ConnectionFactory();
-            const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validSessionID)
-            expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
-            expect(connection.audioStream).toBe(null);
-        } catch (e) {
-            throw new Error(e);
-        }
+        const factory = new ConnectionFactory();
+        const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validSessionID) as any
+        expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
+        expect(connection.audioStream).toBeUndefined();
     }
 );
 
 test(
-    "ConnectionFactory.instantiateConnection - Create an instance of SubscribeAPIConnection - No AudioStream passed in",
+    "ConnectionFactory.instantiateConnection - Create an instance of SubscribeAPIConnection",
     async () => {
 
-        try {
-            const factory = new ConnectionFactory();
-            const connection = await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validSessionID)
-            expect(connection.connectionType).toBe(SymblConnectionType.SUBSCRIBE);
-            expect(connection.audioStream).toBe(null);
-        } catch (e) {
-            throw new Error(e);
-        }
+        const factory = new ConnectionFactory();
+        const connection = await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validSessionID)
+        expect(connection.connectionType).toBe(SymblConnectionType.SUBSCRIBE);
     }
 );
 
@@ -64,17 +54,13 @@ test(
     "ConnectionFactory.instantiateConnection - Create an instance of StreamingAPIConnection - AudioStream passed in",
     async () => {
 
-        try {
-            const factory = new ConnectionFactory();
-            const audioContext = new AudioContext();
-            const sourceNode = audioContext.createMediaStreamSource(mediaStream)
-            const stream = new PCMAudioStream(sourceNode);
-            const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validSessionID, stream)
-            expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
-            expect(connection.audioStream).toBe(stream);
-        } catch (e) {
-            throw new Error(e);
-        }
+        const factory = new ConnectionFactory();
+        const audioContext = new AudioContext();
+        const sourceNode = audioContext.createMediaStreamSource(mediaStream)
+        const stream = new PCMAudioStream(sourceNode);
+        const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validSessionID, stream) as any;
+        expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
+        expect(connection.audioStream).toBe(stream);
     }
 );
 
@@ -82,16 +68,11 @@ test(
     "ConnectionFactory.instantiateConnection - Create an instance of SubscribeAPIConnection - AudioStream passed in - SHould throw an error as Subscribe API takes no audio stream",
     async () => {
 
-        try {
-            const factory = new ConnectionFactory();
-            const audioContext = new AudioContext();
-            const sourceNode = audioContext.createMediaStreamSource(mediaStream)
-            const stream = new PCMAudioStream(sourceNode);
-            const connection = await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validSessionID, stream)
-            expect(connection.connectionType).toBe(SymblConnectionType.SUBSCRIBE);
-        } catch (e) {
-            expect(e).toEqual(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
-        }
+        const factory = new ConnectionFactory();
+        const audioContext = new AudioContext();
+        const sourceNode = audioContext.createMediaStreamSource(mediaStream)
+        const stream = new PCMAudioStream(sourceNode);
+        await expect(async () => await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validSessionID, stream)).rejects.toThrow();
     }
 );
 
@@ -99,39 +80,23 @@ test(
 test(
     "ConnectionFactory.instantiateConnection - Connection type not in ConnectionType enum - Should throw InvalidValueError",
     async () => {
-        try {
-            const factory = new ConnectionFactory();
-            const connection = await factory.instantiateConnection('not-valid' as any, validSessionID)
-        } catch (e) {
-            expect(e).toEqual(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
-        }
+        const factory = new ConnectionFactory();
+        await expect(async () => await factory.instantiateConnection('not-valid' as any, validSessionID)).rejects.toThrow(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
     }
 );
 
 test(
     "ConnectionFactory.instantiateConnection - Create an instance of StreamingAPIConnection - Invalid sessionId",
     async () => {
-
-        try {
-            const factory = new ConnectionFactory();
-            const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, invalidSessionID)
-            expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
-        } catch (e) {
-            expect(e).toEqual(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
-        }
+        const factory = new ConnectionFactory();
+        await expect(async () => await factory.instantiateConnection(SymblConnectionType.STREAMING, invalidSessionID)).rejects.toThrow();
     }
 );
 
 test(
     "ConnectionFactory.instantiateConnection - Create an instance of SubscribeAPIConnection - Invalid sessionID",
     async () => {
-
-        try {
-            const factory = new ConnectionFactory();
-            const connection = await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, invalidSessionID)
-            expect(connection.connectionType).toBe(SymblConnectionType.SUBSCRIBE);
-        } catch (e) {
-            expect(e).toEqual(new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'."))
-        }
+        const factory = new ConnectionFactory();
+        await expect(async () => await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, invalidSessionID)).rejects.toThrow();
     }
 );

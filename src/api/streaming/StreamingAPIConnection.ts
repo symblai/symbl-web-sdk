@@ -258,8 +258,8 @@ export class StreamingAPIConnection extends BaseConnection {
             }
         }
         const encoding = options.config && options.config.encoding ? options.config.encoding : SymblAudioStreamType.PCM;
-        const audioStream = new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
-        this.attachAudioStream(this.audioStream);
+        const audioStream = await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
+        this.attachAudioStream(audioStream);
         await this.audioStream.attachAudioDevice();
 
         // If `processingState` is PROCESSING or ATTEMPTING, then log a warning stating an attempt to `startProcessing` on a connection that is already processing or has already initiated the call.
