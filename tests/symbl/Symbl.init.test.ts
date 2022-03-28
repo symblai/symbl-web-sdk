@@ -1,5 +1,3 @@
-/* AppID is invalid? Double checked and it is definitely updated. */
-
 import Symbl from "../../src/symbl/index";
 import { HttpError, InvalidCredentialsError } from '../../src/error';
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
@@ -38,17 +36,13 @@ test(
 test(
     "Symbl.init: Fails to initialize and throws an HttpError",
     async () => {
-        try {
-            const authConfig = {
-                appId: '58686b6b505a41456c43707042313855554c494e78575171506a38354f6c3sdfsd850',
-                appSecret: APP_SECRET
-            };
-            const symbl = new Symbl();
-            const validationSpy = jest.spyOn(symbl, '_validateSymblConfig');
-            await expect(async () => await symbl.init(authConfig)).toThrowError(new InvalidCredentialsError("AppID is not valid"));
-        } catch(e) {
-
-        }
+        const authConfig = {
+            appId: '58686b6b505a41456c43707042313855554c494e78575171506a38354f6c3sdfsd850',
+            appSecret: APP_SECRET
+        };
+        const symbl = new Symbl();
+        const validationSpy = jest.spyOn(symbl, '_validateSymblConfig');
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("AppID is not valid"));
     }
 );
 

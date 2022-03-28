@@ -12,7 +12,7 @@ import { ConnectionState, ConnectionProcessingState } from "../../../src/types"
 // import Logger from "../../src/logger";
 // import { Stream } from "stream";
 
-let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
+let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, validSessionID;
 let audioStream, sourceNode;
 let streamingAPIConnection
 beforeAll(() => {
@@ -21,23 +21,24 @@ beforeAll(() => {
         appSecret: APP_SECRET
     };
     symbl = new Symbl(authConfig);
-    validConnectionConfig = {
-        insightTypes: ['action_item', 'question'],
-        config: {
-            meetingTitle: 'My Test Meeting',
-            confidenceThreshold: 0.7,
-            timezoneOffset: 480,
-            languageCode: 'en-US',
-        },
-        speaker: {
-            userId: 'emailAddress',
-            name: 'My name'
-        },
-    };
+    // validConnectionConfig = {
+    //     insightTypes: ['action_item', 'question'],
+    //     config: {
+    //         meetingTitle: 'My Test Meeting',
+    //         confidenceThreshold: 0.7,
+    //         timezoneOffset: 480,
+    //         languageCode: 'en-US',
+    //     },
+    //     speaker: {
+    //         userId: 'emailAddress',
+    //         name: 'My name'
+    //     },
+    // };
+    validSessionID = "123475-abcde-9876-bce";
     const context = new AudioContext();
     sourceNode = context.createMediaStreamSource(new MediaStream());
     audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);  
+    streamingAPIConnection = new StreamingAPIConnection(validSessionID, audioStream);  
 });
 
 test(
