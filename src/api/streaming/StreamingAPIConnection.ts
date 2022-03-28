@@ -549,7 +549,7 @@ export class StreamingAPIConnection extends BaseConnection {
     }
 
     /**
-     * ??
+     * Connects the `sendAudio` method to the audioStream class
      */
     private registerAudioStreamCallback (): void {
 
