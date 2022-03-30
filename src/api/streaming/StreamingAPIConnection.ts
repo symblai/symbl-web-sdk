@@ -12,10 +12,13 @@ import {
     SymblData,
     SymblStreamingAPIConnection
 } from "../../types";
+import { BaseConnection } from "../../connection";
+import { SymblEvent } from "../../events";
 import {
     NoConnectionError,
     NotSupportedAudioEncodingError,
-    NotSupportedSampleRateError
+    NotSupportedSampleRateError,
+    InvalidValueError
 } from "../../error";
 import { 
     SYMBL_DEFAULTS
@@ -123,7 +126,7 @@ export class StreamingAPIConnection extends BaseConnection {
         if (insightTypes) {
 
             if (!validateInsightTypes(insightTypes)) {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES}`)
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${SYMBL_DEFAULTS.VALID_INSIGHT_TYPES}`)
             }
 
         }
@@ -322,13 +325,9 @@ export class StreamingAPIConnection extends BaseConnection {
 
         // If `options` is passed in, validate it and in failure to do so, throw the appropriate error emited by validateConfig.
         if (options) {
-            try {
-                StreamingAPIConnection.validateConfig(options);
-            } catch(e) {
-                throw e;
-            }
+            StreamingAPIConnection.validateConfig(options);
         }
-        const encoding = options.config && options.config.encoding ? options.config.encoding : SymblAudioStreamType.PCM;
+        const encoding = options.config && options.config.encoding ? options.config.encoding : SymblAudioStreamType.LINEAR16;
         const audioStream = await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
         this.attachAudioStream(audioStream);
         await this.audioStream.attachAudioDevice();
@@ -387,12 +386,11 @@ export class StreamingAPIConnection extends BaseConnection {
             // Else, set the value of `processingState` to STOPPING and invoke the `stop` function on the `stream`.
 
         } else {
-            try {
-                this.processingState = ConnectionProcessingState.STOPPING;
-                if (this.audioStream) {
-                    await this.audioStream.suspendAudioContext();
-                }
-                await this.stream.stop();
+            this.processingState = ConnectionProcessingState.STOPPING;
+            if (this.audioStream) {
+                await this.audioStream.suspendAudioContext();
+            }
+            await this.stream.stop();
 
             // Set the value of `processingState` to NOT_PROCESSING if the call is successful
             this.processingState = ConnectionProcessingState.NOT_PROCESSING;
@@ -405,12 +403,8 @@ export class StreamingAPIConnection extends BaseConnection {
 
         // If `restartProcessing` is true call `startProcessing`
         if (this.restartProcessing) {
-            try {
-                await this.startProcessing(this.config);
-                this.restartProcessing = false;
-            } catch(e) {
-                throw e;
-            }
+            await this.startProcessing(this.config);
+            this.restartProcessing = false;
         }
 
         // Return from function
