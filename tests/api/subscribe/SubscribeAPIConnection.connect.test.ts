@@ -10,29 +10,16 @@ import { APP_ID, APP_SECRET } from '../../constants';
 
 
 describe('SubscribeAPIConnection.connect()', () => {
-    let validConnectionConfig, subscribeAPIConnection, authConfig, symbl;
+    let  subscribeAPIConnection, authConfig, symbl;
     beforeAll(() => {
         authConfig = {
             appId: APP_ID,
             appSecret: APP_SECRET
         };
         symbl = new Symbl(authConfig);
-        validConnectionConfig = {
-            insightTypes: ['action_item', 'question'],
-            config: {
-                meetingTitle: 'My Test Meeting',
-                confidenceThreshold: 0.7,
-                timezoneOffset: 480,
-                languageCode: 'en-US',
-            },
-            speaker: {
-                userId: 'emailAddress',
-                name: 'My name'
-            },
-        };
-        subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig) as any;
+        subscribeAPIConnection = new SubscribeAPIConnection("abc123") as any;
         subscribeAPIConnection.sdk = {
-            subscribeToStream: jest.fn(() => Promise.resolve())
+            subscribeToStream: jest.fn()
         }
     });
 

@@ -1,11 +1,11 @@
 /*
  tests/api/subscribe/SubscribeAPIConnection.disconnect.test.ts:98:14 - error TS2554: Expected 0 arguments, but got 1.
 
-    98             (<any>newSubscribeAPIConnection).connectionState = ConnectionState.CONNECTED;
+    8             (newSubscribeAPIConnection.connectionState = ConnectionState.CONNECTED;
                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     tests/api/subscribe/SubscribeAPIConnection.disconnect.test.ts:98:46 - error TS2339: Property 'connectionState' does not exist on type 'never'.
 
-    98             (<any>newSubscribeAPIConnection).connectionState = ConnectionState.CONNECTED;
+    8             (newSubscribeAPIConnection.connectionState = ConnectionState.CONNECTED;
 */
 
 import Symbl from "../../../src/symbl";
@@ -28,27 +28,14 @@ import { ConnectionState } from "../../../src/types/connection"
 */
 
 describe("SubscribeAPIConnection.disconnect", () => {
-    let validConnectionConfig, subscribeAPIConnection, authConfig, symbl;
+    let subscribeAPIConnection, authConfig, symbl;
     beforeAll(() => {
         authConfig = {
             appId: APP_ID,
             appSecret: APP_SECRET
         };
         symbl = new Symbl(authConfig);
-        validConnectionConfig = {
-            insightTypes: ['action_item', 'question'],
-            config: {
-                meetingTitle: 'My Test Meeting',
-                confidenceThreshold: 0.7,
-                timezoneOffset: 480,
-                languageCode: 'en-US',
-            },
-            speaker: {
-                userId: 'emailAddress',
-                name: 'My name'
-            },
-        };
-        subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig) as any;
+        subscribeAPIConnection = new SubscribeAPIConnection("abc123") as any;
         subscribeAPIConnection.stream = {
             close: jest.fn(() => {}),
         }
@@ -100,12 +87,12 @@ describe("SubscribeAPIConnection.disconnect", () => {
     test(
         "Verify error handling on disconnect method",
         async () => {
-            const newSubscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig) as any;
+            const newSubscribeAPIConnection = new SubscribeAPIConnection("abc123") as any;
             newSubscribeAPIConnection.dispatchEvent =  jest.fn(() => {
                 throw new Error("An error happened.");
             })
             
-            (<any>newSubscribeAPIConnection).connectionState = ConnectionState.CONNECTED;
+            newSubscribeAPIConnection.connectionState = ConnectionState.CONNECTED;
             // const closeSpy = jest.spyOn(subscribeAPIConnection.stream, 'close');
 
             await expect(async () => await newSubscribeAPIConnection.disconnect()).rejects.toThrow();
@@ -132,7 +119,7 @@ describe("SubscribeAPIConnection.disconnect", () => {
     //     "Verify that any failure to close the connection are handled & logged as an error",
     //     async () => {
     //         try {
-    //             const subscribeAPIConnection = new SubscribeAPIConnection(validConnectionConfig);
+    //             const subscribeAPIConnection = new SubscribeAPIConnection("abc123");
     //             (<any>subscribeAPIConnection.connectionState) = ConnectionState.CONNECTED;
     //             const warnSpy = jest.spyOn(subscribeAPIConnection.logger, 'warn');
     //             const stopSpy = jest.spyOn(subscribeAPIConnection.stream, 'close');
