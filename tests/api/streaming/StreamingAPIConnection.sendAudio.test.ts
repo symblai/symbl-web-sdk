@@ -1,6 +1,6 @@
 import Symbl from "../../../src/symbl";
 import { StreamingAPIConnection } from '../../../src/api';
-import { PCMAudioStream, OpusAudioStream } from '../../../src/audio';
+import { LINEAR16AudioStream, OpusAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { StreamingAPIStartRequest } from '../../../src/types/symbl';
 
@@ -28,8 +28,8 @@ beforeAll(() => {
     };
     const audioContext = new AudioContext();
     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-    audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    audioStream = new LINEAR16AudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection("abc123", audioStream);
     streamingAPIConnection.stream = {
         sendAudio: jest.fn(),
         sendJSON: jest.fn()

@@ -1,6 +1,6 @@
 
 import Symbl from "../../src/symbl";
-import { PCMAudioStream, OpusAudioStream } from "../../src/audio";
+import { LINEAR16AudioStream, OpusAudioStream } from "../../src/audio";
 import { ConnectionFactory } from '../../src/connection';
 import { StreamingAPIConnection, SubscribeAPIConnection } from '../../src/api';
 // jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
@@ -57,7 +57,7 @@ test(
         const factory = new ConnectionFactory();
         const audioContext = new AudioContext();
         const sourceNode = audioContext.createMediaStreamSource(mediaStream)
-        const stream = new PCMAudioStream(sourceNode);
+        const stream = new LINEAR16AudioStream(sourceNode);
         const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validSessionID, stream) as any;
         expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
         expect(connection.audioStream).toBe(stream);
@@ -71,7 +71,7 @@ test(
         const factory = new ConnectionFactory();
         const audioContext = new AudioContext();
         const sourceNode = audioContext.createMediaStreamSource(mediaStream)
-        const stream = new PCMAudioStream(sourceNode);
+        const stream = new LINEAR16AudioStream(sourceNode);
         await expect(async () => await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validSessionID, stream)).rejects.toThrow();
     }
 );

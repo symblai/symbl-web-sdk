@@ -1,4 +1,4 @@
-import { ID_REGEX } from "../../src/constants";
+import { SYMBL_DEFAULTS } from "../../src/constants";
 import { v4 } from "uuid";
 export const uuid = v4;
 
@@ -17,7 +17,7 @@ test(
     "Six alphanumeric characters plus the hyphen should pass",
     async () => {
         const regex = new RegExp(
-            ID_REGEX,
+            SYMBL_DEFAULTS.ID_REGEX,
             "u"
         );
         const validSessionId = regex.test("abc12-");
@@ -30,7 +30,7 @@ test(
     "Sixty-four alphanumeric characters plus the hyphen should pass",
     async () => {
         const regex = new RegExp(
-            ID_REGEX,
+            SYMBL_DEFAULTS.ID_REGEX,
             "u"
         );
         const validSessionId = regex.test(makeid(64));
@@ -43,7 +43,7 @@ test(
     "UUID test should pass",
     async () => {
         const regex = new RegExp(
-            ID_REGEX,
+            SYMBL_DEFAULTS.ID_REGEX,
             "u"
         );
         const validSessionId = regex.test(uuid());
@@ -57,7 +57,7 @@ test(
     "Too few characters should fail",
     async () => {
         const regex = new RegExp(
-            ID_REGEX,
+            SYMBL_DEFAULTS.ID_REGEX,
             "u"
         );
         const validSessionId = regex.test("abc");
@@ -71,7 +71,7 @@ test(
     "Too many characters should fail",
     async () => {
         const regex = new RegExp(
-            ID_REGEX,
+            SYMBL_DEFAULTS.ID_REGEX,
             "u"
         );
         const validSessionId = regex.test(makeid(65));
@@ -84,7 +84,7 @@ test(
     "Any characters used other than alphanumeric or hyphen should fail",
     async () => {
         const regex = new RegExp(
-            ID_REGEX,
+            SYMBL_DEFAULTS.ID_REGEX,
             "u"
         );
         const validSessionId = regex.test("a-b$cd");

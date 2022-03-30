@@ -1,6 +1,6 @@
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
-import { PCMAudioStream } from '../../../src/audio';
+import { LINEAR16AudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 
 let authConfig, symbl, audioStream;
@@ -25,19 +25,15 @@ beforeAll(() => {
     symbl = new Symbl(authConfig);
     const context = new AudioContext();
     const sourceNode = context.createMediaStreamSource(new MediaStream());
-    audioStream = new PCMAudioStream(sourceNode);
+    audioStream = new LINEAR16AudioStream(sourceNode);
 });
 
 test(
-    `PCMAudioStream.attachAudioCallback - verify that the argument (cb function) is properly registered to this.audioCallback.`,
+    `LINEAR16AudioStream.attachAudioCallback - verify that the argument (cb function) is properly registered to this.audioCallback.`,
     async () => {
-        try {
-            let audioData = {};
-            const callbackFn = (audioData) => {};
-            audioStream.attachAudioCallback(callbackFn);
-            expect(audioStream.audioCallback).toBe(callbackFn);
-        } catch (e) {
-            throw new Error(e);
-        }
+        let audioData = {};
+        const callbackFn = (audioData) => {};
+        audioStream.attachAudioCallback(callbackFn);
+        expect(audioStream.audioCallback).toBe(callbackFn);
     }
 );

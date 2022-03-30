@@ -1,5 +1,5 @@
 import Symbl from "../../../src/symbl";
-import { PCMAudioStream } from "../../../src/audio";
+import { LINEAR16AudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types"
@@ -36,8 +36,8 @@ beforeAll(() => {
 
     const audioContext = new AudioContext();
     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-    audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    audioStream = new LINEAR16AudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection("abc123", audioStream);
     streamingAPIConnection.stream = {
         stop: jest.fn()
     }
@@ -50,7 +50,7 @@ test(
         streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
         const audioContext = new AudioContext();
         const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-        const newAudioStream = new PCMAudioStream(sourceNode);
+        const newAudioStream = new LINEAR16AudioStream(sourceNode);
     
         const attachSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream')
         const stopSpy = jest.spyOn(streamingAPIConnection, 'stopProcessing');
@@ -68,7 +68,7 @@ test(
         streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
         const audioContext = new AudioContext();
         const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-        const newAudioStream = new PCMAudioStream(sourceNode);
+        const newAudioStream = new LINEAR16AudioStream(sourceNode);
 
         streamingAPIConnection.audioStream = null;
         const attachSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream')
@@ -87,14 +87,14 @@ test(
         streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
         const audioContext = new AudioContext();
         const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-        const newAudioStream = new PCMAudioStream(sourceNode);
+        const newAudioStream = new LINEAR16AudioStream(sourceNode);
 
         streamingAPIConnection.audioStream = null;
         streamingAPIConnection.attachAudioStream = jest.fn(() => {
             throw new Error("An error happened.");
         });
         const attachSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream')
-        await expect(async() => await streamingAPIConnection.updateAudioStream(newAudioStream)).rejects.toThrow();
+        await expect(async () => await streamingAPIConnection.updateAudioStream(newAudioStream)).rejects.toThrow();
         expect(attachSpy).toBeCalledTimes(1);
         expect(streamingAPIConnection.audioStream).not.toBe(newAudioStream);
     }

@@ -46,14 +46,11 @@ export class SubscribeAPIConnection extends BaseConnection {
             try {
 
                 this.connectionState = ConnectionState.CONNECTING;
-                this.stream = await this.sdk.subscribeToStream(
-                    this.config.sessionId || this.config.id,
-                    {
-                        "handlers": {
-                            "onMessage": this.onDataReceived
-                        }
+                this.stream = await this.sdk.subscribeToStream(this.config.sessionId || this.config.id, {
+                    handlers: {
+                        onMessage: this.onDataReceived
                     }
-                );
+                });
                 // Once the connection is established, set the `connectionState` to CONNECTED
                 this.connectionState = ConnectionState.CONNECTED;
 

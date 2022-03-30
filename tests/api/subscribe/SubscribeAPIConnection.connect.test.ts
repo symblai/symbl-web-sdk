@@ -1,7 +1,7 @@
 import Symbl from "../../../src/symbl";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")
-import { PCMAudioStream, OpusAudioStream } from "../../../src/audio";
+import { LINEAR16AudioStream, OpusAudioStream } from "../../../src/audio";
 import { SubscribeAPIConnection } from '../../../src/api';
 import { NoConnectionError, HandshakeError } from "../../../src/error";
 import { ConnectionState } from "../../../src/types/connection";

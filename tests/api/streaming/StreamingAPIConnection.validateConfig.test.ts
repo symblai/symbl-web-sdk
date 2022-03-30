@@ -1,12 +1,12 @@
 import Symbl from "../../../src/symbl";
 import { uuid } from "../../../src/utils";
 jest.mock("../../../src/utils");
-import { PCMAudioStream } from "../../../src/audio";
+import { LINEAR16AudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types"
 import { InvalidValueError, NotSupportedAudioEncodingError, NotSupportedSampleRateError } from "../../../src/error"
-import { VALID_INSIGHT_TYPES, VALID_ENCODING, OPUS_SAMPLE_RATE_HERTZ, LINEAR16_SAMPLE_RATE_HERTZ} from "../../../src/constants";
+import { SYMBL_DEFAULTS } from "../../../src/constants";
 
 const validConfig = {
         id: 'valid-id',
@@ -37,7 +37,7 @@ describe('streamingAPIConnection.validateConfig', () => {
     //     // symbl = new Symbl(authConfig);
     //     const audioContext = new AudioContext();
     //     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-    //     audioStream = new PCMAudioStream(sourceNode);
+    //     audioStream = new LINEAR16AudioStream(sourceNode);
     // });
 
         // Perform validations for received config
@@ -67,16 +67,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             const validConnectionConfig = {
                 id: "sidfj98s9d8f"
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
-        }
-    );
-
-    test(
-        `config with nothing. should generate a uuid`,
-        async () => {
-            const validConnectionConfig = {}
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
-            expect(uuid).toBeCalledTimes(1);
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -87,7 +78,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                 id: "sidfj98s9d8f",
                 insightTypes: ["action_item", "question"]
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -103,7 +94,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                     sampleRateHertz: 48000
                 }
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -117,7 +108,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                     sampleRateHertz: 48000
                 }
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -131,7 +122,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                     name: "Adam Voliva"
                 }
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -144,7 +135,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                     name: "Adam Voliva"
                 }
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -155,7 +146,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                 id: "sidfj98s9d8f",
                 reconnectOnError: true
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -167,7 +158,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                 disconnectOnStopRequest: false,
                 disconnectOnStopRequestTimeout: 1800
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -178,7 +169,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                 id: "sidfj98s9d8f",
                 noConnectionTimeout: 1800
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -203,7 +194,7 @@ describe('streamingAPIConnection.validateConfig', () => {
                 disconnectOnStopRequestTimeout: 1800,
                 noConnectionTimeout: 1800
             }
-            expect(async () => await StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
         }
     );
 
@@ -234,7 +225,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${VALID_INSIGHT_TYPES}`)
+                new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${SYMBL_DEFAULTS.VALID_INSIGHT_TYPES}`)
             );
         }
     );
@@ -302,7 +293,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${VALID_ENCODING}.`)
+                new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${SYMBL_DEFAULTS.VALID_ENCODING}.`)
             );
         }
     );
@@ -338,7 +329,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${LINEAR16_SAMPLE_RATE_HERTZ}.`)
+                new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`)
             );
         }
     );
@@ -356,7 +347,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${OPUS_SAMPLE_RATE_HERTZ}.`)
+                new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`)
             );
         }
     );

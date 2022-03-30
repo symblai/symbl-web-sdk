@@ -1,5 +1,5 @@
 /*
-PCMAudioStream.attachAudioSourceElement - Ensure that `audio_source_connected` is emitted
+LINEAR16AudioStream.attachAudioSourceElement - Ensure that `audio_source_connected` is emitted
 
     thrown: "Exceeded timeout of 5000 ms for a test.
     Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
@@ -36,7 +36,7 @@ beforeAll(() => {
 });
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in source element with 'video' parent.`,
     async () => {
         try {
@@ -55,7 +55,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in source element with 'audio' parent.`,
     async () => {
         try {
@@ -74,7 +74,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in video element with valid source child`,
     async () => {
         try {
@@ -93,7 +93,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in audio element with valid source child`,
     async () => {
         try {
@@ -112,7 +112,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in audio element with src attribute`,
     async () => {
         try {
@@ -129,7 +129,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in video element with src attribute`,
     async () => {
         try {
@@ -146,7 +146,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that error is thrown if 
     no src attribute on source element`,
     async () => {
         try {
@@ -161,7 +161,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that error is thrown if 
     no src attribute on video element`,
     async () => {
         try {
@@ -174,7 +174,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that error is thrown if 
     no src attribute on audio element`,
     async () => {
         try {
@@ -187,7 +187,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that error is thrown if 
     a non audio element is passed`,
     async () => {
         try {
@@ -200,7 +200,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Validate that error is thrown if 
+    `LINEAR16AudioStream.attachAudioSourceElement - Validate that error is thrown if 
     the source element's parent is not audio or video`,
     async () => {
         try {
@@ -217,7 +217,7 @@ test(
 
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Ensure that auddioContext is being 
+    `LINEAR16AudioStream.attachAudioSourceElement - Ensure that auddioContext is being 
     closed and \`audio_source_disconnected\` is being emitted if it's already set to 'running'`,
     async () => {
         const videoElement = document.createElement("video");
@@ -235,7 +235,7 @@ test(
 
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Ensure that audiocontext is created,
+    `LINEAR16AudioStream.attachAudioSourceElement - Ensure that audiocontext is created,
     that \`audioContext.createMediaElementSource\` is invoked, that 
     \`audioContext.createScriptProcessor\` is invoked and that 
     \`attachAudioProcessor\` is invoked`,
@@ -259,7 +259,7 @@ test(
 
 
 test(
-    `PCMAudioStream.attachAudioSourceElement - Ensure that \`audio_source_connected\` is emitted`,
+    `LINEAR16AudioStream.attachAudioSourceElement - Ensure that \`audio_source_connected\` is emitted`,
     async () => {
         const videoElement = document.createElement("video");
         videoElement.src = "test.mp3";

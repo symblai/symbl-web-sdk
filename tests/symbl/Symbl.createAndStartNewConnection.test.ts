@@ -4,7 +4,7 @@ import { StreamingAPIConnection  } from "../../src/api";
 import { Recorder } from "symbl-opus-encdec";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import { ConnectionProcessingState, ConnectionState } from "../../src/types";
-import { PCMAudioStream, OpusAudioStream } from '../../src/audio';
+import { LINEAR16AudioStream, OpusAudioStream } from '../../src/audio';
 import { APP_ID, APP_SECRET } from '../constants';
 
 /** define mocks */
@@ -59,7 +59,7 @@ beforeAll(() => {
     const mediaStream = new MediaStream();
     const sourceNode = context.createMediaStreamSource(mediaStream);
     opusStream = new OpusAudioStream(sourceNode, opusConfig);
-    pcmStream = new PCMAudioStream(sourceNode);
+    pcmStream = new LINEAR16AudioStream(sourceNode);
 
 });
 
@@ -131,7 +131,7 @@ test(
 );
 
 test(
-    "Symbl.createAndStartNewConnection - Calling createAndStartNewConnection with valid config and passing in PCMAudioStream",
+    "Symbl.createAndStartNewConnection - Calling createAndStartNewConnection with valid config and passing in LINEAR16AudioStream",
     async () => {
         const authConfig = {
             appId: APP_ID,

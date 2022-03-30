@@ -1,7 +1,7 @@
 import Symbl from "../../../src/symbl";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")
-import { PCMAudioStream, OpusAudioStream } from "../../../src/audio";
+import { LINEAR16AudioStream, OpusAudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
 import { NoConnectionError, HandshakeError } from "../../../src/error";
 // jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
@@ -31,8 +31,8 @@ beforeAll(() => {
     };
     const audioContext = new AudioContext();
     sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-    audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    audioStream = new LINEAR16AudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection("abc123", audioStream);
 });
 
 test(

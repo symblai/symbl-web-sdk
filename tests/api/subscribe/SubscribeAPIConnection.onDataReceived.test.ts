@@ -1,7 +1,7 @@
 import Symbl from "../../../src/symbl";
 import { ConnectionFactory } from '../../../src/connection';
 import { SubscribeAPIConnection } from '../../../src/api/subscribe';
-import { PCMAudioStream, OpusAudioStream } from '../../../src/audio';
+import { LINEAR16AudioStream, OpusAudioStream } from '../../../src/audio';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 import { APP_ID, APP_SECRET } from '../../constants';
 import Logger from "../../../src/logger";

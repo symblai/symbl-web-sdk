@@ -14,7 +14,7 @@ import { InvalidValueError } from "../error";
 
 export class BaseConnection extends DelegatedEventTarget {
 
-    private sessionId: string;
+    protected sessionId: string;
 
     protected sdk: sdk = sdk;
 

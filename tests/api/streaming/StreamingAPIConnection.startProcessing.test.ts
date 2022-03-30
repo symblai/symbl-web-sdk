@@ -1,5 +1,5 @@
 import Symbl from "../../../src/symbl";
-import { PCMAudioStream } from "../../../src/audio";
+import { LINEAR16AudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
 import { NoConnectionError } from "../../../src/error";
 import { APP_ID, APP_SECRET } from '../../constants';
@@ -28,7 +28,7 @@ beforeEach(() => {
     
     const audioContext = new AudioContext();
     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-    const audioStream = new PCMAudioStream(sourceNode);
+    const audioStream = new LINEAR16AudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig.id, audioStream); 
     streamingAPIConnection.stream = {
         start: jest.fn(() => {

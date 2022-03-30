@@ -1,5 +1,5 @@
 /*
-PCMAudioStream.updateAudioDevice - Check that `detachAudioDevice`,
+LINEAR16AudioStream.updateAudioDevice - Check that `detachAudioDevice`,
     `attachAudioDevice` and `attachAudioProcessor` are invoked - No mediaStream passed
 
     Error: expect(jest.fn()).toBeCalledTimes(expected)
@@ -7,7 +7,7 @@ PCMAudioStream.updateAudioDevice - Check that `detachAudioDevice`,
     Expected number of calls: 1
     Received number of calls: 0
 
-PCMAudioStream.updateAudioDevice - Check that `detachAudioDevice`,
+LINEAR16AudioStream.updateAudioDevice - Check that `detachAudioDevice`,
     `attachAudioDevice` and `attachAudioProcessor` are invoked - mediaStream passed
 
     Error: expect(jest.fn()).toBeCalledTimes(expected)
@@ -18,7 +18,7 @@ PCMAudioStream.updateAudioDevice - Check that `detachAudioDevice`,
 
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
-import { PCMAudioStream } from '../../../src/audio';
+import { LINEAR16AudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 
 let authConfig, symbl;
@@ -32,11 +32,11 @@ beforeAll(() => {
     symbl = new Symbl(authConfig);
     const context = new AudioContext();
     const sourceNode = context.createMediaStreamSource(new MediaStream());
-    audioStream = new PCMAudioStream(sourceNode);
+    audioStream = new LINEAR16AudioStream(sourceNode);
 });
 
 test(
-    `PCMAudioStream.updateAudioDevice - Check that \`detachAudioDevice\`,
+    `LINEAR16AudioStream.updateAudioDevice - Check that \`detachAudioDevice\`,
     \`attachAudioDevice\` and \`attachAudioProcessor\` are invoked - No mediaStream passed`,
     async () => {
         try {
@@ -67,7 +67,7 @@ test(
 )
 
 test(
-    `PCMAudioStream.updateAudioDevice - Check that \`detachAudioDevice\`,
+    `LINEAR16AudioStream.updateAudioDevice - Check that \`detachAudioDevice\`,
     \`attachAudioDevice\` and \`attachAudioProcessor\` are invoked - mediaStream passed`,
     async () => {
         try {

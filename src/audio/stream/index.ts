@@ -1,4 +1,4 @@
 export * from "./AudioStream";
-export * from "./PCMAudioStream";
+export * from "./LINEAR16AudioStream";
 export * from "./OpusAudioStream";
 export * from "./AudioStreamFactory";

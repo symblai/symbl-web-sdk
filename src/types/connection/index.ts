@@ -17,7 +17,7 @@ enum SymblConnectionType {
 
 enum SymblAudioStreamType {
     OPUS = "OPUS",
-    PCM = "LINEAR16",
+    LINEAR16 = "LINEAR16",
 }
 
 enum ConnectionState {

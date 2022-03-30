@@ -1,7 +1,8 @@
 import Symbl from "../../../src/symbl";
+import { AudioContext } from "standardized-audio-context-mock";
 import { ConnectionFactory } from '../../../src/connection';
 import { StreamingAPIConnection } from "../../../src/api";
-import { PCMAudioStream, OpusAudioStream } from '../../../src/audio';
+import { LINEAR16AudioStream, OpusAudioStream } from '../../../src/audio';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 import { APP_ID, APP_SECRET } from '../../constants';
 import Logger from "../../../src/logger";
@@ -22,10 +23,13 @@ import { NoConnectionError, SymblError } from "../../../src/error";
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, streamingAPIConnection;
 const createNewConnection = () => {
-    const audioContext = new AudioContext();
-    const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-    const audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    const audioContext = new AudioContext() as any;
+    // const stream = new MediaStream() as any;
+    (audioContext as any).createScriptProcessor = jest.fn();
+    const sourceNode = audioContext.createMediaStreamSource();
+    const audioStream = new LINEAR16AudioStream(sourceNode);
+    audioStream.suspendAudioContext = jest.fn();
+    streamingAPIConnection = new StreamingAPIConnection("123abc" + Math.random(), audioStream);
     streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
     streamingAPIConnection.restartProcessing = false;
     streamingAPIConnection.stream = {

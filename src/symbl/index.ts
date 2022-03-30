@@ -23,7 +23,7 @@ import {VALID_LOG_LEVELS} from "../utils/configs";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import {uuid} from "../utils";
 import registerNetworkConnectivityDetector from "../network";
-import {ID_REGEX} from "../constants";
+import {SYMBL_DEFAULTS} from "../constants";
 
 
 export default class Symbl {
@@ -229,7 +229,7 @@ export default class Symbl {
 
             // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
             const regex = new RegExp(
-                ID_REGEX,
+                SYMBL_DEFAULTS.ID_REGEX,
                 "u"
             );
             const validSessionId = regex.test(options.id);
@@ -242,7 +242,7 @@ export default class Symbl {
 
         } else {
 
-            options.id = uuid();
+            sessionId = uuid();
 
         }
         try {

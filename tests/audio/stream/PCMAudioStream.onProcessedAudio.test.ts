@@ -1,5 +1,5 @@
 /*
-PCMAudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.
+LINEAR16AudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.
 
     Error: expect(jest.fn()).toBeCalledTimes(expected)
 
@@ -9,7 +9,7 @@ PCMAudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if th
 
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
-import { PCMAudioStream } from '../../../src/audio';
+import { LINEAR16AudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 
 let authConfig, symbl, audioStream;
@@ -22,11 +22,11 @@ beforeAll(() => {
     symbl = new Symbl(authConfig);
     const context = new AudioContext();
     const sourceNode = context.createMediaStreamSource(new MediaStream());
-    audioStream = new PCMAudioStream(sourceNode);
+    audioStream = new LINEAR16AudioStream(sourceNode);
 });
 
 test(
-    `PCMAudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.`,
+    `LINEAR16AudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.`,
     async () => {
         try {
             const audioData = {};
@@ -41,7 +41,7 @@ test(
 );
 
 test(
-    `PCMAudioStream.onProcessedAudio - Verify that audioCallback is being invoked`,
+    `LINEAR16AudioStream.onProcessedAudio - Verify that audioCallback is being invoked`,
     async () => {
         try {
             const audioData = {};

@@ -24,6 +24,8 @@ export class AudioStream extends DelegatedEventTarget {
 
     protected mediaStreamPromise: any = Promise.resolve();
 
+    private deviceId: string;
+
     constructor (sourceNode?: MediaStreamAudioSourceNode) {
 
         super();
@@ -42,9 +44,7 @@ export class AudioStream extends DelegatedEventTarget {
             this.mediaStreamPromise = AudioStream.getMediaStream();
             this.mediaStreamPromise.then(mediaStream => {
                 this.mediaStream = mediaStream;
-                const sampleRate = this.mediaStream.getAudioTracks()[0].getSettings().sampleRate;
-                this.audioContext = new AudioContext({ sampleRate });
-                this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+                this.createNewContext(mediaStream);
             });
         }
 
@@ -64,6 +64,12 @@ export class AudioStream extends DelegatedEventTarget {
          * Add function bindings here
          */
 
+    }
+
+    private createNewContext(mediaStream: MediaStream) {
+        const sampleRate = mediaStream.getAudioTracks()[0].getSettings().sampleRate;
+        this.audioContext = new AudioContext({ sampleRate });
+        this.sourceNode = this.audioContext.createMediaStreamSource(mediaStream);
     }
 
     static async getMediaStream (deviceId = "default"): Promise<MediaStream> {
@@ -123,85 +129,53 @@ export class AudioStream extends DelegatedEventTarget {
     async attachAudioSourceElement (audioSourceDomElement: any): Promise<void> {
 
         // Const validateElement = element => {
-        try {
 
-            if (!audioSourceDomElement) {
+        if (!audioSourceDomElement) {
 
-                throw new InvalidAudioElementError("Element is null. Please pass in a valid audio source dom element.");
+            throw new InvalidAudioElementError("Element is null. Please pass in a valid audio source dom element.");
 
-            }
+        }
 
-            if (![
-                "AUDIO",
-                "VIDEO",
-                "SOURCE"
-            ].includes(audioSourceDomElement.nodeName)) {
+        if (![
+            "AUDIO",
+            "VIDEO",
+            "SOURCE"
+        ].includes(audioSourceDomElement.nodeName)) {
 
-                throw new InvalidAudioElementError("Please pass in a valid audio source dom element.");
+            throw new InvalidAudioElementError("Please pass in a valid audio source dom element.");
 
-            }
+        }
 
-            if (audioSourceDomElement.nodeName === "SOURCE" && (audioSourceDomElement.parentElement && ![
-                "AUDIO",
-                "VIDEO"
-            ].includes(audioSourceDomElement.parentElement.nodeName))) {
+        if (audioSourceDomElement.nodeName === "SOURCE" && (audioSourceDomElement.parentElement && ![
+            "AUDIO",
+            "VIDEO"
+        ].includes(audioSourceDomElement.parentElement.nodeName))) {
 
-                throw new InvalidAudioElementError("Please ensure that audio and video element is the parent element of <source /> element.");
+            throw new InvalidAudioElementError("Please ensure that audio and video element is the parent element of <source /> element.");
 
-            }
+        }
+        if (audioSourceDomElement.nodeName === "SOURCE" && !audioSourceDomElement.src) {
 
-            if (audioSourceDomElement.nodeName === "SOURCE" && !audioSourceDomElement.src) {
+            throw new InvalidAudioElementError("Element is missing its `src` property");
 
-                throw new InvalidAudioElementError("Element is missing its `src` property");
+        }
 
-            }
+     
+        if ([
+            "AUDIO",
+            "VIDEO"
+        ].includes(audioSourceDomElement.nodeName)) {
 
-         
-            if ([
-                "AUDIO",
-                "VIDEO"
-            ].includes(audioSourceDomElement.nodeName)) {
+            const source = audioSourceDomElement.firstChild;
+            if (source && source.nodeName !== "SOURCE") {
+                throw new InvalidAudioElementError("Child element must be a source element.");
 
-                const source = audioSourceDomElement.firstChild;
-                if (source && source.nodeName !== "SOURCE") {
-                    throw new InvalidAudioElementError("Child element must be a source element.");
+            } else if (source && source.nodeName === "SOURCE") {
 
-                } else if (source && source.nodeName === "SOURCE") {
-
-                    // if (source && !source.src) {
-
-                    //     console.log("here2");
-                    //     throw new InvalidAudioElementError("Element is missing its `src` property");
-                    //     console.log("here9");
-
-                    // } else if (source && source.src) {
-
-                    //     console.log("here3");
-                    //     audioSourceDomElement = source;
-
-                    // } else {
-
-                    //     console.log("here6");
-
-                    // }
-                    this.attachAudioSourceElement(source);
-
-                }
-                // console.log("here7");
-
-                // if (!audioSourceDomElement.src) {
-
-                //     console.log("here4");
-                //     throw new InvalidAudioElementError("Element is missing its `src` property");
-                //     console.log("here5");
-
-                // }
+            
+                await this.attachAudioSourceElement(source);
 
             }
-
-        } catch (e) {
-
-            throw e;
 
         }
 
@@ -251,7 +225,7 @@ export class AudioStream extends DelegatedEventTarget {
         if (this.audioContext && this.audioContext.state !== "closed") {
 
             /*
-             * Console.log(this.audioContext);
+             * console.log(this.audioContext);
              * console.log(this.sourceNode);
              * console.log(this.processorNode);
              */
@@ -284,7 +258,7 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     async attachAudioDevice (deviceId: string = "default", mediaStream?: MediaStream): Promise<void> {
-
+        this.deviceId = deviceId;
         try {
             // TODO:
             // If can reinitialize audio context with new device, not necessary
@@ -314,6 +288,14 @@ export class AudioStream extends DelegatedEventTarget {
                 1
             );
             this.gainNode = this.audioContext.createGain();
+
+            navigator.mediaDevices.ondevicechange = async event => {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === this.deviceId);
+                if (!foundDevice) {
+                    this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+                }
+            }
 
         } catch (e) {
 

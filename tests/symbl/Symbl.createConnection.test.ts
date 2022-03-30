@@ -1,10 +1,11 @@
 import Symbl from "../../src/symbl";
 import { ConnectionFactory, BaseConnection } from '../../src/connection';
-import { PCMAudioStream, OpusAudioStream } from '../../src/audio';
+import { LINEAR16AudioStream, OpusAudioStream } from '../../src/audio';
 import { StreamingAPIConnection  } from "../../src/api";
 import { NotSupportedSampleRateError  } from "../../src/error";
 import { APP_ID, APP_SECRET } from '../constants';
 import { uuid } from '../../src/utils';
+import { SymblConnectionType } from '../../src/types';
 
 // Validate `options` with the `StreamingAPIConnectionConfig` interface
 // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
@@ -62,21 +63,23 @@ test(
         };
 
         const symbl = new Symbl(authConfig);
-        const connectionConfig = {
-            insightTypes: ['action_item', 'question'],
-            config: {
-                meetingTitle: 'My Test Meeting',
-                confidenceThreshold: 0.7,
-                timezoneOffset: 480,
-                languageCode: 'en-US',
-            },
-            speaker: {
-                userId: 'emailAddress',
-                name: 'My name'
-            },
-        };
-        const connection = await symbl.createConnection(connectionConfig);
+        const connectionId = null;
+        // const connectionConfig = {
+        //     insightTypes: ['action_item', 'question'],
+        //     config: {
+        //         meetingTitle: 'My Test Meeting',
+        //         confidenceThreshold: 0.7,
+        //         timezoneOffset: 480,
+        //         languageCode: 'en-US',
+        //     },
+        //     speaker: {
+        //         userId: 'emailAddress',
+        //         name: 'My name'
+        //     },
+        // };
+        const connection = await symbl.createConnection(connectionId);
         expect(ConnectionFactory).toHaveBeenCalled();
+        // expect(ConnectionFactory).toHaveBeenCalledWith(SymblConnectionType.STREAMING, connectionId, null);
         expect(connectMock).toBeCalledTimes(1);
         expect(uuid).toBeCalledTimes(1);
         expect(startProcessingMock).toBeCalledTimes(0);
@@ -93,22 +96,8 @@ test(
         };
         const id = "123940-2390394-19848598";
         const symbl = new Symbl(authConfig);
-        const connectionConfig = {
-            id,
-            insightTypes: ['action_item', 'question'],
-            config: {
-                meetingTitle: 'My Test Meeting',
-                confidenceThreshold: 0.7,
-                timezoneOffset: 480,
-                languageCode: 'en-US',
-            },
-            speaker: {
-                userId: 'emailAddress',
-                name: 'My name'
-            },
-        };
         // const connectSpy = jest.spyOn(Connection)
-        const connection = await symbl.createConnection(connectionConfig);
+        const connection = await symbl.createConnection(id);
         expect(ConnectionFactory).toHaveBeenCalled();
         expect(connectMock).toBeCalledTimes(1);
         expect(uuid).toBeCalledTimes(0);
@@ -118,7 +107,7 @@ test(
 );
 
 test(
-    "Symbl.createConnection - Calling createConnection with valid config and passing in PCMAudioStream",
+    "Symbl.createConnection - Calling createConnection with valid config and passing in LINEAR16AudioStream",
     async () => {
         const authConfig = {
             appId: APP_ID,
@@ -127,22 +116,9 @@ test(
         const context = new AudioContext();
         const mediaStream = new MediaStream();
         const sourceNode = context.createMediaStreamSource(mediaStream);
-        const audioStream = new PCMAudioStream(sourceNode);
+        const audioStream = new LINEAR16AudioStream(sourceNode);
         const symbl = new Symbl(authConfig);
-        const connectionConfig = {
-            insightTypes: ['action_item', 'question'],
-            config: {
-                meetingTitle: 'My Test Meeting',
-                confidenceThreshold: 0.7,
-                timezoneOffset: 480,
-                languageCode: 'en-US',
-            },
-            speaker: {
-                userId: 'emailAddress',
-                name: 'My name'
-            },
-        };
-        const connection = await symbl.createConnection(connectionConfig, audioStream);
+        const connection = await symbl.createConnection(null, audioStream);
         expect(ConnectionFactory).toHaveBeenCalled();
         expect(connectMock).toBeCalledTimes(1);
         expect(uuid).toBeCalledTimes(1);
@@ -172,20 +148,7 @@ test(
         const sourceNode = context.createMediaStreamSource(mediaStream);
         const audioStream = new OpusAudioStream(sourceNode, opusConfig);
         const symbl = new Symbl(authConfig);
-        const connectionConfig = {
-            insightTypes: ['action_item', 'question'],
-            config: {
-                meetingTitle: 'My Test Meeting',
-                confidenceThreshold: 0.7,
-                timezoneOffset: 480,
-                languageCode: 'en-US',
-            },
-            speaker: {
-                userId: 'emailAddress',
-                name: 'My name'
-            },
-        };
-        const connection = await symbl.createConnection(connectionConfig, audioStream);
+        const connection = await symbl.createConnection(null, audioStream);
         expect(ConnectionFactory).toHaveBeenCalled();
         expect(connectMock).toBeCalledTimes(1);
         expect(uuid).toBeCalledTimes(1);

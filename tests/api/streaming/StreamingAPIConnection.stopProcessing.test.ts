@@ -3,7 +3,7 @@ import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")
 import { ConnectionFactory } from '../../../src/connection';
 import { StreamingAPIConnection } from "../../../src/api";
-import { PCMAudioStream, OpusAudioStream } from '../../../src/audio';
+import { LINEAR16AudioStream, OpusAudioStream } from '../../../src/audio';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 import { APP_ID, APP_SECRET } from '../../constants';
 import Logger from "../../../src/logger";
@@ -26,8 +26,8 @@ let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, streaming
 const createNewConnection = () => {
     const audioContext = new AudioContext();
     const sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-    const audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    const audioStream = new LINEAR16AudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection("123abc", audioStream);
     streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
     streamingAPIConnection.restartProcessing = false;
     streamingAPIConnection.stream = {
@@ -125,16 +125,19 @@ test(
     "Symbl.stopProcessing - Test error handling during restartProcessing phase",
     async () => {
         const newStreamingAPIConnection = createNewConnection();
+        const stopSpy = jest.fn();
         newStreamingAPIConnection.stream = {
             start: jest.fn(() => {
                 throw new Error("An error happened.");
             }),
-            stop: jest.fn(),
+            stop: stopSpy,
         };
+        newStreamingAPIConnection.audioStream = {
+            suspendAudioContext: jest.fn()
+        }
         newStreamingAPIConnection.connectionState = ConnectionState.CONNECTED
         newStreamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING
         newStreamingAPIConnection.restartProcessing = true;
-        const stopSpy = jest.spyOn(newStreamingAPIConnection.stream, 'stop');
         const startSpy = jest.spyOn(newStreamingAPIConnection.stream, 'start');
         const startProcessingSpy = jest.spyOn(newStreamingAPIConnection, 'startProcessing');
         await expect(async () => await newStreamingAPIConnection.stopProcessing()).rejects.toThrow();

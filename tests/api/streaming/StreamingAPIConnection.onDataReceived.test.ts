@@ -7,7 +7,7 @@
 import Symbl from "../../../src/symbl";
 import { BaseConnection } from '../../../src/connection';
 import { StreamingAPIConnection } from '../../../src/api';
-import { PCMAudioStream } from '../../../src/audio';
+import { LINEAR16AudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { SymblData } from '../../../src/types';
 import { SymblEvent } from "../../../src/events";
@@ -36,8 +36,8 @@ beforeAll(() => {
     };
     const context = new AudioContext();
     sourceNode = context.createMediaStreamSource(new MediaStream());
-    audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);  
+    audioStream = new LINEAR16AudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection("abc123", audioStream);  
 });
 
 test(

@@ -1,7 +1,7 @@
 import {
     AudioStream,
     OpusAudioStream,
-    PCMAudioStream
+    LINEAR16AudioStream
 } from ".";
 import {
     SymblAudioStreamType,
@@ -22,12 +22,12 @@ export class AudioStreamFactory {
         case SymblAudioStreamType.OPUS:
             audioStream = new OpusAudioStream();
             break;
-        case SymblAudioStreamType.PCM:
-            audioStream = new PCMAudioStream();
+        case SymblAudioStreamType.LINEAR16:
+            audioStream = new LINEAR16AudioStream();
             break;
         default:
             // If the validation fails for `connectionType`, throw `InvalidValueError`
-            throw new InvalidValueError(`\`streamType\` must be one of ${SymblAudioStreamType.OPUS} or ${SymblAudioStreamType.PCM}.`);
+            throw new InvalidValueError(`\`streamType\` must be one of ${SymblAudioStreamType.OPUS} or ${SymblAudioStreamType.LINEAR16}.`);
 
         }
 

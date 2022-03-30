@@ -1,7 +1,7 @@
 import Symbl from "../../../src/symbl";
 // import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 // jest.mock("@symblai/symbl-js/build/client.sdk.min");
-import { PCMAudioStream, OpusAudioStream } from "../../../src/audio";
+import { LINEAR16AudioStream, OpusAudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
 import { NoConnectionError } from "../../../src/error";
 // jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
@@ -31,8 +31,8 @@ beforeAll(() => {
     };
     const audioContext = new AudioContext();
     sourceNode = audioContext.createMediaStreamSource(new MediaStream());
-    audioStream = new PCMAudioStream(sourceNode);
-    streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
+    audioStream = new LINEAR16AudioStream(sourceNode);
+    streamingAPIConnection = new StreamingAPIConnection("abc123", audioStream);
     streamingAPIConnection.stream = {
         close: jest.fn()
     }
@@ -62,18 +62,14 @@ test(
 test(
     "StreamingAPIConnection.connect - Testing an unsuccessful disconnection attempt",
     async () => {
-        try {
             streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
             streamingAPIConnection.stream = {
                 close: jest.fn(() => {
                     throw new Error("An error happened.");
                 })
             }
-            await streamingAPIConnection.disconnect();
-        } catch (e) {
+            await expect(async () => await streamingAPIConnection.disconnect()).rejects.toThrow();
             expect(streamingAPIConnection.connectionState).toBe(ConnectionState.TERMINATED);
-            //
-        }
     }
 );
 
@@ -104,7 +100,7 @@ test(
 //     async () => {
 
 //         try {
-//             const audioStream = new PCMAudioStream();
+//             const audioStream = new LINEAR16AudioStream();
 //             const streamingAPIConnection = new StreamingAPIConnection(validConnectionConfig, audioStream);
 //             streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
 //             streamingAPIConnection.disconnect();
