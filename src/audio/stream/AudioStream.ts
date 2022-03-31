@@ -322,82 +322,79 @@ export class AudioStream extends DelegatedEventTarget {
     async attachAudioDevice (deviceId = "default", mediaStream?: MediaStream): Promise<void> {
 
         this.deviceId = deviceId;
-        try {
 
-            if (this.audioContext) {
+        if (this.audioContext) {
 
-                await this.detachAudioDevice();
+            await this.detachAudioDevice();
 
-            }
+        }
 
-            // If a media stream is passed in attach to the AudioStream
-            if (mediaStream) {
+        // If a media stream is passed in attach to the AudioStream
+        if (mediaStream) {
 
-                this.mediaStream = mediaStream;
+            this.mediaStream = mediaStream;
 
-                // Else if a media stream is not already attached create a new one.
+            // Else if a media stream is not already attached create a new one.
 
-            } else if (deviceId !== "default") {
+        } else if (deviceId !== "default") {
 
-                this.mediaStream = await AudioStream.getMediaStream(deviceId);
+            this.mediaStream = await AudioStream.getMediaStream(deviceId);
 
-            } else {
+        } else {
 
-                this.mediaStream = await this.mediaStreamPromise;
+            this.mediaStream = await this.mediaStreamPromise;
 
-            }
+        }
 
-            await this.createNewContext(this.mediaStream);
+        await this.createNewContext(this.mediaStream);
 
-            // Create the sourceNode, processorNode and gainNode using the Audio Context.
-            this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
-            this.processorNode = this.audioContext.createScriptProcessor(
-                1024,
-                1,
-                1
-            );
-            this.gainNode = this.audioContext.createGain();
-            await this.resumeAudioContext();
-            this.deviceProcessing = true;
+        // Create the sourceNode, processorNode and gainNode using the Audio Context.
+        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+        this.processorNode = this.audioContext.createScriptProcessor(
+            1024,
+            1,
+            1
+        );
+        this.gainNode = this.audioContext.createGain();
+        await this.resumeAudioContext();
+        this.deviceProcessing = true;
 
-            navigator.mediaDevices.ondevicechange = async (event) => {
+        navigator.mediaDevices.ondevicechange = async (event) => {
 
-                if (this.mediaStream) {
+            if (this.mediaStream) {
 
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                    const tracks = this.mediaStream?.getAudioTracks();
-                    if (tracks?.length) {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const tracks = this.mediaStream?.getAudioTracks();
+                if (tracks?.length) {
 
-                        const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
-                        if (!foundDevice && !this.recentlyDisconnectedDevice) {
+                    const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
+                    if (!foundDevice && !this.recentlyDisconnectedDevice) {
 
-                            this.recentlyDisconnectedDevice = true;
-                            this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
-                            window.setTimeout(
-                                () => {
+                        this.recentlyDisconnectedDevice = true;
+                        this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+                        window.setTimeout(
+                            () => {
 
-                                    this.recentlyDisconnectedDevice = false;
+                                this.recentlyDisconnectedDevice = false;
 
-                                },
-                                1000
-                            );
-
-                        }
+                            },
+                            1000
+                        );
 
                     }
 
                 }
 
-            };
+            }
 
-        } catch (e) {
-
-            throw e;
-
-        }
+        };
 
     }
 
+    /**
+     * Closes AudioContext, removes MediaStream and disconnects processor to cleanly
+     * detach the audio input device
+     */
     async detachAudioDevice (): Promise<void> {
 
         if (this.audioContext && this.audioContext.state !== "closed") {
@@ -434,6 +431,11 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
+    /**
+     * Detaches MediaStream audio device and attaches a new one in order to update the device on device change
+     * @param deviceId string
+     * @param mediaStream MediaStream
+     */
     async updateAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
 
         // Invoke `detachAudioDevice` function
@@ -447,24 +449,39 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
+    /**
+     * Attaches a callback function to the audio stream
+     * @param audioCallback function
+     */
     attachAudioCallback (audioCallback: (audioData) => void): void {
 
         this.audioCallback = audioCallback;
 
     }
 
+    /**
+     * Attaches an alternate audio processor node
+     */
     protected attachAudioProcessor (): void {
 
         throw new TypeError("Not implemented!");
 
     }
 
+    /**
+     * Processes audio through custom processor node
+     * @param audioEvent
+     */
     protected processAudio (audioEvent: unknown): void {
 
         throw new TypeError("Not implemented!");
 
     }
 
+    /**
+     * Applies the audioCallback function on any processed audio data
+     * @param audioData
+     */
     onProcessedAudio (audioData: unknown): void {
 
         if (this.audioCallback) {
