@@ -33,8 +33,14 @@ export default class Symbl {
      */
     private sdk: sdk = sdk;
 
+    /**
+     * @ignore
+     */
     private symblConfig: SymblConfig;
 
+    /**
+     * @ignore
+     */
     private logger: Logger;
 
     /**

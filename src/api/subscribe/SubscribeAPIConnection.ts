@@ -9,15 +9,29 @@ import {SymblEvent} from "../../events";
 
 export class SubscribeAPIConnection extends BaseConnection {
 
+    /**
+     * @ignore
+     */
     private config: SubscribeAPIConnectionConfig;
 
-    // Private stream: SymblSubscribeAPIConnection;
+    /**
+     * @ignore
+     */
     private stream: any;
 
+    /**
+     * @ignore
+     */
     private connectionState = ConnectionState.DISCONNECTED;
 
+    /**
+     * @ignore
+     */
     private _isConnected = false;
 
+    /**
+     * Connection type is either STREAMING or SUBSCRIBE
+     */
     public connectionType = SymblConnectionType.SUBSCRIBE;
 
     constructor (sessionId: string) {
@@ -46,11 +60,14 @@ export class SubscribeAPIConnection extends BaseConnection {
             try {
 
                 this.connectionState = ConnectionState.CONNECTING;
-                this.stream = await this.sdk.subscribeToStream(this.sessionId, {
-                    handlers: {
-                        onMessage: this.onDataReceived
+                this.stream = await this.sdk.subscribeToStream(
+                    this.sessionId,
+                    {
+                        "handlers": {
+                            "onMessage": this.onDataReceived
+                        }
                     }
-                });
+                );
                 // Once the connection is established, set the `connectionState` to CONNECTED
                 this.connectionState = ConnectionState.CONNECTED;
 

@@ -61,24 +61,56 @@ const validateInsightTypes = (insightTypes: Array<string>): boolean => {
  */
 export class StreamingAPIConnection extends BaseConnection {
 
+     /**
+     * @ignore
+     */
     private config: StreamingAPIConnectionConfig;
 
+     /**
+     * @ignore
+     */
     private connectionState = ConnectionState.DISCONNECTED;
 
+     /**
+     * @ignore
+     */
     private processingState = ConnectionProcessingState.NOT_PROCESSING;
 
+     /**
+     * @ignore
+     */
     private _isProcessing = false;
 
+     /**
+     * @ignore
+     */
     private _isConnected = false;
 
+     /**
+     * @ignore
+     */
     private restartProcessing = false;
 
+     /**
+     * @ignore
+     */
     private stream: SymblStreamingAPIConnection;
 
+     /**
+     * @ignore
+     */
     private audioStream: AudioStream;
 
+    /**
+     * Connection type is either STREAMING or SUBSCRIBE
+     */
     public connectionType = SymblConnectionType.STREAMING;
 
+    /**
+     * Creates Streaming API connection instance
+     * @param sessionId string
+     * @param audioStream AudioStream
+     */
     constructor (sessionId: string, audioStream: AudioStream) {
 
         super(sessionId);
