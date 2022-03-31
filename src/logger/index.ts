@@ -1,25 +1,27 @@
-import consola from 'consola'
-// import console from 'console';
+import consola from "consola";
+// Import console from 'console';
 
 export default class Logger {
-    
-    // logger: typeof consola = consola;
+
+    // Logger: typeof consola = consola;
     logger = console;
 
     logLevel: string;
 
     constructor (logLevel?: string) {
-        
+
         this.setLevel(logLevel);
-        
+
     }
 
-    // error(message): void {};
-    // warn(message): void {};
-    // info(message): void {};
-    // log(message): void {};
-    // trace(message): void {};
-    // debug(message): void {};
+    /*
+     * Error(message): void {};
+     * warn(message): void {};
+     * info(message): void {};
+     * log(message): void {};
+     * trace(message): void {};
+     * debug(message): void {};
+     */
 
     /**
      * Sets the logging level.
@@ -29,10 +31,12 @@ export default class Logger {
 
         const options: any = {};
         if (level) {
+
             options.level = level;
             this.logLevel = level;
+
         }
-        // this.logger = consola.create(options);
+        // This.logger = consola.create(options);
 
     }
 
@@ -55,7 +59,10 @@ export default class Logger {
 
         this.logger?.trace.apply(
             null,
-            [msg, meta]
+            [
+                msg,
+                meta
+            ]
         );
 
     }
@@ -67,7 +74,10 @@ export default class Logger {
 
         this.logger?.debug.apply(
             null,
-            [msg, meta]
+            [
+                msg,
+                meta
+            ]
         );
 
     }
@@ -79,7 +89,10 @@ export default class Logger {
 
         this.logger?.log.apply(
             null,
-            [msg, meta]
+            [
+                msg,
+                meta
+            ]
         );
 
     }
@@ -91,7 +104,10 @@ export default class Logger {
 
         this.logger?.info.apply(
             null,
-            [msg, meta]
+            [
+                msg,
+                meta
+            ]
         );
 
     }
@@ -103,7 +119,10 @@ export default class Logger {
 
         this.logger?.warn.apply(
             null,
-            [msg, meta]
+            [
+                msg,
+                meta
+            ]
         );
 
     }
@@ -115,7 +134,10 @@ export default class Logger {
 
         this.logger?.error.apply(
             null,
-            [msg, meta]
+            [
+                msg,
+                meta
+            ]
         );
 
     }
