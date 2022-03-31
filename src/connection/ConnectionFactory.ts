@@ -1,7 +1,4 @@
 import {
-    AudioStream
-} from "../audio";
-import {
     ConnectionConfig,
     ConnectionProcessingState,
     ConnectionState,
@@ -14,6 +11,9 @@ import {
     SubscribeAPIConnection
 } from "../api";
 import {
+    AudioStream
+} from "../audio";
+import {
     InvalidValueError
 } from "../error";
 
@@ -21,6 +21,13 @@ import {
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 export class ConnectionFactory {
 
+    /**
+     * Establishes a connection to a websocket based on connectionType provided and using the provided sessionId
+     * @param connectionType SymblConnectionType
+     * @param sessionId string
+     * @param audioStream AudioStream
+     * @returns StreamingAPIConnection | SubscribeAPIConnection
+     */
     async instantiateConnection (connectionType: SymblConnectionType, sessionId: string, audioStream?: AudioStream): Promise < StreamingAPIConnection | SubscribeAPIConnection > {
 
         if (!sessionId) {
@@ -34,41 +41,26 @@ export class ConnectionFactory {
         switch (connectionType) {
 
         case SymblConnectionType.STREAMING:
-            try {
+            connection = new StreamingAPIConnection(
+                sessionId,
+                audioStream
+            );
 
-                connection = new StreamingAPIConnection(
-                    sessionId,
-                    audioStream
-                );
+            // Return the instantiated `Connection` type
+            return connection as StreamingAPIConnection;
 
-                // Return the instantiated `Connection` type
-                return connection as StreamingAPIConnection;
-
-            } catch (e) {
-
-                throw e;
-
-            }
         case SymblConnectionType.SUBSCRIBE:
-            try {
+            if (audioStream) {
 
-
-                if (audioStream) {
-
-                    throw new InvalidValueError(`\`audioStream\` not allowed for type \`${SymblConnectionType.SUBSCRIBE}\`.`);
-
-                }
-
-                connection = new SubscribeAPIConnection(sessionId);
-                
-                // Return the instantiated `Connection` type
-                return connection as SubscribeAPIConnection;
-
-            } catch (e) {
-
-                throw e;
+                throw new InvalidValueError(`\`audioStream\` not allowed for type \`${SymblConnectionType.SUBSCRIBE}\`.`);
 
             }
+
+            connection = new SubscribeAPIConnection(sessionId);
+
+            // Return the instantiated `Connection` type
+            return connection as SubscribeAPIConnection;
+
         default:
             // If the validation fails for `connectionType`, throw `InvalidValueError`
             throw new InvalidValueError("`connectionType` must be one of 'streaming' or 'subscribe'.");
