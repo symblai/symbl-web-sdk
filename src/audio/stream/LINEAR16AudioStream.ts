@@ -5,9 +5,9 @@ export class LINEAR16AudioStream extends AudioStream {
 
     /**
      * Converts audio data from Big Endian to Little Endian and sends to audio processor
-     * @param audioEvent unknown
+     * @param audioEvent any
      */
-    processAudio (audioEvent: unknown): void {
+    processAudio (audioEvent: any): void {
 
         /*
          * Conversion logic from Big Endian to Little Endian
