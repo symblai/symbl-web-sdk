@@ -2,13 +2,17 @@ import {AudioStream} from "./AudioStream";
 import {SymblEvent} from "../../events";
 
 export class LINEAR16AudioStream extends AudioStream {
-    constructor(sourceNode?: MediaStreamAudioSourceNode) {
-        super(sourceNode);
-    }
-    
-    processAudio(audioEvent) {
-        // Conversion logic from Big Endian to Little Endian
-        // Send the processed audio by invoking super.onProcessedAudio(convertedAudioData)
+
+    /**
+     * Converts audio data from Big Endian to Little Endian and sends to audio processor
+     * @param audioEvent unknown
+     */
+    processAudio (audioEvent: unknown): void {
+
+        /*
+         * Conversion logic from Big Endian to Little Endian
+         * Send the processed audio by invoking super.onProcessedAudio(convertedAudioData)
+         */
 
         const inputData = audioEvent.inputBuffer.getChannelData(0);
         const targetBuffer = new Int16Array(inputData.length);
@@ -20,16 +24,17 @@ export class LINEAR16AudioStream extends AudioStream {
             );
 
         }
-        try {
-            // Send audio stream to websocket.
-            super.onProcessedAudio(targetBuffer.buffer);
 
-        } catch (err) {
-            throw err;
-        }    
+        // Send audio stream to websocket.
+        super.onProcessedAudio(targetBuffer.buffer);
+
     }
-    
-    attachAudioProcessor() {
+
+    /**
+     * Connects the audio data to the browser audio processor
+     */
+    attachAudioProcessor (): void {
+
         if (this.processorNode) {
 
             this.sourceNode.disconnect();
@@ -45,12 +50,16 @@ export class LINEAR16AudioStream extends AudioStream {
 
         } else {
 
-            this.logger.warn('Audio processor not attached.');
+            this.logger.warn("Audio processor not attached.");
 
         }
 
     }
 
+    /**
+     * Attaches <audio> DOM element to the audio processor
+     * @param audioSourceDomElement HTMLAudioElement
+     */
     async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
 
         await super.attachAudioSourceElement(audioSourceDomElement);
@@ -58,12 +67,19 @@ export class LINEAR16AudioStream extends AudioStream {
 
     }
 
+    /**
+     * Detaches <audio> DOM element from the audio processor
+     */
     async detachAudioSourceElement (): Promise<void> {
 
         await super.detachAudioSourceElement();
 
     }
 
+    /**
+     * Detaches current DOM element and attaches new <audio> DOM element to audio processor
+     * @param audioSourceDomElement HTMLAudioElement
+     */
     async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
 
         await super.updateAudioSourceElement(audioSourceDomElement);
@@ -71,6 +87,11 @@ export class LINEAR16AudioStream extends AudioStream {
 
     }
 
+    /**
+     * Attaches browser audio input device source to audio processor
+     * @param deviceId string
+     * @param mediaStream MediaStream
+     */
     async attachAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
 
         await super.attachAudioDevice(
@@ -86,12 +107,20 @@ export class LINEAR16AudioStream extends AudioStream {
 
     }
 
+    /**
+     * Detaches audio input device from audio processor
+     */
     async detachAudioDevice (): Promise<void> {
 
         await super.detachAudioDevice();
 
     }
 
+    /**
+     * Updates the audio device on device change
+     * @param deviceId string
+     * @param mediaStream MediaStream
+     */
     async updateAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
 
         await super.updateAudioDevice(
