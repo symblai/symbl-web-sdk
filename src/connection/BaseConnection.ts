@@ -1,16 +1,16 @@
 import {DelegatedEventTarget, SymblEvent} from "../events";
 import {
     EventTypes,
-    SymblData,
-    RealtimeSpeechData,
-    RealtimeMessageData,
     RealtimeInsightData,
+    RealtimeMessageData,
+    RealtimeSpeechData,
     RealtimeTopicData,
+    SymblData
 } from "../types";
+import {InvalidValueError} from "../error";
 import Logger from "../logger";
+import registerNetworkConnectivityDetector from "../network";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
-import registerNetworkConnectivityDetector from "../network"
-import { InvalidValueError } from "../error";
 
 export class BaseConnection extends DelegatedEventTarget {
 
@@ -34,43 +34,49 @@ export class BaseConnection extends DelegatedEventTarget {
         this.disconnect = this.disconnect.bind(this);
         this.onDataReceived = this.onDataReceived.bind(this);
         this.getSessionId = this.getSessionId.bind(this);
-        registerNetworkConnectivityDetector(this.sdk)
+        registerNetworkConnectivityDetector(this.sdk);
 
     }
 
+    /**
+     * Checks if data is valid and if so dispatches the data as an event
+     * @param data SymblData
+     */
     async emitEvents (data: any /* SymblData*/): Promise<void> {
 
         if (data.type === "error") {
+
             throw new InvalidValueError(data.detail);
+
         }
 
         const eventNameMapper = (data) => {
 
             const eventNameMap = {
-                "message_response": {
-                    name: "message",
-                    data: data.messages as RealtimeMessageData[]
-                },
-                "topic_response": {
-                    name: "topic",
-                    data: data.topics as RealtimeTopicData[]
-                },
                 "insight_response": {
-                    name: null,
-                    data: data as RealtimeInsightData,
+                    "data": data as RealtimeInsightData,
+                    "name": null
                 },
                 "message": {
-                    name: data.message
+                    data,
+                    "name": data.message
                         ? data.message.type
-                        : null,
-                    data
+                        : null
+                },
+                "message_response": {
+                    "data": data.messages as RealtimeMessageData[],
+                    "name": "message"
+                },
+                "topic_response": {
+                    "data": data.topics as RealtimeTopicData[],
+                    "name": "topic"
                 },
                 "tracker_response": {
-                    name: "tracker",
-                    data: data.trackers
+                    "data": data.trackers,
+                    "name": "tracker"
                 }
             };
-            let eventType = eventNameMap[data.type] || {};
+            const eventType = eventNameMap[data.type] || {};
             if (eventType.name === "recognition_result") {
 
                 eventType.name = "speech_recognition";
@@ -86,7 +92,9 @@ export class BaseConnection extends DelegatedEventTarget {
 
             this.dispatchEvent(new SymblEvent(
                 eventData.name,
-                eventData.data.message ? eventData.data.message : eventData.data
+                eventData.data.message
+                    ? eventData.data.message
+                    : eventData.data
             ));
 
         } else if (!eventData.name && data.type === "insight_response") {
@@ -117,24 +125,37 @@ export class BaseConnection extends DelegatedEventTarget {
 
     }
 
+    /**
+     * @ignore
+     */
     connect (): void {
 
         throw new TypeError("Function not implemented!");
 
     }
 
+    /**
+     * @ignore
+     */
     disconnect (): void {
 
         throw new TypeError("Function not implemented!");
 
     }
 
+    /**
+     * @ignore
+     */
     async onDataReceived (data: SymblData): Promise<void> {
 
         throw new TypeError("Function not implemented!");
 
     }
 
+    /**
+     * Returns the current session/connection id
+     * @returns string
+     */
     getSessionId (): string {
 
         return this.sessionId;
