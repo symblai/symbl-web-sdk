@@ -19,11 +19,11 @@ import {
 import {AudioStream} from "../audio";
 import {ConnectionFactory} from "../connection";
 import Logger from "../logger";
+import {SYMBL_DEFAULTS} from "../constants";
 import {VALID_LOG_LEVELS} from "../utils/configs";
+import registerNetworkConnectivityDetector from "../network";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 import {uuid} from "../utils";
-import registerNetworkConnectivityDetector from "../network";
-import {SYMBL_DEFAULTS} from "../constants";
 
 
 export default class Symbl {
@@ -37,19 +37,15 @@ export default class Symbl {
 
     private logger: Logger;
 
+    /**
+     * Using SymblConfig an instance of the Symbl SDK is instantiated
+     * @param symblConfig SymblConfig
+     */
     constructor (symblConfig?: SymblConfig) {
 
         if (symblConfig) {
 
-            try {
-
-                this._validateSymblConfig(symblConfig);
-
-            } catch (e) {
-
-                throw e;
-
-            }
+            this._validateSymblConfig(symblConfig);
 
         }
 
@@ -63,6 +59,7 @@ export default class Symbl {
         this.subscribeToConnection = this.subscribeToConnection.bind(this);
 
         registerNetworkConnectivityDetector(this.sdk);
+
     }
 
     /**
@@ -222,12 +219,19 @@ export default class Symbl {
 
     }
 
+    /**
+     * Validates that SessionID is unique and then creates websocket connection
+     * @param sessionId string
+     * @param audioStream AudioStream
+     * @returns StreamingAPIConnection
+     */
     async createConnection (sessionId: string, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+
         if (sessionId) {
 
             if (typeof sessionId !== "string") {
 
-                throw new InvalidValueError("Session ID must be a string.")
+                throw new InvalidValueError("Session ID must be a string.");
 
             }
 
@@ -272,31 +276,36 @@ export default class Symbl {
 
     }
 
+    /**
+     * Creates a new connection and then immediately starts processing audio data through the connection
+     * @param options StreamingApiConnectionConfig
+     * @param audioStream AudioStream
+     * @returns StreamingAPIConnection
+     */
     async createAndStartNewConnection (options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
 
-        try {
+        // Invoke `createConnection` with the above arguments.
+        const connection = await this.createConnection(
+            options
+                ? options.id
+                : null,
+            audioStream
+        );
 
-            // Invoke `createConnection` with the above arguments.
-            const connection = await this.createConnection(
-                options ? options.id : null,
-                audioStream
-            );
+        // Invoke `startProcessing` on the instance of `StreamingAPIConnection`
+        await connection.startProcessing(options);
 
-            // Invoke `startProcessing` on the instance of `StreamingAPIConnection`
-            await connection.startProcessing(options);
+        // Return the connection instance
+        return connection as StreamingAPIConnection;
 
-            // Return the connection instance
-            return connection as StreamingAPIConnection;
-
-        } catch (e) {
-
-            // If the connection fails to get established, re-throw the error thrown by `StreamingAPIConnection` instance
-            throw e;
-
-        }
 
     }
 
+    /**
+     * Establishes a Subscribe connection with session id
+     * @param sessionId string
+     * @returns SubscribeAPIConnection
+     */
     async subscribeToConnection (sessionId: string) : Promise<SubscribeAPIConnection> {
 
         // Validate `sessionId` and if not present, throw `RequiredParameterAbsentError`
@@ -305,29 +314,27 @@ export default class Symbl {
             throw new RequiredParameterAbsentError("sessionId is required.");
 
         }
-        try {
 
-            // Initialize the instance of `SubscribeAPIConnection` via the `ConnectionFactory` with the passed in `sessionId`
-            const connection = await new ConnectionFactory().instantiateConnection(
-                SymblConnectionType.SUBSCRIBE,
-                sessionId
-            );
+        // Initialize the instance of `SubscribeAPIConnection` via the `ConnectionFactory` with the passed in `sessionId`
+        const connection = await new ConnectionFactory().instantiateConnection(
+            SymblConnectionType.SUBSCRIBE,
+            sessionId
+        );
 
-            // Invoke the `connect` method to start the connection to the Subscribe API
-            await connection.connect();
+        // Invoke the `connect` method to start the connection to the Subscribe API
+        await connection.connect();
 
-            // If connection is successful, return the instance of the `SubscribeAPIConnection`
-            return connection as SubscribeAPIConnection;
-
-        } catch (e) {
-
-            // If connection fails to get established, re-throw the error returned by `SubscribeAPIConnection`
-            throw e;
-
-        }
+        // If connection is successful, return the instance of the `SubscribeAPIConnection`
+        return connection as SubscribeAPIConnection;
 
     }
 
+    /**
+     * Waits for provided amount of time in the supplied units (ms, s, min)
+     * @param time number
+     * @param unit string
+     * @returns Promise<void>
+     */
     static wait (time: number, unit: string = TimeUnit.MS) : Promise<void> {
 
         let timeout;
