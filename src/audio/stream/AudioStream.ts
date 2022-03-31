@@ -307,7 +307,7 @@ export class AudioStream extends DelegatedEventTarget {
      * Detaches from any currently connected DOM Audio element and attaches to provided element
      * @param audioSourceDomElement HTMLAudioElement
      */
-    updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): void {
+    async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
 
         await this.detachAudioSourceElement();
         await this.attachAudioSourceElement(audioSourceDomElement);
