@@ -1,11 +1,11 @@
 import {
     AudioStream,
-    OpusAudioStream,
-    LINEAR16AudioStream
+    LINEAR16AudioStream,
+    OpusAudioStream
 } from ".";
 import {
-    SymblAudioStreamType,
-    OpusConfig
+    OpusConfig,
+    SymblAudioStreamType
 } from "../../types";
 import {
     InvalidValueError
@@ -15,7 +15,13 @@ import {
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 export class AudioStreamFactory {
 
+    /**
+     * Establishes an audio stream based on stream type
+     * @param streamType SymblAudioStreamType
+     * @returns audioStream - Opus or LINEAR16
+     */
     async instantiateStream (streamType: SymblAudioStreamType): Promise < AudioStream > {
+
         let audioStream: AudioStream;
         switch (streamType.toUpperCase()) {
 
