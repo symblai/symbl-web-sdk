@@ -14,10 +14,19 @@ import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
 export class BaseConnection extends DelegatedEventTarget {
 
+    /**
+     * @ignore
+     */
     protected sessionId: string;
 
+    /**
+     * @ignore
+     */
     protected sdk: sdk = sdk;
 
+    /**
+     * @ignore
+     */
     protected logger: Logger = new Logger();
 
     constructor (sessionId: string) {

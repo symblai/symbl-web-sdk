@@ -6,26 +6,56 @@ import Logger from "../../logger";
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 export class AudioStream extends DelegatedEventTarget {
 
+    /**
+     * @ignore
+     */
     protected logger: Logger;
 
     public sourceNode: MediaStreamAudioSourceNode | MediaElementAudioSourceNode;
 
+    /**
+     * @ignore
+     */
     protected audioCallback: (audioData) => void;
 
+    /**
+     * @ignore
+     */
     protected mediaStream: MediaStream;
 
+    /**
+     * Audio processor node to convert audio to appropriate data stream
+     */
     public processorNode: ScriptProcessorNode;
 
+    /**
+     * @ignore
+     */
     protected audioContext: AudioContext;
 
+    /**
+     * @ignore
+     */
     protected gainNode: GainNode;
 
+    /**
+     * @ignore
+     */
     protected stream: any;
 
+    /**
+     * @ignore
+     */
     protected mediaStreamPromise: any = Promise.resolve();
 
+    /**
+     * @ignore
+     */
     private deviceId: string;
 
+    /**
+     * @ignore
+     */
     private recentlyDisconnectedDevice = false;
 
     /**
@@ -33,6 +63,10 @@ export class AudioStream extends DelegatedEventTarget {
      */
     public deviceProcessing = true;
 
+    /**
+     * Creates an audio stream to be used to send audio data to the websocket connection
+     * @param sourceNode MediaStreamAudioSourceNode
+     */
     constructor (sourceNode?: MediaStreamAudioSourceNode) {
 
         super();
@@ -71,6 +105,9 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
+    /**
+     * @ignore
+     */
     private async mediaStreamResolution (mediaStream: MediaStream) {
 
         this.mediaStream = mediaStream;
@@ -78,6 +115,9 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
+    /**
+     * @ignore
+     */
     private async createNewContext (mediaStream: MediaStream) {
 
         const {sampleRate} = mediaStream.getAudioTracks()[0].getSettings();

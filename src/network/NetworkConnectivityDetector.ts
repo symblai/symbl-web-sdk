@@ -4,16 +4,35 @@ import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
 export class NetworkConnectivityDetector extends DelegatedEventTarget {
 
+    /**
+     * @ignore
+     */
     private sdk: sdk;
 
+    /**
+     * @ignore
+     */
     private maxRetries: number;
 
+    /**
+     * @ignore
+     */
     private checkInterval: number;
 
+    /**
+     * @ignore
+     */
     private connectivityCheckIntervalRef: number;
 
+    /**
+     * @ignore
+     */
     private logger: Logger = new Logger();
 
+    /**
+     * Creates instance of JS SDK for network connectivity testing
+     * @param sdk sdk
+     */
     constructor (sdk: sdk) { // Instance of JS-SDK
 
         super();

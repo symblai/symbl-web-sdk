@@ -4,8 +4,14 @@ import {Recorder} from "symbl-opus-encdec";
 
 export class OpusAudioStream extends AudioStream {
 
+    /**
+     * @ignore
+     */
     private opusEncoder: Recorder;
 
+    /**
+     * @ignore
+     */
     private config: OpusConfig = {
         "encoderComplexity": 6,
         "encoderFrameSize": 20,
