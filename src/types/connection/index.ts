@@ -35,6 +35,11 @@ enum ConnectionProcessingState {
     STOPPING
 }
 
+interface SymblTrackersConfig {
+    name: string;
+    vocabulary: string[];
+}
+
 interface StreamingAPIConnectionConfig {
     /**
      * Connection ID. Will be a random UUID if not provided.
@@ -97,6 +102,8 @@ interface StreamingAPIConnectionConfig {
      * information associated with it.
      */
     noConnectionTimeout?: number;
+
+    trackers?: SymblTrackersConfig[];
 }
 
 interface SubscribeAPIConnectionConfig {

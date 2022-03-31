@@ -20,14 +20,12 @@ export class OpusAudioStream extends AudioStream {
 
         super(sourceNode);
 
+        if (config) {
+            this.config = config;
+        }
+
         // Validate `config` and throw appropriate error if the validation fails
-        this.mediaStreamPromise.then(() => {
-            if (config) {
-                this.config = config;
-            }
-            this.config.sourceNode = <MediaStreamAudioSourceNode>this.sourceNode;
-            this.opusEncoder = new Recorder(this.config);
-        })
+        
         this.processAudio = this.processAudio.bind(this);
         this.attachAudioProcessor = this.attachAudioProcessor.bind(this);
         this.attachAudioSourceElement = this.attachAudioSourceElement.bind(this);
@@ -43,20 +41,23 @@ export class OpusAudioStream extends AudioStream {
     }
 
     async attachAudioProcessor (reInitialise?: boolean): Promise<void> {
+        if (reInitialise && this.opusEncoder) {
 
-        if (reInitialise) {
+            this.resetOpusEncoder();
 
-            this.config.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+        }
+
+        if (!this.opusEncoder) {
+
+            this.mediaStream = await this.mediaStreamPromise;
+            this.config.sourceNode = <MediaStreamAudioSourceNode>this.sourceNode;
+            console.log("===== sourceNode ======", this.config.sourceNode);
             this.opusEncoder = new Recorder(this.config);
 
         }
 
-        if (this.opusEncoder) {
-
-            await this.opusEncoder.start();
-            this.opusEncoder.ondataavailable = this.processAudio;
-
-        }
+        await this.opusEncoder.start();
+        this.opusEncoder.ondataavailable = this.processAudio;
 
     }
 
@@ -69,13 +70,13 @@ export class OpusAudioStream extends AudioStream {
 
     async detachAudioSourceElement (): Promise<void> {
 
-        super.detachAudioSourceElement();
+        await super.detachAudioSourceElement();
 
     }
 
-    updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): void {
+    async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
 
-        super.updateAudioSourceElement(audioSourceDomElement);
+        await super.updateAudioSourceElement(audioSourceDomElement);
 
     }
 
@@ -91,13 +92,14 @@ export class OpusAudioStream extends AudioStream {
 
     async detachAudioDevice (): Promise<void> {
 
-        super.detachAudioDevice();
+        await super.detachAudioDevice();
+        this.resetOpusEncoder();
 
     }
 
-    updateAudioDevice (deviceId: string, mediaStream?: MediaStream): void {
+    async updateAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
 
-        super.updateAudioDevice(
+        await super.updateAudioDevice(
             deviceId,
             mediaStream
         );
@@ -108,6 +110,15 @@ export class OpusAudioStream extends AudioStream {
 
         super.attachAudioCallback(audioCallback);
 
+    }
+
+    private async resetOpusEncoder() {
+        if (this.opusEncoder) {
+            await this.opusEncoder.pause();
+            this.opusEncoder.ondataavailable = () => {};
+            await this.opusEncoder.close();
+            this.opusEncoder = null;
+        }
     }
 
 }

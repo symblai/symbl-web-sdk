@@ -223,16 +223,20 @@ export default class Symbl {
     }
 
     async createConnection (sessionId: string, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
-        const options: StreamingAPIConnectionConfig = {};
         if (sessionId) {
-            options.id = sessionId;
+
+            if (typeof sessionId !== "string") {
+
+                throw new InvalidValueError("Session ID must be a string.")
+
+            }
 
             // Validate `id` as a `uuid` or its `uniqueness` and if it doesn't conform, reject the request with `SessionIDNotUniqueError`
             const regex = new RegExp(
                 SYMBL_DEFAULTS.ID_REGEX,
                 "u"
             );
-            const validSessionId = regex.test(options.id);
+            const validSessionId = regex.test(sessionId);
 
             if (!validSessionId) {
 

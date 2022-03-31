@@ -31,13 +31,21 @@ export class LINEAR16AudioStream extends AudioStream {
     
     attachAudioProcessor() {
         if (this.processorNode) {
+
+            this.sourceNode.disconnect();
+            this.gainNode?.disconnect();
+            this.processorNode.disconnect();
             this.sourceNode.connect(this.gainNode);
-            this.gainNode.connect(this.processorNode);
+
+            // Element processing doesn't use gain.
+            this.gainNode?.connect(this.processorNode);
+
             this.processorNode.connect(this.audioContext.destination);
             this.processorNode.onaudioprocess = this.processAudio;
 
         } else {
-            console.log('audio processor not attached');
+
+            this.logger.warn('Audio processor not attached.');
 
         }
 
@@ -52,13 +60,13 @@ export class LINEAR16AudioStream extends AudioStream {
 
     async detachAudioSourceElement (): Promise<void> {
 
-        super.detachAudioSourceElement();
+        await super.detachAudioSourceElement();
 
     }
 
-    updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): void {
+    async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
 
-        super.updateAudioSourceElement(audioSourceDomElement);
+        await super.updateAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();
 
     }
@@ -80,13 +88,13 @@ export class LINEAR16AudioStream extends AudioStream {
 
     async detachAudioDevice (): Promise<void> {
 
-        super.detachAudioDevice();
+        await super.detachAudioDevice();
 
     }
 
-    updateAudioDevice (deviceId: string, mediaStream?: MediaStream): void {
+    async updateAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
 
-        super.updateAudioDevice(
+        await super.updateAudioDevice(
             deviceId,
             mediaStream
         );

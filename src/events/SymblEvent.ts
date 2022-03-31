@@ -20,6 +20,24 @@ export class DelegatedEventTarget implements EventTarget {
     return this.delegate.removeEventListener.apply(this.delegate, args);
   }
 
+    on (eventName: EventTypes, callback: (event: SymblEvent) => void): void {
+
+        this.addEventListener(
+            eventName,
+            (data) => callback(data.detail ? data.detail : data)
+        );
+
+    }
+
+    off (eventName: EventTypes, callback: (event: SymblEvent) => void): void {
+
+        this.removeEventListener(
+            eventName,
+            (data) => callback(data.detail ? data.detail : data)
+        );
+
+    }
+
 }
 
 export class SymblEvent {

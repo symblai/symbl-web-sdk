@@ -6,7 +6,7 @@
     <title>Symbl Web SDK example</title>
     <script src="symbl.js"></script>
     <script>
-    let symblSdk, connection, id;
+    let symblSdk, connection, id, connectionConfig;
     function uuidv4() {
       return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -26,18 +26,16 @@
             }
 
         }
-        const context = new AudioContext();
         symblSdk = new symbl.Symbl(config);
         id = uuidv4();
         symblSdk.init(config)
         .then(async () => {
-            const connectionConfig = {
-              id,
+            connectionConfig = {
               // sourceNode: source,
               // reconnectOnError: true,
               disconnectOnStopRequest: false,
               disconnectOnStopRequestTimeout: 200,
-              noConnectionTimeout: 20,
+              noConnectionTimeout: 200,
               insightTypes: ['action_item', 'question'],
               config: {
                 meetingTitle: 'My Test Meeting',
@@ -46,7 +44,6 @@
                 languageCode: 'en-US',
                 encoding: 'OPUS',
                 // encoding: 'linear16',
-                sampleRateHertz: 48000,
               },
               handlers: {},
               trackers: [
@@ -65,9 +62,8 @@
                 name: 'Chris Stokes'
               }
             };
-            await context.close();
-            connection = await symblSdk.createConnection(connectionConfig);
-            await connection.startProcessing();
+            connection = await symblSdk.createConnection(id);
+            await connection.startProcessing(connectionConfig);
 
             const subscription = await symblSdk.subscribeToConnection(id);
 
@@ -151,12 +147,13 @@
                 console.log('question', data);
             });
             
-            connection.on('audio_source_connected', (data) => {
-                console.log('audio_source_connected', data);
-            });
+            // connection.on('audio_source_connected', (data) => {
+            //     console.log('audio_source_connected', data);
+            // });
             
             connection.on('audio_source_disconnected', (data) => {
                 console.log('audio_source_disconnected', data);
+                alert('testing');
             });
             
             connection.on('offline', (data) => {
@@ -169,6 +166,7 @@
             
             connection.on('speech_recognition', (data) => {
                 console.log('speech_recognition', data);
+                console.log(data.punctuated.transcript);
             });
         })
         .catch(err => console.error('Error in initialization.', err));
@@ -179,7 +177,7 @@
     }
 
     const startProcessing = () => {
-        connection.startProcessing();
+        connection.startProcessing(connectionConfig);
     }
 </script>
 </head>
@@ -202,7 +200,7 @@
 
     <p>Start Processing</p>
     <div>
-        <button onclick="javascript: startProcessing()">Start Processing</button>
+        <button onclick="javascript: startProcessing(connectionConfig)">Start Processing</button>
     </div>
 </div>
 

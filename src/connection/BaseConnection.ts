@@ -38,15 +38,6 @@ export class BaseConnection extends DelegatedEventTarget {
 
     }
 
-    on (eventName: EventTypes, callback: (event: SymblEvent) => void): void {
-
-        this.addEventListener(
-            eventName,
-            (data) => callback(data.detail)
-        );
-
-    }
-
     async emitEvents (data: any /* SymblData*/): Promise<void> {
 
         if (data.type === "error") {

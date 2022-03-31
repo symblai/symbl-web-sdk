@@ -92,6 +92,9 @@ export class StreamingAPIConnection extends BaseConnection {
 
         this.onDataReceived = this.onDataReceived.bind(this);
         this.sendAudio = this.sendAudio.bind(this);
+        this.attachAudioStream = this.attachAudioStream.bind(this);
+        this.onAudioSourceChanged = this.onAudioSourceChanged.bind(this);
+        this.on = this.on.bind(this);
 
     }
 
@@ -235,7 +238,10 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 // Else, set the `connectionState` to CONNECTING and establish a new connection with the Streaming API via JS SDK
                 this.connectionState = ConnectionState.CONNECTING;
-                this.stream = await this.sdk.createStream(this.config);
+                const copiedHandlers = this.config.handlers;
+                const copiedConfig = JSON.parse(JSON.stringify(this.config));
+                copiedConfig.handlers = copiedHandlers;
+                this.stream = await this.sdk.createStream(copiedConfig);
                 // Once the connection is established, set the `connectionState` to CONNECTED
                 this.connectionState = ConnectionState.CONNECTED;
                 // Set uthe value of `_isConnected` to `true` and emit the appropriate event
@@ -323,15 +329,6 @@ export class StreamingAPIConnection extends BaseConnection {
 
         }
 
-        // If `options` is passed in, validate it and in failure to do so, throw the appropriate error emited by validateConfig.
-        if (options) {
-            StreamingAPIConnection.validateConfig(options);
-        }
-        const encoding = options.config && options.config.encoding ? options.config.encoding : SymblAudioStreamType.LINEAR16;
-        const audioStream = await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
-        this.attachAudioStream(audioStream);
-        await this.audioStream.attachAudioDevice();
-
         // If `processingState` is PROCESSING or ATTEMPTING, then log a warning stating an attempt to `startProcessing` on a connection that is already processing or has already initiated the call.
         if (this.processingState === ConnectionProcessingState.PROCESSING ||
             this.processingState === ConnectionProcessingState.ATTEMPTING) {
@@ -342,15 +339,51 @@ export class StreamingAPIConnection extends BaseConnection {
 
         } else {
 
-            this.processingState = ConnectionProcessingState.ATTEMPTING;
-            if (options.config && !options.config.sampleRateHertz) {
 
-                options.config.sampleRateHertz = this.audioStream.getSampleRate();
+
+            // If `options` is passed in, validate it and in failure to do so, throw the appropriate error emited by validateConfig.
+            if (options) {
+
+                StreamingAPIConnection.validateConfig(options);
+                this.config = Object.assign(this.config, options);
 
             }
-            const copiedOptions = {...options};
+
+            let encoding;
+            if (this.config.config && this.config.config.encoding) {
+
+                this.config.config.encoding = this.config.config.encoding.toUpperCase();
+                encoding = this.config.config.encoding;
+
+            } else {
+
+                encoding = SymblAudioStreamType.LINEAR16;
+
+            }
+
+            const audioStream = this.audioStream ? this.audioStream : await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
+            this.attachAudioStream(audioStream);
+
+            if (this.audioStream.deviceProcessing) {
+
+                await this.audioStream.attachAudioDevice();
+
+            }
+
+            this.processingState = ConnectionProcessingState.ATTEMPTING;
+
+            if (this.config.config && !this.config.config.sampleRateHertz) {
+
+                this.config.config.sampleRateHertz = this.audioStream.getSampleRate();
+
+            }
+
+            
+            const copiedHandlers = this.config.handlers;
+            const copiedConfig = JSON.parse(JSON.stringify(this.config));
+            copiedConfig.handlers = copiedHandlers;
             await this.audioStream.resumeAudioContext();
-            await this.stream.start(copiedOptions);
+            await this.stream.start(copiedConfig);
             // Set the value of `processingState` to PROCESSING if the call is successful
             this.processingState = ConnectionProcessingState.PROCESSING;
             // Set the value of `_isProcessing` to `true` and emit the appropriate event
@@ -386,10 +419,30 @@ export class StreamingAPIConnection extends BaseConnection {
             // Else, set the value of `processingState` to STOPPING and invoke the `stop` function on the `stream`.
 
         } else {
+
             this.processingState = ConnectionProcessingState.STOPPING;
+
             if (this.audioStream) {
-                await this.audioStream.suspendAudioContext();
+
+                // if (this.config.disconnectOnStopRequest === false) {
+
+                //     await this.audioStream.suspendAudioContext();
+
+                // }
+
+                if (this.audioStream.deviceProcessing) {
+
+                    await this.audioStream.detachAudioDevice();
+
+                } else {
+
+                    await this.audioStream.detachAudioSourceElement();
+
+                }
+
+
             }
+
             await this.stream.stop();
 
             // Set the value of `processingState` to NOT_PROCESSING if the call is successful
@@ -399,13 +452,16 @@ export class StreamingAPIConnection extends BaseConnection {
             this._isProcessing = false;
             this.dispatchEvent(new SymblEvent("processing_stopped"));
 
+            // If `restartProcessing` is true call `startProcessing`
+            if (this.restartProcessing) {
+
+                await this.startProcessing(this.config);
+                this.restartProcessing = false;
+
+            }
+
         }
 
-        // If `restartProcessing` is true call `startProcessing`
-        if (this.restartProcessing) {
-            await this.startProcessing(this.config);
-            this.restartProcessing = false;
-        }
 
         // Return from function
         return this;
@@ -416,19 +472,21 @@ export class StreamingAPIConnection extends BaseConnection {
      * Stops and restarts processing on a change of audio source being pushed to the websocket
      * @param audioSourceChangedEvent Event
      */
-    onAudioSourceChanged (audioSourceChangedEvent: Event): void {
+    async onAudioSourceChanged (audioSourceChangedEvent: Event): Promise<void> {
 
-        if (this._isConnected) {
+        if (this.isConnected()) {
 
-            if (this._isProcessing && audioSourceChangedEvent.type === "audio_source_disconnected") {
+            if (this.isProcessing() && audioSourceChangedEvent.type === "audio_source_disconnected") {
 
                 this.restartProcessing = true;
-                this.stopProcessing();
+                await this.audioStream.detachAudioDevice();
+                this.audioStream = null;
+                await this.stopProcessing();
 
-            } else if (!this._isProcessing && audioSourceChangedEvent.type === "audio_source_connected" && this.restartProcessing) {
+            } else if (!this.isProcessing() && audioSourceChangedEvent.type === "audio_source_connected" && this.restartProcessing) {
 
                 this.restartProcessing = false;
-                this.startProcessing(this.config);
+                await this.startProcessing(this.config);
 
             }
 
@@ -446,7 +504,7 @@ export class StreamingAPIConnection extends BaseConnection {
      */
     isProcessing (): boolean {
 
-        return this._isProcessing;
+        return this.processingState === ConnectionProcessingState.PROCESSING;
 
     }
 
@@ -456,7 +514,7 @@ export class StreamingAPIConnection extends BaseConnection {
      */
     isConnected (): boolean {
 
-        return this._isConnected;
+        return this.connectionState === ConnectionState.CONNECTED;
 
     }
 
@@ -516,15 +574,13 @@ export class StreamingAPIConnection extends BaseConnection {
     private attachAudioStream (audioStream: AudioStream): void {
 
         this.audioStream = audioStream;
+        // this.audioStream.on("audio_source_connected", this.onAudioSourceChanged);
+        try {
+            this.audioStream.off("audio_source_disconnected", this.onAudioSourceChanged);
+        } catch(e) {
 
-        this.on(
-            "audio_source_connected",
-            this.onAudioSourceChanged
-        );
-        this.on(
-            "audio_source_disconnected",
-            this.onAudioSourceChanged
-        );
+        }
+        this.audioStream.on("audio_source_disconnected", this.onAudioSourceChanged);
 
         this.registerAudioStreamCallback();
 
