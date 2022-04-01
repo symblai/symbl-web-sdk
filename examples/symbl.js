@@ -420,8 +420,6 @@ var AudioStream = function (_super) {
                 _this.audioContext = sourceNode.context;
             }
             _this.mediaStream = _this.sourceNode.mediaStream;
-        } else {
-            _this.mediaStreamPromise = AudioStream.getMediaStream();
         }
         _this.attachAudioSourceElement = _this.attachAudioSourceElement.bind(_this);
         _this.detachAudioSourceElement = _this.detachAudioSourceElement.bind(_this);
@@ -471,7 +469,7 @@ var AudioStream = function (_super) {
             deviceId = "default";
         }
         return __awaiter(this, void 0, void 0, function () {
-            var stream, devices, inputDevices, foundDevice_1;
+            var stream, devices, inputDevices, foundDevice;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -491,28 +489,23 @@ var AudioStream = function (_super) {
                             throw new error_1.NoAudioInputDeviceDetectedError("No input devices found.");
                         }
                         if (!deviceId) return [3, 4];
-                        foundDevice_1 = inputDevices.find(function (dev) {
+                        foundDevice = inputDevices.find(function (dev) {
                             return dev.deviceId === deviceId;
                         });
-                        if (!foundDevice_1) {
+                        if (!foundDevice) {
                             throw new error_1.InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
-                        } else {
-                            if (deviceId === "default") {
-                                foundDevice_1 = inputDevices.find(function (dev) {
-                                    return dev.groupId === foundDevice_1.groupId && dev.deviceId !== deviceId;
-                                });
-                            }
                         }
                         return [4, navigator.mediaDevices.getUserMedia({
                             "audio": {
-                                deviceId: {
-                                    exact: foundDevice_1.deviceId
+                                groupId: {
+                                    exact: foundDevice.groupId
                                 }
                             },
                             "video": false
                         })];
                     case 3:
                         stream = _a.sent();
+                        console.log("===== device =====", stream.getAudioTracks()[0].label);
                         return [3, 5];
                     case 4:
                         throw new error_1.InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
@@ -662,47 +655,44 @@ var AudioStream = function (_super) {
             deviceId = "default";
         }
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _b, e_2;
+            var _a, e_2;
             var _this = this;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         this.deviceId = deviceId;
-                        _c.label = 1;
+                        _b.label = 1;
                     case 1:
-                        _c.trys.push([1, 11,, 12]);
+                        _b.trys.push([1, 10,, 11]);
                         if (!this.audioContext) return [3, 3];
                         return [4, this.detachAudioDevice()];
                     case 2:
-                        _c.sent();
-                        _c.label = 3;
+                        _b.sent();
+                        _b.label = 3;
                     case 3:
                         if (!mediaStream) return [3, 4];
                         this.mediaStream = mediaStream;
-                        return [3, 8];
+                        return [3, 6];
                     case 4:
-                        if (!(deviceId !== "default")) return [3, 6];
                         _a = this;
                         return [4, AudioStream.getMediaStream(deviceId)];
                     case 5:
-                        _a.mediaStream = _c.sent();
-                        return [3, 8];
+                        _a.mediaStream = _b.sent();
+                        _b.label = 6;
                     case 6:
-                        _b = this;
-                        return [4, this.mediaStreamPromise];
-                    case 7:
-                        _b.mediaStream = _c.sent();
-                        _c.label = 8;
-                    case 8:
+                        console.log('===== this.mediaStream2 ======', this.mediaStream);
+                        if (!(!this.audioContext || this.audioContext && this.audioContext.state === "closed")) return [3, 8];
                         return [4, this.createNewContext(this.mediaStream)];
-                    case 9:
-                        _c.sent();
+                    case 7:
+                        _b.sent();
+                        _b.label = 8;
+                    case 8:
                         this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
                         this.processorNode = this.audioContext.createScriptProcessor(1024, 1, 1);
                         this.gainNode = this.audioContext.createGain();
                         return [4, this.resumeAudioContext()];
-                    case 10:
-                        _c.sent();
+                    case 9:
+                        _b.sent();
                         this.deviceProcessing = true;
                         navigator.mediaDevices.ondevicechange = function (event) {
                             return __awaiter(_this, void 0, void 0, function () {
@@ -712,6 +702,7 @@ var AudioStream = function (_super) {
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {
                                         case 0:
+                                            console.log('===== this.mediaStream ======', this.mediaStream);
                                             if (!this.mediaStream) return [3, 2];
                                             return [4, navigator.mediaDevices.enumerateDevices()];
                                         case 1:
@@ -736,11 +727,11 @@ var AudioStream = function (_super) {
                                 });
                             });
                         };
-                        return [3, 12];
-                    case 11:
-                        e_2 = _c.sent();
+                        return [3, 11];
+                    case 10:
+                        e_2 = _b.sent();
                         throw e_2;
-                    case 12:
+                    case 11:
                         return [2];
                 }
             });
@@ -749,33 +740,19 @@ var AudioStream = function (_super) {
     AudioStream.prototype.detachAudioDevice = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!(this.audioContext && this.audioContext.state !== "closed")) return [3, 2];
-                        return [4, this.audioContext.close()];
-                    case 1:
-                        _a.sent();
-                        if (this.sourceNode) {
-                            this.sourceNode.disconnect();
-                            this.sourceNode = null;
-                        }
-                        if (this.gainNode) {
-                            this.gainNode.disconnect();
-                            this.gainNode = null;
-                        }
-                        if (this.processorNode) {
-                            this.processorNode.disconnect();
-                            this.processorNode = null;
-                        }
-                        this.mediaStream = null;
-                        this.dispatchEvent(new events_1.SymblEvent("audio_source_disconnected"));
-                        return [3, 3];
-                    case 2:
-                        this.logger.warn("Your audio context is already closed.");
-                        _a.label = 3;
-                    case 3:
-                        return [2];
+                if (this.sourceNode) {
+                    this.sourceNode.disconnect();
+                    this.sourceNode = null;
                 }
+                if (this.gainNode) {
+                    this.gainNode.disconnect();
+                    this.gainNode = null;
+                }
+                if (this.processorNode) {
+                    this.processorNode.disconnect();
+                    this.processorNode = null;
+                }
+                return [2];
             });
         });
     };
@@ -1750,34 +1727,40 @@ var StreamingAPIConnection = function (_super) {
                         }
                         if (!(this.processingState === types_1.ConnectionProcessingState.NOT_PROCESSING || this.processingState === types_1.ConnectionProcessingState.STOPPING)) return [3, 1];
                         this.logger.warn("An attempt to `stopProcessing` on a connection that is already not processing or has already initiated the call.");
-                        return [3, 8];
+                        return [3, 10];
                     case 1:
                         this.processingState = types_1.ConnectionProcessingState.STOPPING;
-                        if (!this.audioStream) return [3, 5];
-                        if (!this.audioStream.deviceProcessing) return [3, 3];
-                        return [4, this.audioStream.detachAudioDevice()];
+                        if (!this.audioStream) return [3, 7];
+                        if (!(this.config.disconnectOnStopRequest === false)) return [3, 3];
+                        return [4, this.audioStream.suspendAudioContext()];
                     case 2:
                         _a.sent();
-                        return [3, 5];
+                        return [3, 7];
                     case 3:
-                        return [4, this.audioStream.detachAudioSourceElement()];
+                        if (!this.audioStream.deviceProcessing) return [3, 5];
+                        return [4, this.audioStream.detachAudioDevice()];
                     case 4:
                         _a.sent();
-                        _a.label = 5;
+                        return [3, 7];
                     case 5:
-                        return [4, this.stream.stop()];
+                        return [4, this.audioStream.detachAudioSourceElement()];
                     case 6:
+                        _a.sent();
+                        _a.label = 7;
+                    case 7:
+                        return [4, this.stream.stop()];
+                    case 8:
                         _a.sent();
                         this.processingState = types_1.ConnectionProcessingState.NOT_PROCESSING;
                         this._isProcessing = false;
                         this.dispatchEvent(new events_1.SymblEvent("processing_stopped"));
-                        if (!this.restartProcessing) return [3, 8];
+                        if (!this.restartProcessing) return [3, 10];
                         return [4, this.startProcessing(this.config)];
-                    case 7:
+                    case 9:
                         _a.sent();
                         this.restartProcessing = false;
-                        _a.label = 8;
-                    case 8:
+                        _a.label = 10;
+                    case 10:
                         return [2, this];
                 }
             });
@@ -1794,7 +1777,6 @@ var StreamingAPIConnection = function (_super) {
                         return [4, this.audioStream.detachAudioDevice()];
                     case 1:
                         _a.sent();
-                        this.audioStream = null;
                         return [4, this.stopProcessing()];
                     case 2:
                         _a.sent();
@@ -3042,29 +3024,21 @@ var OpusAudioStream = function (_super) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        if (!(reInitialise && this.opusEncoder)) return [3, 3];
-                        return [4, this.opusEncoder.pause()];
-                    case 1:
-                        _b.sent();
-                        this.opusEncoder.ondataavailable = function () {};
-                        return [4, this.opusEncoder.close()];
-                    case 2:
-                        _b.sent();
-                        this.opusEncoder = null;
-                        _b.label = 3;
-                    case 3:
-                        if (!!this.opusEncoder) return [3, 5];
+                        if (reInitialise && this.opusEncoder) {
+                            this.resetOpusEncoder();
+                        }
+                        if (!!this.opusEncoder) return [3, 2];
                         _a = this;
-                        return [4, this.mediaStreamPromise];
-                    case 4:
+                        return [4, AudioStream_1.AudioStream.getMediaStream()];
+                    case 1:
                         _a.mediaStream = _b.sent();
                         this.config.sourceNode = this.sourceNode;
                         console.log("===== sourceNode ======", this.config.sourceNode);
                         this.opusEncoder = new symbl_opus_encdec_1.Recorder(this.config);
-                        _b.label = 5;
-                    case 5:
+                        _b.label = 2;
+                    case 2:
                         return [4, this.opusEncoder.start()];
-                    case 6:
+                    case 3:
                         _b.sent();
                         this.opusEncoder.ondataavailable = this.processAudio;
                         return [2];
@@ -3136,14 +3110,7 @@ var OpusAudioStream = function (_super) {
                         return [4, _super.prototype.detachAudioDevice.call(this)];
                     case 1:
                         _a.sent();
-                        return [4, this.opusEncoder.pause()];
-                    case 2:
-                        _a.sent();
-                        this.opusEncoder.ondataavailable = function () {};
-                        return [4, this.opusEncoder.close()];
-                    case 3:
-                        _a.sent();
-                        this.opusEncoder = null;
+                        this.resetOpusEncoder();
                         return [2];
                 }
             });
@@ -3164,6 +3131,27 @@ var OpusAudioStream = function (_super) {
     };
     OpusAudioStream.prototype.attachAudioCallback = function (audioCallback) {
         _super.prototype.attachAudioCallback.call(this, audioCallback);
+    };
+    OpusAudioStream.prototype.resetOpusEncoder = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.opusEncoder) return [3, 3];
+                        return [4, this.opusEncoder.pause()];
+                    case 1:
+                        _a.sent();
+                        this.opusEncoder.ondataavailable = function () {};
+                        return [4, this.opusEncoder.close()];
+                    case 2:
+                        _a.sent();
+                        this.opusEncoder = null;
+                        _a.label = 3;
+                    case 3:
+                        return [2];
+                }
+            });
+        });
     };
     return OpusAudioStream;
 }(AudioStream_1.AudioStream);

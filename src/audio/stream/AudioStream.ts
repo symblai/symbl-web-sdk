@@ -82,9 +82,7 @@ export class AudioStream extends DelegatedEventTarget {
             this.mediaStream = this.sourceNode.mediaStream;
 
         } else {
-
             this.mediaStreamPromise = AudioStream.getMediaStream();
-
         }
 
         this.attachAudioSourceElement = this.attachAudioSourceElement.bind(this);
@@ -152,19 +150,17 @@ export class AudioStream extends DelegatedEventTarget {
 
                 throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
 
-            } else if (deviceId === "default") {
-
-                foundDevice = inputDevices.find((dev) => dev.groupId === foundDevice.groupId && dev.deviceId !== deviceId);
-
             }
             stream = await navigator.mediaDevices.getUserMedia({
                 "audio": {
-                    "deviceId": {
-                        "exact": foundDevice.deviceId
+                    groupId: {
+                        exact: foundDevice.groupId,
                     }
                 },
                 "video": false
             });
+
+            console.log("===== device =====", stream.getAudioTracks()[0].label);
 
         } else {
 
@@ -316,7 +312,7 @@ export class AudioStream extends DelegatedEventTarget {
         if (this.audioContext && this.audioContext.state !== "closed") {
 
             /*
-             * Console.log(this.audioContext);
+             * console.log(this.audioContext);
              * console.log(this.sourceNode);
              * console.log(this.processorNode);
              */
@@ -375,46 +371,42 @@ export class AudioStream extends DelegatedEventTarget {
             this.mediaStream = mediaStream;
 
             // Else if a media stream is not already attached create a new one.
+            } else {
 
-        } else if (deviceId !== "default") {
+                this.mediaStream = await AudioStream.getMediaStream(deviceId);
 
-            this.mediaStream = await AudioStream.getMediaStream(deviceId);
+            }
 
-        } else {
+            console.log('===== this.mediaStream2 ======', this.mediaStream);
 
-            this.mediaStream = await this.mediaStreamPromise;
+            if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed" )) {
 
-        }
+            	await this.createNewContext(this.mediaStream);
 
-        await this.createNewContext(this.mediaStream);
+            }
 
-        // Create the sourceNode, processorNode and gainNode using the Audio Context.
-        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
-        this.processorNode = this.audioContext.createScriptProcessor(
-            1024,
-            1,
-            1
-        );
-        this.gainNode = this.audioContext.createGain();
-        await this.resumeAudioContext();
-        this.deviceProcessing = true;
 
-        navigator.mediaDevices.ondevicechange = async (event) => {
+            // Create the sourceNode, processorNode and gainNode using the Audio Context.
+            this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+            this.processorNode = this.audioContext.createScriptProcessor(
+                1024,
+                1,
+                1
+            );
+            this.gainNode = this.audioContext.createGain();
+            await this.resumeAudioContext();
+            this.deviceProcessing = true;
 
-            if (this.mediaStream) {
-
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const tracks = this.mediaStream?.getAudioTracks();
-                if (tracks?.length) {
-
-                    const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
-                    if (!foundDevice && !this.recentlyDisconnectedDevice) {
-
-                        this.recentlyDisconnectedDevice = true;
-                        this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
-                        window.setTimeout(
-                            () => {
-
+            navigator.mediaDevices.ondevicechange = async event => {
+                if (this.mediaStream) {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const tracks = this.mediaStream?.getAudioTracks();
+                    if (tracks?.length) {
+                        const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
+                        if (!foundDevice && !this.recentlyDisconnectedDevice) {
+                            this.recentlyDisconnectedDevice = true;
+                            this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+                            window.setTimeout(() => {
                                 this.recentlyDisconnectedDevice = false;
 
                             },
@@ -437,9 +429,9 @@ export class AudioStream extends DelegatedEventTarget {
      */
     async detachAudioDevice (): Promise<void> {
 
-        if (this.audioContext && this.audioContext.state !== "closed") {
+        // if (this.audioContext && this.audioContext.state !== "closed") {
 
-            await this.audioContext.close();
+        //     await this.audioContext.close();
 
             if (this.sourceNode) {
 
@@ -459,15 +451,15 @@ export class AudioStream extends DelegatedEventTarget {
                 this.processorNode = null;
 
             }
-            this.mediaStream = null;
+            // this.mediaStream = null;
 
-            this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+            // this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
 
-        } else {
+        // } else {
 
-            this.logger.warn("Your audio context is already closed.");
+        //     this.logger.warn("Your audio context is already closed.");
 
-        }
+        // }
 
     }
 

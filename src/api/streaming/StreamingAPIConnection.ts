@@ -236,7 +236,7 @@ export class StreamingAPIConnection extends BaseConnection {
         if (disconnectOnStopRequest === false && disconnectOnStopRequestTimeout) {
             if (typeof disconnectOnStopRequestTimeout !== 'number' ||
             (disconnectOnStopRequestTimeout < SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN || disconnectOnStopRequestTimeout > SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX)) {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 3600.`)
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX}.`)
             }
 
         }
@@ -244,7 +244,7 @@ export class StreamingAPIConnection extends BaseConnection {
         if (noConnectionTimeout) {
             if (typeof noConnectionTimeout !== 'number' ||
             (noConnectionTimeout < SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN || noConnectionTimeout > SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX)) {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'noConnectionTimeout' optional field should be a type number.`)
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX}.`)
             }
 
         }
@@ -456,22 +456,23 @@ export class StreamingAPIConnection extends BaseConnection {
 
             if (this.audioStream) {
 
-                // if (this.config.disconnectOnStopRequest === false) {
+                if (this.config.disconnectOnStopRequest === false) {
 
-                //     await this.audioStream.suspendAudioContext();
-
-                // }
-
-                if (this.audioStream.deviceProcessing) {
-
-                    await this.audioStream.detachAudioDevice();
+                    await this.audioStream.suspendAudioContext();
 
                 } else {
 
-                    await this.audioStream.detachAudioSourceElement();
+                    if (this.audioStream.deviceProcessing) {
+
+                        await this.audioStream.detachAudioDevice();
+
+                    } else {
+
+                        await this.audioStream.detachAudioSourceElement();
+
+                    }
 
                 }
-
 
             }
 
@@ -512,7 +513,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 this.restartProcessing = true;
                 await this.audioStream.detachAudioDevice();
-                this.audioStream = null;
+                // this.audioStream = null;
                 await this.stopProcessing();
 
             } else if (!this.isProcessing() && audioSourceChangedEvent.type === "audio_source_connected" && this.restartProcessing) {
