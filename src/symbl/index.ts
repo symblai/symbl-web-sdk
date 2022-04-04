@@ -44,6 +44,11 @@ export default class Symbl {
     private logger: Logger;
 
     /**
+     * @ignore
+     */
+    private token: string;
+
+    /**
      * Using SymblConfig an instance of the Symbl SDK is instantiated
      * @param symblConfig SymblConfig
      */
@@ -175,15 +180,7 @@ export default class Symbl {
             symblConfig = this.symblConfig;
 
         }
-        try {
-
-            this._validateSymblConfig(symblConfig);
-
-        } catch (e) {
-
-            throw e;
-
-        }
+        this._validateSymblConfig(symblConfig);
 
         try {
 
@@ -207,18 +204,20 @@ export default class Symbl {
             }
 
             initConfig.basePath = symblConfig.basePath || "https://api.symbl.ai";
-            console.log(
-                "this.sdk",
-                symblConfig
-            );
+
+            /*
+             * Console.log(
+             *     "this.sdk",
+             *     symblConfig
+             * );
+             */
             await this.sdk.init(symblConfig);
+
+            // Once initialization is complete set the access token to be reused elsewhere
+            this.token = this.sdk.oauth2.apiClient.authentications.jwt.apiKey;
 
         } catch (err) {
 
-            console.log(
-                "error",
-                err
-            );
             throw new HttpError(err.message);
 
         }
