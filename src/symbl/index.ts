@@ -46,7 +46,7 @@ export default class Symbl {
     /**
      * @ignore
      */
-    private token: string;
+    protected token: string;
 
     /**
      * Using SymblConfig an instance of the Symbl SDK is instantiated
