@@ -46,7 +46,7 @@ export default class Symbl {
     /**
      * @ignore
      */
-    protected token: string;
+    protected accessToken: string;
 
     /**
      * Using SymblConfig an instance of the Symbl SDK is instantiated
@@ -56,7 +56,26 @@ export default class Symbl {
 
         if (symblConfig) {
 
-            this._validateSymblConfig(symblConfig);
+            if (this._validateSymblConfig(symblConfig)) {
+
+                this.sdk.oauth2.init(
+                    symblConfig.appId,
+                    symblConfig.appSecret,
+                    symblConfig.accessToken
+                ).then(
+                    (response) => {
+
+                        this.accessToken = response.accessToken;
+
+                    },
+                    (error) => {
+
+                        throw new InvalidCredentialsError(error);
+
+                    }
+                );
+
+            }
 
         }
 
@@ -212,9 +231,6 @@ export default class Symbl {
              * );
              */
             await this.sdk.init(symblConfig);
-
-            // Once initialization is complete set the access token to be reused elsewhere
-            this.token = this.sdk.oauth2.apiClient.authentications.jwt.apiKey;
 
         } catch (err) {
 
