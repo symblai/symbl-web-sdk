@@ -64,10 +64,11 @@ export class LINEAR16AudioStream extends AudioStream {
      * Attaches <audio> DOM element to the audio processor
      * @param audioSourceDomElement HTMLAudioElement
      */
-    async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
+    async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<any> {
 
-        await super.attachAudioSourceElement(audioSourceDomElement);
+        const element = await super.attachAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();
+        return element;
 
     }
 
@@ -84,7 +85,7 @@ export class LINEAR16AudioStream extends AudioStream {
      * Detaches current DOM element and attaches new <audio> DOM element to audio processor
      * @param audioSourceDomElement HTMLAudioElement
      */
-    async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
+    async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<any> {
 
         await super.updateAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();

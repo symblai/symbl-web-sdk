@@ -205,7 +205,7 @@ export class AudioStream extends DelegatedEventTarget {
      * Connects a DOM element with an audio source to the websocket stream
      * @param audioSourceDomElement any
      */
-    async attachAudioSourceElement (audioSourceDomElement: any): Promise<void> {
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
         // Const validateElement = element => {
 
@@ -259,14 +259,14 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        if (audioSourceDomElement.nodeName === "SOURCE") {
-            audioSourceDomElement = audioSourceDomElement.parentElement;
-        }
-
         if (!audioSourceDomElement.type) {
 
             throw new InvalidAudioElementError("Element must have a `type` attribute.");
 
+        }
+
+        if (audioSourceDomElement.nodeName === "SOURCE") {
+            audioSourceDomElement = audioSourceDomElement.parentElement;
         }
 
         if (this.audioContext) {
@@ -281,15 +281,19 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        if (audioSourceDomElement.substring(0, 5) !== "blob:") {
-            const src = await fetch(audioSourceDomElement.src);
+        const hasSourceElement = audioSourceDomElement.firstChild && audioSourceDomElement.firstChild.nodeName === "SOURCE";
+
+        const sourceElement = hasSourceElement ? audioSourceDomElement.firstChild : audioSourceDomElement;
+
+        if (sourceElement.src.substring(0, 5) !== "blob:") {
+            const src = await fetch(sourceElement.src);
             const data = await src.blob();
             const metadata = {
-                type: audioSourceDomElement.type
+                type: sourceElement.type
             }
             const file = new File([data], "sample_audio_file.wav", metadata);
-            audioSourceDomElement.src = URL.createObjectURL(file);
-            audioSourceDomElement.type = 'audio/wav';
+            sourceElement.src = URL.createObjectURL(file);
+            sourceElement.type = 'audio/wav';
         }
 
         const sourceNode = this.audioContext.createMediaElementSource(audioSourceDomElement);
@@ -305,10 +309,9 @@ export class AudioStream extends DelegatedEventTarget {
             "audio_source_connected",
             this.audioContext.sampleRate
         );
-        this.on('recognition_started', () => {
-            audioSourceDomElement.play();
-        })
         this.dispatchEvent(event);
+
+        return audioSourceDomElement;
 
         /*
          * Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.

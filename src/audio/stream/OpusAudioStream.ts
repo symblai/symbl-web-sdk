@@ -89,8 +89,9 @@ export class OpusAudioStream extends AudioStream {
      */
     async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
 
-        super.attachAudioSourceElement(audioSourceDomElement);
+        const element = super.attachAudioSourceElement(audioSourceDomElement);
         await this.attachAudioProcessor(true);
+        return element;
 
     }
 
