@@ -394,12 +394,19 @@ export class StreamingAPIConnection extends BaseConnection {
 
             }
 
+            console.log('==== audioStream is =====', this.audioStream);
             const audioStream = this.audioStream ? this.audioStream : await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
             this.attachAudioStream(audioStream);
 
             if (this.audioStream.deviceProcessing) {
 
-                await this.audioStream.attachAudioDevice();
+                let device, mediaStream;
+                if (this.audioStream.sourceNode) {
+                    mediaStream = (<MediaStreamAudioSourceNode>this.audioStream.sourceNode).mediaStream;
+                    device = mediaStream.getAudioTracks()[0].getSettings().deviceId;
+                }
+
+                await this.audioStream.attachAudioDevice(device, mediaStream);
 
             }
 

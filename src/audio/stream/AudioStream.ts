@@ -81,8 +81,6 @@ export class AudioStream extends DelegatedEventTarget {
             }
             this.mediaStream = this.sourceNode.mediaStream;
 
-        } else {
-            this.mediaStreamPromise = AudioStream.getMediaStream();
         }
 
         this.attachAudioSourceElement = this.attachAudioSourceElement.bind(this);
@@ -106,23 +104,17 @@ export class AudioStream extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    private async mediaStreamResolution (mediaStream: MediaStream) {
-
-        this.mediaStream = mediaStream;
-        await this.createNewContext(mediaStream);
-
-    }
-
-    /**
-     * @ignore
-     */
-    private async createNewContext (mediaStream: MediaStream) {
-
-        const {sampleRate} = mediaStream.getAudioTracks()[0].getSettings();
-        this.audioContext = new AudioContext({sampleRate});
-        this.sourceNode = this.audioContext.createMediaStreamSource(mediaStream);
+    private async createNewContext (mediaStream?: MediaStream) {
+        if (mediaStream) {
+            const {sampleRate} = mediaStream.getAudioTracks()[0].getSettings();
+            const audioContextOptions = {
+                sampleRate
+            }
+            this.audioContext = new AudioContext(audioContextOptions);
+        } else {
+            this.audioContext = new AudioContext();
+        }
         await this.suspendAudioContext();
-
     }
 
     /**
@@ -148,19 +140,16 @@ export class AudioStream extends DelegatedEventTarget {
             let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
             if (!foundDevice) {
 
-                throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
+                // Safari fix because Safari doens't always support "default" as deviceId.
+                foundDevice = inputDevices[0];
 
             }
             stream = await navigator.mediaDevices.getUserMedia({
                 "audio": {
-                    groupId: {
-                        exact: foundDevice.groupId,
-                    }
+                    groupId: foundDevice.groupId
                 },
                 "video": false
             });
-
-            console.log("===== device =====", stream.getAudioTracks()[0].label);
 
         } else {
 
@@ -270,11 +259,37 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        // ValidateElement(audioSourceDomElement);
-        if (this.audioContext && this.audioContext.state === "running") {
+        if (audioSourceDomElement.nodeName === "SOURCE") {
+            audioSourceDomElement = audioSourceDomElement.parentElement;
+        }
+
+        if (!audioSourceDomElement.type) {
+
+            throw new InvalidAudioElementError("Element must have a `type` attribute.");
+
+        }
+
+        if (this.audioContext) {
 
             await this.detachAudioSourceElement();
 
+        }
+
+        if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed" )) {
+
+            await this.createNewContext();
+
+        }
+
+        if (audioSourceDomElement.substring(0, 5) !== "blob:") {
+            const src = await fetch(audioSourceDomElement.src);
+            const data = await src.blob();
+            const metadata = {
+                type: audioSourceDomElement.type
+            }
+            const file = new File([data], "sample_audio_file.wav", metadata);
+            audioSourceDomElement.src = URL.createObjectURL(file);
+            audioSourceDomElement.type = 'audio/wav';
         }
 
         const sourceNode = this.audioContext.createMediaElementSource(audioSourceDomElement);
@@ -290,6 +305,9 @@ export class AudioStream extends DelegatedEventTarget {
             "audio_source_connected",
             this.audioContext.sampleRate
         );
+        this.on('recognition_started', () => {
+            audioSourceDomElement.play();
+        })
         this.dispatchEvent(event);
 
         /*
@@ -309,14 +327,14 @@ export class AudioStream extends DelegatedEventTarget {
      */
     async detachAudioSourceElement (): Promise<void> {
 
-        if (this.audioContext && this.audioContext.state !== "closed") {
+        // if (this.audioContext && this.audioContext.state !== "closed") {
 
             /*
              * console.log(this.audioContext);
              * console.log(this.sourceNode);
              * console.log(this.processorNode);
              */
-            await this.audioContext.close();
+            // await this.audioContext.close();
             if (this.sourceNode) {
 
                 this.sourceNode.disconnect();
@@ -329,13 +347,13 @@ export class AudioStream extends DelegatedEventTarget {
                 this.processorNode = null;
 
             }
-            this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+            // this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
 
-        } else {
+        // } else {
 
-            this.logger.warn("Your audio context is already closed.");
+        //     this.logger.warn("Your audio context is already closed.");
 
-        }
+        // }
 
     }
 
@@ -370,48 +388,45 @@ export class AudioStream extends DelegatedEventTarget {
 
             this.mediaStream = mediaStream;
 
-            // Else if a media stream is not already attached create a new one.
-            } else {
+        // Else if a media stream is not already attached create a new one.
+        } else {
 
-                this.mediaStream = await AudioStream.getMediaStream(deviceId);
+            this.mediaStream = await AudioStream.getMediaStream(deviceId);
 
-            }
+        }
 
-            console.log('===== this.mediaStream2 ======', this.mediaStream);
+        if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed" )) {
 
-            if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed" )) {
+        	await this.createNewContext(this.mediaStream);
 
-            	await this.createNewContext(this.mediaStream);
-
-            }
+        }
 
 
-            // Create the sourceNode, processorNode and gainNode using the Audio Context.
-            this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
-            this.processorNode = this.audioContext.createScriptProcessor(
-                1024,
-                1,
-                1
-            );
-            this.gainNode = this.audioContext.createGain();
-            await this.resumeAudioContext();
-            this.deviceProcessing = true;
+        // Create the sourceNode, processorNode and gainNode using the Audio Context.
+        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+        this.processorNode = this.audioContext.createScriptProcessor(
+            1024,
+            1,
+            1
+        );
+        this.gainNode = this.audioContext.createGain();
+        await this.resumeAudioContext();
+        this.deviceProcessing = true;
 
-            navigator.mediaDevices.ondevicechange = async event => {
-                if (this.mediaStream) {
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                    const tracks = this.mediaStream?.getAudioTracks();
-                    if (tracks?.length) {
-                        const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
-                        if (!foundDevice && !this.recentlyDisconnectedDevice) {
-                            this.recentlyDisconnectedDevice = true;
-                            this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
-                            window.setTimeout(() => {
-                                this.recentlyDisconnectedDevice = false;
+        navigator.mediaDevices.ondevicechange = async event => {
+            if (this.mediaStream) {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const tracks = this.mediaStream?.getAudioTracks();
+                if (tracks?.length) {
+                    const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
+                    if (!foundDevice && !this.recentlyDisconnectedDevice) {
+                        this.recentlyDisconnectedDevice = true;
+                        this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+                        window.setTimeout(() => {
 
-                            },
-                            1000
-                        );
+                            this.recentlyDisconnectedDevice = false;
+
+                        }, 1000);
 
                     }
 

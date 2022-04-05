@@ -71,7 +71,7 @@ export class OpusAudioStream extends AudioStream {
 
         if (!this.opusEncoder) {
 
-            this.mediaStream = await AudioStream.getMediaStream();
+            this.mediaStream = this.mediaStream ? this.mediaStream : await AudioStream.getMediaStream();
             this.config.sourceNode = <MediaStreamAudioSourceNode>this.sourceNode;
             console.log("===== sourceNode ======", this.config.sourceNode);
             this.opusEncoder = new Recorder(this.config);
