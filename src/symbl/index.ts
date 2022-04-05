@@ -53,18 +53,6 @@ export default class Symbl {
 
             this._validateSymblConfig(symblConfig);
 
-            if (symblConfig.appId && symblConfig.appSecret) {
-
-                this.sdk.oauth2.appId = symblConfig.appId;
-                this.sdk.oauth2.appSecret = symblConfig.appSecret;
-
-            }
-            if (symblConfig.accessToken) {
-
-                this.sdk.oauth2.activeToken = symblConfig.accessToken;
-
-            }
-
         }
 
         this.symblConfig = symblConfig;
@@ -79,15 +67,22 @@ export default class Symbl {
         registerNetworkConnectivityDetector(this.sdk);
 
         if (symblConfig) {
+
             const {appId, appSecret, accessToken, basePath} = symblConfig;
             if (appId && appSecret) {
+
                 this.sdk.oauth2.appId = appId;
                 this.sdk.oauth2.appSecret = appSecret;
+
             } else if (accessToken) {
+
                 this.sdk.oauth2.activeToken = accessToken;
+
             }
             if (basePath) {
+
                 this.sdk.oauth2.apiClient.basePath = basePath;
+
             }
 
         }
