@@ -53,14 +53,22 @@ export default class Symbl {
 
             this._validateSymblConfig(symblConfig);
 
+            if (symblConfig.appId && symblConfig.appSecret) {
+
+                this.sdk.oauth2.appId = symblConfig.appId;
+                this.sdk.oauth2.appSecret = symblConfig.appSecret;
+
+            }
+            if (symblConfig.accessToken) {
+
+                this.sdk.oauth2.activeToken = symblConfig.accessToken;
+
+            }
+
         }
 
         this.symblConfig = symblConfig;
         this.logger = new Logger();
-
-        this.sdk.oauth2.appId = this.symblConfig.appId;
-        this.sdk.oauth2.appSecret = this.symblConfig.appSecret;
-        this.sdk.oauth2.activeToken = this.symblConfig.accessToken;
 
         this._validateSymblConfig = this._validateSymblConfig.bind(this);
         this.init = this.init.bind(this);
