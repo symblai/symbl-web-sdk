@@ -273,6 +273,7 @@ export class StreamingAPIConnection extends BaseConnection {
                 const copiedHandlers = this.config.handlers;
                 const copiedConfig = JSON.parse(JSON.stringify(this.config));
                 copiedConfig.handlers = copiedHandlers;
+                await this.sdk.oauth2.init();
                 this.stream = await this.sdk.createStream(copiedConfig);
                 // Once the connection is established, set the `connectionState` to CONNECTED
                 this.connectionState = ConnectionState.CONNECTED;

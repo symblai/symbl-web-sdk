@@ -60,6 +60,7 @@ export class SubscribeAPIConnection extends BaseConnection {
             try {
 
                 this.connectionState = ConnectionState.CONNECTING;
+                await this.sdk.oauth2.init();
                 this.stream = await this.sdk.subscribeToStream(
                     this.sessionId,
                     {

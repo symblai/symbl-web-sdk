@@ -1,66 +1,65 @@
 <!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Symbl Web SDK example</title>
     <script src="symbl.js"></script>
     <script>
-    let symblSdk, connection, id, connectionConfig;
-    function uuidv4() {
-      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      );
-    }
+        let symblSdk, connection, id, connectionConfig;
 
-    const authenticate = async (withToken) => {
-        let config;
-        if (withToken) {
-            config = {
-                accessToken: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlFVUTRNemhDUVVWQk1rTkJNemszUTBNMlFVVTRRekkyUmpWQ056VTJRelUxUTBVeE5EZzFNUSJ9.eyJodHRwczovL3BsYXRmb3JtLnN5bWJsLmFpL3VzZXJJZCI6IjUxNDU0NTg5NDgxNzc5MjAiLCJpc3MiOiJodHRwczovL2RpcmVjdC1wbGF0Zm9ybS5hdXRoMC5jb20vIiwic3ViIjoiaGhra1BaQUVsQ3BwQjE4VVVMSU54V1FxUGo4NU9sOFBAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vcGxhdGZvcm0ucmFtbWVyLmFpIiwiaWF0IjoxNjQ3Mzc4MjkxLCJleHAiOjE2NDc0NjQ2OTEsImF6cCI6Imhoa2tQWkFFbENwcEIxOFVVTElOeFdRcVBqODVPbDhQIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIn0.PigoNV8a-WHQLJ7uL6r-aM9D304nHlKIXgkIHDCu1JO_WqPjEl-y8NcAl7-1OQGDaA7FmtlCfz7w1l5t6OBjc_1or87jsCyO8YAjf3WX1wOTRuxcvJU8M2ITmF4UnPBfpUJcP-zMWDbI5zi3EpKJsXW6q0DP7e-fG2_l_TylZ4pAn3ICDQv2urZ6uCYsant-PfWyt41NUH1AWwu19qcMBsgr3vTl4f8BLCaWEtlOFw_b-bQa84cC0EQzwDFMQpi05aH1ijW68YszcfXF9R57Sk1HV-92-Hur62KFaJ4KWo0XUQwmu59Det_F9VfHUqOdu13r1Es2fi8fxvQ4vHWTZA"
-            }
-        } else {
-            config = {
-                appId: '68686b6b505a41456c43707042313855554c494e78575171506a38354f6c3850',
-                appSecret: '596d6c567431347776553536766259506e4e6757494f6933506e4a532d79444a6a3455755377425a45456d5855717248716b326d42485555634f794173694a68',
-            }
-
+        function uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
         }
-        symblSdk = new symbl.Symbl(config);
-        id = uuidv4();
-        symblSdk.init(config)
-        .then(async () => {
+
+        const authenticate = async (withToken) => {
+            let config;
+            if (withToken) {
+                config = {
+                    accessToken: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlFVUTRNemhDUVVWQk1rTkJNemszUTBNMlFVVTRRekkyUmpWQ056VTJRelUxUTBVeE5EZzFNUSJ9.eyJodHRwczovL3BsYXRmb3JtLnN5bWJsLmFpL3VzZXJJZCI6IjUxNDU0NTg5NDgxNzc5MjAiLCJpc3MiOiJodHRwczovL2RpcmVjdC1wbGF0Zm9ybS5hdXRoMC5jb20vIiwic3ViIjoiaGhra1BaQUVsQ3BwQjE4VVVMSU54V1FxUGo4NU9sOFBAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vcGxhdGZvcm0ucmFtbWVyLmFpIiwiaWF0IjoxNjQ3Mzc4MjkxLCJleHAiOjE2NDc0NjQ2OTEsImF6cCI6Imhoa2tQWkFFbENwcEIxOFVVTElOeFdRcVBqODVPbDhQIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIn0.PigoNV8a-WHQLJ7uL6r-aM9D304nHlKIXgkIHDCu1JO_WqPjEl-y8NcAl7-1OQGDaA7FmtlCfz7w1l5t6OBjc_1or87jsCyO8YAjf3WX1wOTRuxcvJU8M2ITmF4UnPBfpUJcP-zMWDbI5zi3EpKJsXW6q0DP7e-fG2_l_TylZ4pAn3ICDQv2urZ6uCYsant-PfWyt41NUH1AWwu19qcMBsgr3vTl4f8BLCaWEtlOFw_b-bQa84cC0EQzwDFMQpi05aH1ijW68YszcfXF9R57Sk1HV-92-Hur62KFaJ4KWo0XUQwmu59Det_F9VfHUqOdu13r1Es2fi8fxvQ4vHWTZA"
+                }
+            } else {
+                config = {
+                    appId: '68686b6b505a41456c43707042313855554c494e78575171506a38354f6c3850',
+                    appSecret: '596d6c567431347776553536766259506e4e6757494f6933506e4a532d79444a6a3455755377425a45456d5855717248716b326d42485555634f794173694a68',
+                }
+
+            }
+            symblSdk = new symbl.Symbl(config);
+            id = uuidv4();
+
             connectionConfig = {
-              // sourceNode: source,
-              // reconnectOnError: true,
-              disconnectOnStopRequest: false,
-              disconnectOnStopRequestTimeout: 200,
-              noConnectionTimeout: 200,
-              insightTypes: ['action_item', 'question'],
-              config: {
-                meetingTitle: 'My Test Meeting',
-                confidenceThreshold: 0.7,
-                timezoneOffset: 480, // Offset in minutes from UTC
-                languageCode: 'en-US',
-                // encoding: 'OPUS',
-                // encoding: 'linear16',
-              },
-              handlers: {},
-              trackers: [
-                {
+                // sourceNode: source,
+                // reconnectOnError: true,
+                disconnectOnStopRequest: false,
+                disconnectOnStopRequestTimeout: 200,
+                noConnectionTimeout: 200,
+                insightTypes: ['action_item', 'question'],
+                config: {
+                    meetingTitle: 'My Test Meeting',
+                    confidenceThreshold: 0.7,
+                    timezoneOffset: 480, // Offset in minutes from UTC
+                    languageCode: 'en-US',
+                    // encoding: 'OPUS',
+                    // encoding: 'linear16',
+                },
+                handlers: {},
+                trackers: [{
                     name: "Goodness",
                     vocabulary: [
                         "This is awesome",
                         "I like it",
                         "I love this"
                     ]
+                }],
+                speaker: {
+                    // Optional, if not specified, will simply not send an email in the end.
+                    userId: 'christopherstokes@symbl.ai', // Update with valid email
+                    name: 'Chris Stokes'
                 }
-              ],
-              speaker: {
-                // Optional, if not specified, will simply not send an email in the end.
-                userId: 'christopherstokes@symbl.ai', // Update with valid email
-                name: 'Chris Stokes'
-              }
             };
             connection = await symblSdk.createConnection(id);
             await connection.startProcessing(connectionConfig);
@@ -90,119 +89,118 @@
             connection.on('stopped_listening', (data) => {
                 console.log('stopped_listening', data);
             });
-            
+
             connection.on('processing_started', (data) => {
                 console.log('processing_started', data);
             });
-            
+
             connection.on('recognition_started', (data) => {
                 console.log('recognition_started', data);
             });
-            
+
             connection.on('processing_stopped', (data) => {
                 console.log('processing_stopped', data);
             });
-            
+
             connection.on('recognition_stopped', (data) => {
                 console.log('recognition_stopped', data);
             });
-            
+
             connection.on('conversation_created', (data) => {
                 console.log('conversation_created', data);
             });
-            
+
             connection.on('conversation_completed', (data) => {
                 console.log('conversation_completed', data);
             });
-            
+
             connection.on('session_modified', (data) => {
                 console.log('session_modified', data);
             });
-            
+
             connection.on('audio_stream_updated', (data) => {
                 console.log('audio_stream_updated', data);
             });
-            
+
             connection.on('error', (data) => {
                 console.log('error', data);
             });
-            
+
             connection.on('topic', (data) => {
                 console.log('topic', data);
             });
-            
+
             connection.on('tracker', (data) => {
                 console.log('tracker', data);
             });
-            
+
             connection.on('action_item', (data) => {
                 console.log('action_item', data);
             });
-            
+
             connection.on('follow_up', (data) => {
                 console.log('follow_up', data);
             });
-            
+
             connection.on('question', (data) => {
                 console.log('question', data);
             });
-            
+
             // connection.on('audio_source_connected', (data) => {
             //     console.log('audio_source_connected', data);
             // });
-            
+
             connection.on('audio_source_disconnected', (data) => {
                 console.log('audio_source_disconnected', data);
                 alert('testing');
             });
-            
+
             connection.on('offline', (data) => {
                 console.log('offline', data);
             });
-            
+
             connection.on('message', (data) => {
                 console.log('message', data);
             });
-            
+
             connection.on('speech_recognition', (data) => {
                 console.log('speech_recognition', data);
                 console.log(data.punctuated.transcript);
             });
-        })
-        .catch(err => console.error('Error in initialization.', err));
-    };
 
-    const stopProcessing = () => {
-        connection.stopProcessing();
-    }
+        };
 
-    const startProcessing = () => {
-        connection.startProcessing(connectionConfig);
-    }
-</script>
+        const stopProcessing = () => {
+            connection.stopProcessing();
+        }
+
+        const startProcessing = () => {
+            connection.startProcessing(connectionConfig);
+        }
+    </script>
 </head>
 
 <body>
 
-<div>
-    <p>Authentication</p>
     <div>
-        <button onclick="javascript: authenticate()">Authenticate with appId/appSecret</button>
-    </div>
-    <div>
-        <button onclick="javascript: authenticate(true)">Authenticate with accessToken</button>
-    </div>
+        <p>Authentication</p>
+        <div>
+            <button onclick="javascript: authenticate()">Authenticate with appId/appSecret</button>
+        </div>
+        <div>
+            <button onclick="javascript: authenticate(true)">Authenticate with accessToken</button>
+        </div>
 
-    <p>Stop Processing</p>
-    <div>
-        <button onclick="javascript: stopProcessing()">Stop Processing</button>
-    </div>
+        <p>Stop Processing</p>
+        <div>
+            <button onclick="javascript: stopProcessing()">Stop Processing</button>
+        </div>
 
-    <p>Start Processing</p>
-    <div>
-        <button onclick="javascript: startProcessing(connectionConfig)">Start Processing</button>
+        <p>Start Processing</p>
+        <div>
+            <button onclick="javascript: startProcessing(connectionConfig)">Start Processing</button>
+        </div>
     </div>
-</div>
 
 </body>
 
