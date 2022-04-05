@@ -44,11 +44,6 @@ export default class Symbl {
     private logger: Logger;
 
     /**
-     * @ignore
-     */
-    protected accessToken: string;
-
-    /**
      * Using SymblConfig an instance of the Symbl SDK is instantiated
      * @param symblConfig SymblConfig
      */
@@ -56,31 +51,16 @@ export default class Symbl {
 
         if (symblConfig) {
 
-            if (this._validateSymblConfig(symblConfig)) {
-
-                this.sdk.oauth2.init(
-                    symblConfig.appId,
-                    symblConfig.appSecret,
-                    symblConfig.accessToken
-                ).then(
-                    (response) => {
-
-                        this.accessToken = response.accessToken;
-
-                    },
-                    (error) => {
-
-                        throw new InvalidCredentialsError(error);
-
-                    }
-                );
-
-            }
+            this._validateSymblConfig(symblConfig);
 
         }
 
         this.symblConfig = symblConfig;
         this.logger = new Logger();
+
+        this.sdk.oauth2.appId = this.symblConfig.appId;
+        this.sdk.oauth2.appSecret = this.symblConfig.appSecret;
+        this.sdk.oauth2.activeToken = this.symblConfig.accessToken;
 
         this._validateSymblConfig = this._validateSymblConfig.bind(this);
         this.init = this.init.bind(this);
