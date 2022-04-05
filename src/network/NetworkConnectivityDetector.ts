@@ -50,7 +50,7 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
      */
     public forceCheckNetworkConnectivity (): void {
 
-        this.onlineDetector();
+        // this.onlineDetector();
 
     }
 

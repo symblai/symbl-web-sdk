@@ -38,12 +38,16 @@ export class LINEAR16AudioStream extends AudioStream {
         if (this.processorNode) {
 
             this.sourceNode.disconnect();
-            this.gainNode?.disconnect();
             this.processorNode.disconnect();
-            this.sourceNode.connect(this.gainNode);
+            if (this.gainNode) {
+                this.gainNode.disconnect();
+                this.sourceNode.connect(this.gainNode);
+                this.gainNode.connect(this.processorNode);
+            } else {
+                this.sourceNode.connect(this.processorNode);
+            }
 
             // Element processing doesn't use gain.
-            this.gainNode?.connect(this.processorNode);
 
             this.processorNode.connect(this.audioContext.destination);
             this.processorNode.onaudioprocess = this.processAudio;

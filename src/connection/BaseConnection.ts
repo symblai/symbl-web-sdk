@@ -55,7 +55,7 @@ export class BaseConnection extends DelegatedEventTarget {
 
         if (data.type === "error") {
 
-            throw new InvalidValueError(data.detail);
+            throw new InvalidValueError(data.details);
 
         }
 
