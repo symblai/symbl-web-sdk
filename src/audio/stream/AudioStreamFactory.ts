@@ -4,13 +4,11 @@ import {
     OpusAudioStream
 } from ".";
 import {
-    OpusConfig,
-    SymblAudioStreamType
-} from "../../types";
-import {
     InvalidValueError
 } from "../../error";
-
+import {
+    SymblAudioStreamType
+} from "../../types";
 
 const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 export class AudioStreamFactory {
