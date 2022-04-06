@@ -31,8 +31,135 @@ test(
         // expect(sdkInitMock).toBeCalledTimes(1);
     }
 );
+test(
+    "Symbl.init: Ignores invalid parameters ",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET,
+            foo:'bar'
+        };
+        const symbl = new Symbl();
+        const validationSpy = jest.spyOn(symbl, '_validateSymblConfig');
+        await symbl.init(authConfig);
+        expect(validationSpy).toBeCalledWith(authConfig);
+        expect(validationSpy).toReturnWith(true);
+        // expect(sdkInitMock).toBeCalledTimes(1);
+    }
+);
+test(
+    "Symbl.init: invalid log level parameters are ignored (as this is optional parameter)",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET,
+            logLevel: 'none'
+        };
+        const symbl = new Symbl();
+        const validationSpy = jest.spyOn(symbl, '_validateSymblConfig');
+        await symbl.init(authConfig);
+        expect(validationSpy).toBeCalledWith(authConfig);
+        expect(validationSpy).toReturnWith(true);
+        // expect(sdkInitMock).toBeCalledTimes(1);
+    }
+);
 
-
+test(
+    "Symbl.init: Called twice",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET,
+        };
+        const symbl = new Symbl();
+        const validationSpy = jest.spyOn(symbl, '_validateSymblConfig');
+        await symbl.init(authConfig);
+        await symbl.init(authConfig);
+        expect(validationSpy).toBeCalledWith(authConfig);
+        expect(validationSpy).toReturnWith(true);
+        // expect(sdkInitMock).toBeCalledTimes(1);
+    }
+);
+test(
+    "Symbl.init: Called with undefined as auth config",
+    async () => {
+        const authConfig = undefined
+        const symbl = new Symbl();
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("No credentials were passed"));
+    }
+);
+test(
+    "Symbl.init: Called with null auth config",
+    async () => {
+        const authConfig = null
+        const symbl = new Symbl();
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("No credentials were passed"));
+    }
+);
+test(
+    "Symbl.init: Called with undefined appId",
+    async () => {
+        const authConfig = {
+            appId: undefined,
+            appSecret: APP_SECRET,
+        };
+        const symbl = new Symbl();
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("appId is missing"));
+    }
+);
+test(
+    "Symbl.init: Called with null appId",
+    async () => {
+        const authConfig = {
+            appId: null,
+            appSecret: APP_SECRET,
+        };
+        const symbl = new Symbl();
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("appId is missing"));
+    }
+);
+test(
+    "Symbl.init: Called with undefined appSecret",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: undefined,
+        };
+        const symbl = new Symbl();
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("appSecret is missing"));
+    }
+);
+test(
+    "Symbl.init: Called with null appSecret",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: null,
+        };
+        const symbl = new Symbl();
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("appSecret is missing"));
+    }
+);
+test(
+    "Symbl.init: Called with undefined accessToken",
+    async () => {
+        const authConfig = {
+            accessToken: undefined,
+        };
+        const symbl = new Symbl();
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("Please provide an appId & appSecret or an accessToken"));
+    }
+);
+test(
+    "Symbl.init: Called with null accessToken",
+    async () => {
+        const authConfig = {
+            accessToken: null,
+        };
+        const symbl = new Symbl();
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("Please provide an appId & appSecret or an accessToken"));
+    }
+);
 test(
     "Symbl.init: Fails to initialize and throws an HttpError",
     async () => {
@@ -42,7 +169,8 @@ test(
         };
         const symbl = new Symbl();
         const validationSpy = jest.spyOn(symbl, '_validateSymblConfig');
-        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("AppID is not valid"));
+        await expect(async () => await symbl.init(authConfig)).rejects.toThrowError(new InvalidCredentialsError("appId is not valid"));
     }
 );
+
 
