@@ -310,7 +310,7 @@ export class StreamingAPIConnection extends BaseConnection {
                 );
                 return this;
 
-            } catch (e) {
+            } catch (error) {
 
                 // In any case of faliure, the `connectionState` should be set to `TERMINATED`
                 this.connectionState = ConnectionState.TERMINATED;
