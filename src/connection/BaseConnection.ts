@@ -1,6 +1,5 @@
 import {DelegatedEventTarget, SymblEvent} from "../events";
 import {
-    EventTypes,
     RealtimeInsightData,
     RealtimeMessageData,
     RealtimeSpeechData,
