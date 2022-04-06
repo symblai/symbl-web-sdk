@@ -1,8 +1,4 @@
-import { 
-    RealtimeSpeechData,
-    RealtimeMessageData,
-    RealtimeInsightData,
-    RealtimeTopicData,
+import {
     SymblData
 } from "../event/types";
 
@@ -12,4 +8,4 @@ interface RealtimeHandlers {
 
 export {
     RealtimeHandlers
-}
+};

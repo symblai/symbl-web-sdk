@@ -8,16 +8,6 @@ interface SymblConfig {
     logLevel?: string;
 }
 
-// interface StreamingAPIConnectionConfig {
-
-// }
-
-// {
-//     "type": "start_request",
-//     "otherData": "somethingElse",
-//     "optionalArg": true,
-// }
-
 type InsightType = "action_item" | "question" | "follow_up";
 
 interface StreamingAPIStopRequest {
