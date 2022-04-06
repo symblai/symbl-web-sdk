@@ -349,7 +349,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 // Else, set the `connectionState` to DISCONNECTING and call the `close` function on the `stream` created via JS SDK
                 this.connectionState = ConnectionState.DISCONNECTING;
-                await this.stream.close();
+                this.stream.close();
                 // Set the `connectionState` to DISCONNECTED
                 this.connectionState = ConnectionState.DISCONNECTED;
                 // Set the value of `_isConnected` to `false` and emit the appropriate event
@@ -513,7 +513,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
             }
 
-            await this.stream.stop();
+            this.stream.stop();
 
             // Set the value of `processingState` to NOT_PROCESSING if the call is successful
             this.processingState = ConnectionProcessingState.NOT_PROCESSING;
