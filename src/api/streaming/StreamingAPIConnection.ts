@@ -1,6 +1,5 @@
 import {AudioStream, AudioStreamFactory} from "../../audio";
 import {
-    ConnectionConfig,
     ConnectionProcessingState,
     ConnectionState,
     StreamingAPIConnectionConfig,
@@ -12,17 +11,15 @@ import {
     SymblData,
     SymblStreamingAPIConnection
 } from "../../types";
-import { BaseConnection } from "../../connection";
-import { SymblEvent } from "../../events";
 import {
+    InvalidValueError,
     NoConnectionError,
     NotSupportedAudioEncodingError,
-    NotSupportedSampleRateError,
-    InvalidValueError
+    NotSupportedSampleRateError
 } from "../../error";
-import { 
-    SYMBL_DEFAULTS
-} from '../../constants';
+import {BaseConnection} from "../../connection";
+import {SYMBL_DEFAULTS} from "../../constants";
+import {SymblEvent} from "../../events";
 
 
 /**
@@ -39,7 +36,9 @@ const validateInsightTypes = (insightTypes: Array<string>): boolean => {
     }
 
     for (const insight of insightTypes) {
+
         if (!SYMBL_DEFAULTS.VALID_INSIGHT_TYPES.includes(insight)) {
+
             return false;
 
         }
@@ -61,42 +60,42 @@ const validateInsightTypes = (insightTypes: Array<string>): boolean => {
  */
 export class StreamingAPIConnection extends BaseConnection {
 
-     /**
+    /**
      * @ignore
      */
     private config: StreamingAPIConnectionConfig;
 
-     /**
+    /**
      * @ignore
      */
     private connectionState = ConnectionState.DISCONNECTED;
 
-     /**
+    /**
      * @ignore
      */
     private processingState = ConnectionProcessingState.NOT_PROCESSING;
 
-     /**
+    /**
      * @ignore
      */
     private _isProcessing = false;
 
-     /**
+    /**
      * @ignore
      */
     private _isConnected = false;
 
-     /**
+    /**
      * @ignore
      */
     private restartProcessing = false;
 
-     /**
+    /**
      * @ignore
      */
     private stream: SymblStreamingAPIConnection;
 
-     /**
+    /**
      * @ignore
      */
     private audioStream: AudioStream;
@@ -115,11 +114,11 @@ export class StreamingAPIConnection extends BaseConnection {
 
         super(sessionId);
         this.config = {
-            id: sessionId,
-            handlers: {
-                onDataReceived: this.onDataReceived
+            "id": sessionId,
+            "handlers": {
+                "onDataReceived": this.onDataReceived
             }
-        }
+        };
         this.audioStream = audioStream;
 
         this.onDataReceived = this.onDataReceived.bind(this);
@@ -131,19 +130,20 @@ export class StreamingAPIConnection extends BaseConnection {
     }
 
     /*
-        Perform validations for received config
-        Explicit validations on required fields to be passed in the `StreamingAPIConnectionConfig`
-        
-        In case any required key/value pair is missing, throw `RequiredParameterAbsentError`
-        [Adam] To confirm, there is 0 required field in the config argument? 'id' is not a required field as uuid is generated
+     *Perform validations for received config
+     *Explicit validations on required fields to be passed in the `StreamingAPIConnectionConfig`
+     *
+     *In case any required key/value pair is missing, throw `RequiredParameterAbsentError`
+     *[Adam] To confirm, there is 0 required field in the config argument? 'id' is not a required field as uuid is generated
+     *
+     *In case of any invalid key/value pairs, throw `InvalidValueError`
+     *In case the audio encoding is not supported, throw `NotSupportedAudioEncodingError`
+     *In case the sample rate is not supported by the AudioEncoding, throw `NotSupportedSampleRateError`
+     *If the validation of the `config` is successful, return the validated config
+     */
+    static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig | StreamingAPIStartRequest {
 
-        In case of any invalid key/value pairs, throw `InvalidValueError`
-        In case the audio encoding is not supported, throw `NotSupportedAudioEncodingError`
-        In case the sample rate is not supported by the AudioEncoding, throw `NotSupportedSampleRateError`
-        If the validation of the `config` is successful, return the validated config
-    */
-    static validateConfig(config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig | StreamingAPIStartRequest {
-        const { 
+        const {
             id,
             insightTypes,
             "config": configObj,
@@ -154,21 +154,25 @@ export class StreamingAPIConnection extends BaseConnection {
             noConnectionTimeout
         } = config;
 
-        if (id && typeof id !== 'string') {
-            throw new InvalidValueError(`StreamingAPIConnectionConfig argument 'id' field should be a type string.`)
+        if (id && typeof id !== "string") {
+
+            throw new InvalidValueError("StreamingAPIConnectionConfig argument 'id' field should be a type string.");
+
         }
 
         if (insightTypes) {
 
             if (!validateInsightTypes(insightTypes)) {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${SYMBL_DEFAULTS.VALID_INSIGHT_TYPES}`)
+
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${SYMBL_DEFAULTS.VALID_INSIGHT_TYPES}`);
+
             }
 
         }
 
         if (configObj) {
 
-            let {confidenceThreshold, meetingTitle, encoding, sampleRateHertz} = configObj;
+            const {confidenceThreshold, meetingTitle, encoding, sampleRateHertz} = configObj;
             if (confidenceThreshold && typeof confidenceThreshold !== "number") {
 
                 throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.");
@@ -179,8 +183,10 @@ export class StreamingAPIConnection extends BaseConnection {
                 throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.meetingTitle' field should be a type string.");
 
             }
-            if (sampleRateHertz && typeof sampleRateHertz !== 'number') {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.`)
+            if (sampleRateHertz && typeof sampleRateHertz !== "number") {
+
+                throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.");
+
             }
 
             if (encoding) {
@@ -191,18 +197,27 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 }
                 if (!SYMBL_DEFAULTS.VALID_ENCODING.includes(encoding.toUpperCase())) {
-                    throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${SYMBL_DEFAULTS.VALID_ENCODING}.`)
+
+                    throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${SYMBL_DEFAULTS.VALID_ENCODING}.`);
+
                 }
 
             }
             if (sampleRateHertz) {
-                if ((!encoding || encoding?.toUpperCase() === 'LINEAR16') && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
-                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`)
+
+                if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+
+                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
+
                 }
-                if (encoding?.toUpperCase() === 'OPUS' && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
-                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`)
+                if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+
+                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
+
                 }
+
             }
+
         }
 
         if (speaker) {
@@ -234,17 +249,23 @@ export class StreamingAPIConnection extends BaseConnection {
         }
 
         if (disconnectOnStopRequest === false && disconnectOnStopRequestTimeout) {
-            if (typeof disconnectOnStopRequestTimeout !== 'number' ||
+
+            if (typeof disconnectOnStopRequestTimeout !== "number" ||
             (disconnectOnStopRequestTimeout < SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN || disconnectOnStopRequestTimeout > SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX)) {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX}.`)
+
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX}.`);
+
             }
 
         }
 
         if (noConnectionTimeout) {
-            if (typeof noConnectionTimeout !== 'number' ||
+
+            if (typeof noConnectionTimeout !== "number" ||
             (noConnectionTimeout < SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN || noConnectionTimeout > SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX)) {
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX}.`)
+
+                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX}.`);
+
             }
 
         }
@@ -373,12 +394,14 @@ export class StreamingAPIConnection extends BaseConnection {
         } else {
 
 
-
             // If `options` is passed in, validate it and in failure to do so, throw the appropriate error emited by validateConfig.
             if (options) {
 
                 StreamingAPIConnection.validateConfig(options);
-                this.config = Object.assign(this.config, options);
+                this.config = Object.assign(
+                    this.config,
+                    options
+                );
 
             }
 
@@ -394,19 +417,29 @@ export class StreamingAPIConnection extends BaseConnection {
 
             }
 
-            console.log('==== audioStream is =====', this.audioStream);
-            const audioStream = this.audioStream ? this.audioStream : await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
+            console.log(
+                "==== audioStream is =====",
+                this.audioStream
+            );
+            const audioStream = this.audioStream
+                ? this.audioStream
+                : await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
             this.attachAudioStream(audioStream);
 
             if (this.audioStream.deviceProcessing) {
 
                 let device, mediaStream;
                 if (this.audioStream.sourceNode) {
-                    mediaStream = (<MediaStreamAudioSourceNode>this.audioStream.sourceNode).mediaStream;
+
+                    mediaStream = (<MediaStreamAudioSourceNode> this.audioStream.sourceNode).mediaStream;
                     device = mediaStream.getAudioTracks()[0].getSettings().deviceId;
+
                 }
 
-                await this.audioStream.attachAudioDevice(device, mediaStream);
+                await this.audioStream.attachAudioDevice(
+                    device,
+                    mediaStream
+                );
 
             }
 
@@ -418,7 +451,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
             }
 
-            
+
             const copiedHandlers = this.config.handlers;
             const copiedConfig = JSON.parse(JSON.stringify(this.config));
             copiedConfig.handlers = copiedHandlers;
@@ -468,17 +501,13 @@ export class StreamingAPIConnection extends BaseConnection {
 
                     await this.audioStream.suspendAudioContext();
 
+                } else if (this.audioStream.deviceProcessing) {
+
+                    await this.audioStream.detachAudioDevice();
+
                 } else {
 
-                    if (this.audioStream.deviceProcessing) {
-
-                        await this.audioStream.detachAudioDevice();
-
-                    } else {
-
-                        await this.audioStream.detachAudioSourceElement();
-
-                    }
+                    await this.audioStream.detachAudioSourceElement();
 
                 }
 
@@ -521,7 +550,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 this.restartProcessing = true;
                 await this.audioStream.detachAudioDevice();
-                // this.audioStream = null;
+                // This.audioStream = null;
                 await this.stopProcessing();
 
             } else if (!this.isProcessing() && audioSourceChangedEvent.type === "audio_source_connected" && this.restartProcessing) {
@@ -615,20 +644,28 @@ export class StreamingAPIConnection extends BaseConnection {
     private attachAudioStream (audioStream: AudioStream): void {
 
         this.audioStream = audioStream;
-        // this.audioStream.on("audio_source_connected", this.onAudioSourceChanged);
+        // This.audioStream.on("audio_source_connected", this.onAudioSourceChanged);
         try {
-            this.audioStream.off("audio_source_disconnected", this.onAudioSourceChanged);
-        } catch(e) {
+
+            this.audioStream.off(
+                "audio_source_disconnected",
+                this.onAudioSourceChanged
+            );
+
+        } catch (e) {
 
         }
-        this.audioStream.on("audio_source_disconnected", this.onAudioSourceChanged);
+        this.audioStream.on(
+            "audio_source_disconnected",
+            this.onAudioSourceChanged
+        );
 
         this.registerAudioStreamCallback();
 
     }
 
     /**
-     * 
+     *
      * @param audioStream AudioStream
      */
     async updateAudioStream (audioStream: AudioStream): Promise<void> {
