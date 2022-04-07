@@ -259,14 +259,18 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        if (!audioSourceDomElement.type) {
-
-            throw new InvalidAudioElementError("Element must have a `type` attribute.");
-
-        }
-
         if (audioSourceDomElement.nodeName === "SOURCE") {
             audioSourceDomElement = audioSourceDomElement.parentElement;
+        }
+
+        const hasSourceElement = audioSourceDomElement.firstChild && audioSourceDomElement.firstChild.nodeName === "SOURCE";
+
+        const sourceElement = hasSourceElement ? audioSourceDomElement.firstChild : audioSourceDomElement;
+
+        if (!sourceElement.type) {
+
+            throw new InvalidAudioElementError("Audio element must have a `type` field.");
+
         }
 
         if (this.audioContext) {
@@ -280,10 +284,6 @@ export class AudioStream extends DelegatedEventTarget {
             await this.createNewContext();
 
         }
-
-        const hasSourceElement = audioSourceDomElement.firstChild && audioSourceDomElement.firstChild.nodeName === "SOURCE";
-
-        const sourceElement = hasSourceElement ? audioSourceDomElement.firstChild : audioSourceDomElement;
 
         if (sourceElement.src.substring(0, 5) !== "blob:") {
             const src = await fetch(sourceElement.src);

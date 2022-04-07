@@ -60,6 +60,11 @@ export class BaseConnection extends DelegatedEventTarget {
 
         const eventNameMapper = (data) => {
 
+            const eventRenameMap = {
+                "recognition_result": "speech_recognition",
+                "recognition_started": "processing_started",
+                "recognition_stopped": "processing_stopped",
+            }
             const eventNameMap = {
                 "insight_response": {
                     "data": data as RealtimeInsightData,
@@ -85,10 +90,9 @@ export class BaseConnection extends DelegatedEventTarget {
                 }
             };
             const eventType = eventNameMap[data.type] || {};
-            if (eventType.name === "recognition_result") {
+            if (eventRenameMap[eventType.name]) {
 
-                eventType.name = "speech_recognition";
-                eventType.data = eventType.data as RealtimeSpeechData;
+                eventType.name = eventRenameMap[eventType.name]
 
             }
             return eventType;

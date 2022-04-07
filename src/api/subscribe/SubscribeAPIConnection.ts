@@ -77,7 +77,7 @@ export class SubscribeAPIConnection extends BaseConnection {
                 window.setTimeout(
                     () => {
 
-                        this.dispatchEvent(new SymblEvent("subscribed"));
+                        this.dispatchEvent(new SymblEvent("connected"));
 
                     },
                     1
@@ -131,7 +131,7 @@ export class SubscribeAPIConnection extends BaseConnection {
 
             // Set the value of `_isConnected` to `false` and emit the appropriate event
             this._isConnected = false;
-            this.dispatchEvent(new SymblEvent("unsubscribed"));
+            this.dispatchEvent(new SymblEvent("disconnected"));
 
         }
 

@@ -417,10 +417,6 @@ export class StreamingAPIConnection extends BaseConnection {
 
             }
 
-            console.log(
-                "==== audioStream is =====",
-                this.audioStream
-            );
             const audioStream = this.audioStream
                 ? this.audioStream
                 : await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
@@ -461,7 +457,6 @@ export class StreamingAPIConnection extends BaseConnection {
             this.processingState = ConnectionProcessingState.PROCESSING;
             // Set the value of `_isProcessing` to `true` and emit the appropriate event
             this._isProcessing = true;
-            this.dispatchEvent(new SymblEvent("processing_started"));
 
         }
 
@@ -520,7 +515,6 @@ export class StreamingAPIConnection extends BaseConnection {
 
             // Set the value of `_isProcessing` to `false` and emit the appropriate event
             this._isProcessing = false;
-            this.dispatchEvent(new SymblEvent("processing_stopped"));
 
             // If `restartProcessing` is true call `startProcessing`
             if (this.restartProcessing) {
