@@ -540,7 +540,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
         if (this.isConnected()) {
 
-            if (this.isProcessing() && audioSourceChangedEvent.type === "audio_source_disconnected") {
+            if (this.isProcessing() && audioSourceChangedEvent.type === "audio_source_changed") {
 
                 this.restartProcessing = true;
                 await this.audioStream.detachAudioDevice();

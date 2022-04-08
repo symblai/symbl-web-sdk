@@ -5,9 +5,7 @@ type EventTypes =
     "disconnected" |
     "started_listening" |
     "processing_started" |
-    "recognition_started" |
     "processing_stopped" |
-    "recognition_stopped" |
     "conversation_created" |
     "conversation_completed" |
     "session_modified" |
@@ -21,9 +19,8 @@ type EventTypes =
     "question" |
     "audio_source_connected" |
     "audio_source_disconnected" |
-    "offline" |
-    "subscribed" |
-    "unsubscribed"
+    "audio_source_changed" |
+    "offline"
 ;
 
 interface RealtimeUser {

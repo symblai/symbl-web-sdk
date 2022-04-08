@@ -13,8 +13,7 @@ export default class SymblError extends Error {
         this.name = name;
         this.logger.error(message);
         this.logger.trace(message);
-        const delegate = document.createDocumentFragment();
-        delegate.dispatchEvent.apply(delegate, [new SymblEvent('error', this)]);
+        window.dispatchEvent(new SymblEvent('error', this) as Event);
 
     }
 

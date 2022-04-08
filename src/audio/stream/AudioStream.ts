@@ -253,7 +253,7 @@ export class AudioStream extends DelegatedEventTarget {
             } else if (source && source.nodeName === "SOURCE") {
 
 
-                await this.attachAudioSourceElement(source);
+                return await this.attachAudioSourceElement(source);
 
             }
 
@@ -305,11 +305,6 @@ export class AudioStream extends DelegatedEventTarget {
         this.sourceNode = <MediaElementAudioSourceNode>sourceNode;
         this.processorNode = processorNode;
         this.deviceProcessing = false;
-        const event = new SymblEvent(
-            "audio_source_connected",
-            this.audioContext.sampleRate
-        );
-        this.dispatchEvent(event);
 
         return audioSourceDomElement;
 
@@ -350,7 +345,10 @@ export class AudioStream extends DelegatedEventTarget {
                 this.processorNode = null;
 
             }
-            // this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+
+            window.setTimeout(() => {
+                this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+            }, 1);
 
         // } else {
 
@@ -364,10 +362,11 @@ export class AudioStream extends DelegatedEventTarget {
      * Detaches from any currently connected DOM Audio element and attaches to provided element
      * @param audioSourceDomElement HTMLAudioElement
      */
-    async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
+    async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
         await this.detachAudioSourceElement();
-        await this.attachAudioSourceElement(audioSourceDomElement);
+        const newElement = await this.attachAudioSourceElement(audioSourceDomElement);
+        return newElement;
 
     }
 
@@ -424,7 +423,7 @@ export class AudioStream extends DelegatedEventTarget {
                     const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
                     if (!foundDevice && !this.recentlyDisconnectedDevice) {
                         this.recentlyDisconnectedDevice = true;
-                        this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+                        this.dispatchEvent(new SymblEvent("audio_source_changed"));
                         window.setTimeout(() => {
 
                             this.recentlyDisconnectedDevice = false;
@@ -471,7 +470,9 @@ export class AudioStream extends DelegatedEventTarget {
             }
             // this.mediaStream = null;
 
-            // this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+            window.setTimeout(() => {
+                this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+            }, 1);
 
         // } else {
 
@@ -537,10 +538,6 @@ export class AudioStream extends DelegatedEventTarget {
         if (this.audioCallback) {
 
             this.audioCallback(audioData);
-
-        } else {
-
-            this.logger.warn("No audio callback attached. Audio not being proceessed.");
 
         }
 

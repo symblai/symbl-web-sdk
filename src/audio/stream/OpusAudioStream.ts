@@ -1,5 +1,6 @@
 import {AudioStream} from "./AudioStream";
 import {OpusConfig} from "../../types";
+import {SymblEvent} from "../../events";
 import {Recorder} from "symbl-opus-encdec";
 
 export class OpusAudioStream extends AudioStream {
@@ -73,7 +74,6 @@ export class OpusAudioStream extends AudioStream {
 
             this.mediaStream = this.mediaStream ? this.mediaStream : await AudioStream.getMediaStream();
             this.config.sourceNode = <MediaStreamAudioSourceNode>this.sourceNode;
-            console.log("===== sourceNode ======", this.config.sourceNode);
             this.opusEncoder = new Recorder(this.config);
 
         }
@@ -87,10 +87,20 @@ export class OpusAudioStream extends AudioStream {
      * Attaches DOM <audio> element to the audio data stream
      * @param audioSourceDomElement HTMLAudioElement
      */
-    async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
         const element = super.attachAudioSourceElement(audioSourceDomElement);
         await this.attachAudioProcessor(true);
+
+        const event = new SymblEvent(
+            "audio_source_connected",
+            this.audioContext.sampleRate
+        );
+        
+        window.setTimeout(() => {
+            this.dispatchEvent(event);
+        }, 1);
+
         return element;
 
     }
@@ -109,9 +119,10 @@ export class OpusAudioStream extends AudioStream {
      * the provided DOM element
      * @param audioSourceDomElement HTMLAudioElement
      */
-    async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<void> {
+    async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        await super.updateAudioSourceElement(audioSourceDomElement);
+        const newElement = await super.updateAudioSourceElement(audioSourceDomElement);
+        return newElement;
 
     }
 
@@ -127,6 +138,15 @@ export class OpusAudioStream extends AudioStream {
             mediaStream
         );
         await this.attachAudioProcessor(true);
+
+        const event = new SymblEvent(
+            "audio_source_connected",
+            this.audioContext.sampleRate
+        );
+        
+        window.setTimeout(() => {
+            this.dispatchEvent(event);
+        }, 1);
 
     }
 

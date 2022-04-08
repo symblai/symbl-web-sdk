@@ -64,10 +64,17 @@ export class LINEAR16AudioStream extends AudioStream {
      * Attaches <audio> DOM element to the audio processor
      * @param audioSourceDomElement HTMLAudioElement
      */
-    async attachAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<any> {
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
         const element = await super.attachAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();
+        const event = new SymblEvent(
+            "audio_source_connected",
+            this.audioContext.sampleRate
+        );
+        window.setTimeout(() => {
+            this.dispatchEvent(event);
+        }, 1);
         return element;
 
     }
@@ -85,10 +92,11 @@ export class LINEAR16AudioStream extends AudioStream {
      * Detaches current DOM element and attaches new <audio> DOM element to audio processor
      * @param audioSourceDomElement HTMLAudioElement
      */
-    async updateAudioSourceElement (audioSourceDomElement: HTMLAudioElement): Promise<any> {
+    async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        await super.updateAudioSourceElement(audioSourceDomElement);
+        const newElement = await super.updateAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();
+        return newElement;
 
     }
 
@@ -108,7 +116,10 @@ export class LINEAR16AudioStream extends AudioStream {
             "audio_source_connected",
             this.audioContext.sampleRate
         );
-        this.dispatchEvent(event);
+        
+        window.setTimeout(() => {
+            this.dispatchEvent(event);
+        }, 1);
 
     }
 
