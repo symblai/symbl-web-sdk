@@ -2,7 +2,6 @@ import {DelegatedEventTarget, SymblEvent} from "../events";
 import {
     RealtimeInsightData,
     RealtimeMessageData,
-    RealtimeSpeechData,
     RealtimeTopicData,
     SymblData
 } from "../types";
@@ -50,7 +49,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * Checks if data is valid and if so dispatches the data as an event
      * @param data SymblData
      */
-    async emitEvents (data: any /* SymblData*/): Promise<void> {
+    emitEvents (data: any): void {
 
         if (data.type === "error") {
 
@@ -58,41 +57,41 @@ export class BaseConnection extends DelegatedEventTarget {
 
         }
 
-        const eventNameMapper = (data) => {
+        const eventNameMapper = (mapperData) => {
 
             const eventRenameMap = {
                 "recognition_result": "speech_recognition",
                 "recognition_started": "processing_started",
-                "recognition_stopped": "processing_stopped",
-            }
+                "recognition_stopped": "processing_stopped"
+            };
             const eventNameMap = {
                 "insight_response": {
-                    "data": data as RealtimeInsightData,
+                    "data": mapperData as RealtimeInsightData,
                     "name": null
                 },
                 "message": {
-                    data,
-                    "name": data.message
-                        ? data.message.type
+                    mapperData,
+                    "name": mapperData.message
+                        ? mapperData.message.type
                         : null
                 },
                 "message_response": {
-                    "data": data.messages as RealtimeMessageData[],
+                    "data": mapperData.messages as RealtimeMessageData[],
                     "name": "message"
                 },
                 "topic_response": {
-                    "data": data.topics as RealtimeTopicData[],
+                    "data": mapperData.topics as RealtimeTopicData[],
                     "name": "topic"
                 },
                 "tracker_response": {
-                    "data": data.trackers,
+                    "data": mapperData.trackers,
                     "name": "tracker"
                 }
             };
-            const eventType = eventNameMap[data.type] || {};
+            const eventType = eventNameMap[mapperData.type] || {};
             if (eventRenameMap[eventType.name]) {
 
-                eventType.name = eventRenameMap[eventType.name]
+                eventType.name = eventRenameMap[eventType.name];
 
             }
             return eventType;
@@ -158,6 +157,7 @@ export class BaseConnection extends DelegatedEventTarget {
     /**
      * @ignore
      */
+    // eslint-disable-next-line
     async onDataReceived (data: SymblData): Promise<void> {
 
         throw new TypeError("Function not implemented!");

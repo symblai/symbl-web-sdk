@@ -17,7 +17,9 @@ export class SubscribeAPIConnection extends BaseConnection {
     /**
      * @ignore
      */
-    private stream: any;
+    private stream: {
+        close: () => void
+    }
 
     /**
      * @ignore
@@ -83,12 +85,12 @@ export class SubscribeAPIConnection extends BaseConnection {
                     1
                 );
 
-            } catch (e) {
+            } catch (ex) {
 
                 // In any case of faliure, the `connectionState` should be set to `TERMINATED`
                 this.connectionState = ConnectionState.TERMINATED;
                 this._isConnected = false;
-                throw e;
+                throw ex;
 
             }
 

@@ -40,11 +40,15 @@ export class LINEAR16AudioStream extends AudioStream {
             this.sourceNode.disconnect();
             this.processorNode.disconnect();
             if (this.gainNode) {
+
                 this.gainNode.disconnect();
                 this.sourceNode.connect(this.gainNode);
                 this.gainNode.connect(this.processorNode);
+
             } else {
+
                 this.sourceNode.connect(this.processorNode);
+
             }
 
             // Element processing doesn't use gain.
@@ -72,9 +76,14 @@ export class LINEAR16AudioStream extends AudioStream {
             "audio_source_connected",
             this.audioContext.sampleRate
         );
-        window.setTimeout(() => {
-            this.dispatchEvent(event);
-        }, 1);
+        window.setTimeout(
+            () => {
+
+                this.dispatchEvent(event);
+
+            },
+            1
+        );
         return element;
 
     }
@@ -82,9 +91,9 @@ export class LINEAR16AudioStream extends AudioStream {
     /**
      * Detaches <audio> DOM element from the audio processor
      */
-    async detachAudioSourceElement (): Promise<void> {
+    detachAudioSourceElement (): void {
 
-        await super.detachAudioSourceElement();
+        super.detachAudioSourceElement();
 
     }
 
@@ -116,19 +125,24 @@ export class LINEAR16AudioStream extends AudioStream {
             "audio_source_connected",
             this.audioContext.sampleRate
         );
-        
-        window.setTimeout(() => {
-            this.dispatchEvent(event);
-        }, 1);
+
+        window.setTimeout(
+            () => {
+
+                this.dispatchEvent(event);
+
+            },
+            1
+        );
 
     }
 
     /**
      * Detaches audio input device from audio processor
      */
-    async detachAudioDevice (): Promise<void> {
+    detachAudioDevice (): void {
 
-        await super.detachAudioDevice();
+        super.detachAudioDevice();
 
     }
 

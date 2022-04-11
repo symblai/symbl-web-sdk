@@ -7,8 +7,8 @@ interface OpusConfig {
     streamPages: boolean;
     rawOpus: boolean;
     sourceNode?: MediaStreamAudioSourceNode;
-};
+}
 
 export {
     OpusConfig
-}
+};

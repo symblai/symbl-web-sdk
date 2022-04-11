@@ -1,7 +1,7 @@
 import {AudioStream} from "./AudioStream";
 import {OpusConfig} from "../../types";
-import {SymblEvent} from "../../events";
 import {Recorder} from "symbl-opus-encdec";
+import {SymblEvent} from "../../events";
 
 export class OpusAudioStream extends AudioStream {
 
@@ -72,8 +72,10 @@ export class OpusAudioStream extends AudioStream {
 
         if (!this.opusEncoder) {
 
-            this.mediaStream = this.mediaStream ? this.mediaStream : await AudioStream.getMediaStream();
-            this.config.sourceNode = <MediaStreamAudioSourceNode>this.sourceNode;
+            this.mediaStream = this.mediaStream
+                ? this.mediaStream
+                : await AudioStream.getMediaStream();
+            this.config.sourceNode = <MediaStreamAudioSourceNode> this.sourceNode;
             this.opusEncoder = new Recorder(this.config);
 
         }
@@ -96,10 +98,15 @@ export class OpusAudioStream extends AudioStream {
             "audio_source_connected",
             this.audioContext.sampleRate
         );
-        
-        window.setTimeout(() => {
-            this.dispatchEvent(event);
-        }, 1);
+
+        window.setTimeout(
+            () => {
+
+                this.dispatchEvent(event);
+
+            },
+            1
+        );
 
         return element;
 
@@ -108,9 +115,9 @@ export class OpusAudioStream extends AudioStream {
     /**
      * Detaches DOM <audio> element from the audio data stream
      */
-    async detachAudioSourceElement (): Promise<void> {
+    detachAudioSourceElement (): void {
 
-        await super.detachAudioSourceElement();
+        super.detachAudioSourceElement();
 
     }
 
@@ -143,19 +150,24 @@ export class OpusAudioStream extends AudioStream {
             "audio_source_connected",
             this.audioContext.sampleRate
         );
-        
-        window.setTimeout(() => {
-            this.dispatchEvent(event);
-        }, 1);
+
+        window.setTimeout(
+            () => {
+
+                this.dispatchEvent(event);
+
+            },
+            1
+        );
 
     }
 
     /**
      * Detaches the currently connected MediaStream audio input device from the audio data stream
      */
-    async detachAudioDevice (): Promise<void> {
+    detachAudioDevice (): void {
 
-        await super.detachAudioDevice();
+        super.detachAudioDevice();
         this.resetOpusEncoder();
 
     }

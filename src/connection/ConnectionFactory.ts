@@ -1,12 +1,4 @@
 import {
-    ConnectionConfig,
-    ConnectionProcessingState,
-    ConnectionState,
-    StreamingAPIConnectionConfig,
-    SubscribeAPIConnectionConfig,
-    SymblConnectionType
-} from "../types";
-import {
     StreamingAPIConnection,
     SubscribeAPIConnection
 } from "../api";
@@ -16,9 +8,11 @@ import {
 import {
     InvalidValueError
 } from "../error";
+import {
+    SymblConnectionType
+} from "../types";
 
 
-const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 export class ConnectionFactory {
 
     /**
@@ -28,7 +22,7 @@ export class ConnectionFactory {
      * @param audioStream AudioStream
      * @returns StreamingAPIConnection | SubscribeAPIConnection
      */
-    async instantiateConnection (connectionType: SymblConnectionType, sessionId: string, audioStream?: AudioStream): Promise < StreamingAPIConnection | SubscribeAPIConnection > {
+    instantiateConnection (connectionType: SymblConnectionType, sessionId: string, audioStream?: AudioStream): StreamingAPIConnection | SubscribeAPIConnection {
 
         if (!sessionId) {
 
@@ -36,7 +30,7 @@ export class ConnectionFactory {
 
         }
 
-        let ConnectionClass, connection;
+        let connection;
         // Validate the `connectionType` to be a valid enum present in the `ConnectionType` enum
         switch (connectionType) {
 

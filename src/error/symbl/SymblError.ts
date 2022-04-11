@@ -1,5 +1,5 @@
 import Logger from "../../logger/index";
-import { SymblEvent } from "../../events";
+import {SymblEvent} from "../../events";
 
 
 export default class SymblError extends Error {
@@ -13,7 +13,10 @@ export default class SymblError extends Error {
         this.name = name;
         this.logger.error(message);
         this.logger.trace(message);
-        window.dispatchEvent(new SymblEvent('error', this) as Event);
+        window.dispatchEvent(new SymblEvent(
+            "error",
+            this
+        ) as Event);
 
     }
 

@@ -1,4 +1,4 @@
-import SymblError from './SymblError';
+import SymblError from "./SymblError";
 
 export default class InvalidCredentialsError extends SymblError {
 

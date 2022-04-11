@@ -3,6 +3,30 @@ import {
     SymblData
 } from "../types";
 
+
+export class SymblEvent {
+
+    /**
+     * Creates custom event with supplied eventType and data
+     * @param eventType EventTypes
+     * @param data unknown
+     * @returns CustomEvent
+     */
+    constructor (eventType: EventTypes, data?: unknown) {
+
+        const detail: CustomEventInit = {
+            "detail": data
+        };
+        // eslint-disable-next-line no-constructor-return
+        return new CustomEvent<SymblData>(
+            eventType,
+            detail
+        );
+
+    }
+
+}
+
 export class DelegatedEventTarget implements EventTarget {
 
   private delegate = document.createDocumentFragment();
@@ -80,28 +104,6 @@ export class DelegatedEventTarget implements EventTarget {
       );
 
   }
-
-}
-
-export class SymblEvent {
-
-    /**
-     * Creates custom event with supplied eventType and data
-     * @param eventType EventTypes
-     * @param data unknown
-     * @returns CustomEvent
-     */
-    constructor (eventType: EventTypes, data?: unknown) {
-
-        const detail: CustomEventInit = {
-            "detail": data
-        };
-        return new CustomEvent<SymblData>(
-            eventType,
-            detail
-        );
-
-    }
 
 }
 

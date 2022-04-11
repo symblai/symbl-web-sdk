@@ -33,10 +33,10 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
      * Creates instance of JS SDK for network connectivity testing
      * @param sdk sdk
      */
-    constructor (sdk: sdk) { // Instance of JS-SDK
+    constructor (jsSDK: sdk) {
 
         super();
-        this.sdk = sdk;
+        this.sdk = jsSDK;
 
         /*
          * This.sdk.setNetworkConnectivityDispatcher(this);
@@ -58,7 +58,7 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
      * Checks if currently online by attempting to establish a network connection and retrying as many times as specified before determining
      * that there is no current connection
      */
-    public async onlineDetector (): Promise<void> {
+    public onlineDetector (): void {
 
         this.maxRetries = 1200;
         this.checkInterval = 3000;

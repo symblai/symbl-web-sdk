@@ -10,7 +10,6 @@ import {
     SymblAudioStreamType
 } from "../../types";
 
-const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 export class AudioStreamFactory {
 
     /**
@@ -18,7 +17,7 @@ export class AudioStreamFactory {
      * @param streamType SymblAudioStreamType
      * @returns audioStream - Opus or LINEAR16
      */
-    async instantiateStream (streamType: SymblAudioStreamType): Promise < AudioStream > {
+    instantiateStream (streamType: SymblAudioStreamType): AudioStream {
 
         let audioStream: AudioStream;
         switch (streamType.toUpperCase()) {

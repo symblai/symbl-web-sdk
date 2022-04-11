@@ -1,4 +1,4 @@
-import { SymblError } from '../symbl';
+import {SymblError} from "../symbl";
 
 export class NoAudioInputDeviceDetectedError extends SymblError {
 

@@ -114,10 +114,10 @@ export class StreamingAPIConnection extends BaseConnection {
 
         super(sessionId);
         this.config = {
-            "id": sessionId,
             "handlers": {
                 "onDataReceived": this.onDataReceived
-            }
+            },
+            "id": sessionId
         };
         this.audioStream = audioStream;
 
@@ -278,7 +278,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Check if already connected and if not connect to the websocket stream to send data.
      * @returns connection object
      */
-    async connect () {
+    async connect (reconnectOnError?: boolean): Promise<void> {
 
         // If the `connectionState` is already CONNECTED, log at warning level that a connection attempt is being made on an already open connection.
         if (this.connectionState === ConnectionState.CONNECTED) {
@@ -291,6 +291,11 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 // Else, set the `connectionState` to CONNECTING and establish a new connection with the Streaming API via JS SDK
                 this.connectionState = ConnectionState.CONNECTING;
+                if (reconnectOnError) {
+
+                    this.config.reconnectOnError = true;
+
+                }
                 const copiedHandlers = this.config.handlers;
                 const copiedConfig = JSON.parse(JSON.stringify(this.config));
                 copiedConfig.handlers = copiedHandlers;
@@ -308,7 +313,6 @@ export class StreamingAPIConnection extends BaseConnection {
                     },
                     1
                 );
-                return this;
 
             } catch (error) {
 
@@ -331,7 +335,7 @@ export class StreamingAPIConnection extends BaseConnection {
     /**
      * Disconnects from streaming websocket.
      */
-    async disconnect () {
+    async disconnect (): Promise<void> {
 
         // If the `connectionState` is already DISCONNECTED, log at warning level that a connection closure attempt is being made on an already closed connection.
         if (this.connectionState === ConnectionState.DISCONNECTED) {
@@ -349,19 +353,19 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 // Else, set the `connectionState` to DISCONNECTING and call the `close` function on the `stream` created via JS SDK
                 this.connectionState = ConnectionState.DISCONNECTING;
-                this.stream.close();
+                await this.stream.close();
                 // Set the `connectionState` to DISCONNECTED
                 this.connectionState = ConnectionState.DISCONNECTED;
                 // Set the value of `_isConnected` to `false` and emit the appropriate event
                 this._isConnected = false;
                 this.dispatchEvent(new SymblEvent("disconnected"));
 
-            } catch (e) {
+            } catch (ex) {
 
                 // Any failure to close the connection should be handled, and logged as an error.
                 this.connectionState = ConnectionState.TERMINATED;
                 this._isConnected = false;
-                throw e;
+                throw ex;
 
             }
 
@@ -409,7 +413,7 @@ export class StreamingAPIConnection extends BaseConnection {
             if (this.config.config && this.config.config.encoding) {
 
                 this.config.config.encoding = this.config.config.encoding.toUpperCase();
-                encoding = this.config.config.encoding;
+                ({encoding} = this.config.config);
 
             } else {
 
@@ -417,9 +421,12 @@ export class StreamingAPIConnection extends BaseConnection {
 
             }
 
-            const audioStream = this.audioStream
-                ? this.audioStream
-                : await new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
+            let {audioStream} = this;
+            if (!audioStream) {
+
+                audioStream = new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
+
+            }
             this.attachAudioStream(audioStream);
 
             if (this.audioStream.deviceProcessing) {
@@ -427,7 +434,7 @@ export class StreamingAPIConnection extends BaseConnection {
                 let device, mediaStream;
                 if (this.audioStream.sourceNode) {
 
-                    mediaStream = (<MediaStreamAudioSourceNode> this.audioStream.sourceNode).mediaStream;
+                    ({mediaStream} = (<MediaStreamAudioSourceNode> this.audioStream.sourceNode));
                     device = mediaStream.getAudioTracks()[0].getSettings().deviceId;
 
                 }
@@ -640,15 +647,20 @@ export class StreamingAPIConnection extends BaseConnection {
         try {
 
             this.audioStream.off(
-                "audio_source_disconnected",
+                "audio_source_changed",
                 this.onAudioSourceChanged
             );
 
-        } catch (e) {
+        } catch (ex) {
+
+            this.logger.debug(
+                "Error",
+                ex
+            );
 
         }
         this.audioStream.on(
-            "audio_source_disconnected",
+            "audio_source_changed",
             this.onAudioSourceChanged
         );
 
