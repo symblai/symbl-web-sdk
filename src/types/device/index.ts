@@ -11,42 +11,42 @@ declare namespace W3C {
 }
 
 interface NumberRange {
-    max?: number | undefined;
-    min?: number | undefined;
+    max?: number;
+    min?: number;
 }
 
 interface ConstrainNumberRange extends NumberRange {
-    exact?: number | undefined;
-    ideal?: number | undefined;
+    exact?: number;
+    ideal?: number;
 }
 
 interface ConstrainStringParameters {
-    exact?: string | string[] | undefined;
-    ideal?: string | string[] | undefined;
+    exact?: string | string[];
+    ideal?: string | string[];
 }
 
 interface MediaStreamConstraints {
-    video?: boolean | MediaTrackConstraints | undefined;
-    audio?: boolean | MediaTrackConstraints | undefined;
+    video?: boolean | MediaTrackConstraints;
+    audio?: boolean | MediaTrackConstraints;
 }
 
 interface MediaTrackConstraints extends MediaTrackConstraintSet {
-    advanced?: MediaTrackConstraintSet[] | undefined;
+    advanced?: MediaTrackConstraintSet[];
 }
 
 interface MediaTrackConstraintSet {
-    width?: W3C.ConstrainLong | undefined;
-    height?: W3C.ConstrainLong | undefined;
-    aspectRatio?: W3C.ConstrainDouble | undefined;
-    frameRate?: W3C.ConstrainDouble | undefined;
-    facingMode?: W3C.ConstrainString | undefined;
-    volume?: W3C.ConstrainDouble | undefined;
-    sampleRate?: W3C.ConstrainLong | undefined;
-    sampleSize?: W3C.ConstrainLong | undefined;
-    echoCancellation?: W3C.ConstrainBoolean | undefined;
-    latency?: W3C.ConstrainDouble | undefined;
-    deviceId?: W3C.ConstrainString | undefined;
-    groupId?: W3C.ConstrainString | undefined;
+    width?: W3C.ConstrainLong;
+    height?: W3C.ConstrainLong;
+    aspectRatio?: W3C.ConstrainDouble;
+    frameRate?: W3C.ConstrainDouble;
+    facingMode?: W3C.ConstrainString;
+    volume?: W3C.ConstrainDouble;
+    sampleRate?: W3C.ConstrainLong;
+    sampleSize?: W3C.ConstrainLong;
+    echoCancellation?: W3C.ConstrainBoolean;
+    latency?: W3C.ConstrainDouble;
+    deviceId?: W3C.ConstrainString;
+    groupId?: W3C.ConstrainString;
 }
 
 interface MediaStream extends EventTarget {
