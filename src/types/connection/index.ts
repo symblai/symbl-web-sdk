@@ -1,10 +1,6 @@
 import {
-    Encoding,
-    InsightType,
     Speaker,
-    StreamingAPIModifyRequest,
-    StreamingAPIStartRequest,
-    StreamingAPIStopRequest
+    StreamingAPIStartRequest
 } from "../symbl";
 import {
     RealtimeHandlers
