@@ -144,12 +144,23 @@ export class AudioStream extends DelegatedEventTarget {
                 foundDevice = inputDevices[0];
 
             }
-            stream = await navigator.mediaDevices.getUserMedia({
-                "audio": {
-                    groupId: foundDevice.groupId
-                },
-                "video": false
-            });
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    "audio": {
+                        groupId: {
+                            exact: foundDevice.groupId
+                        }
+                    },
+                    "video": false
+                });
+            } catch(e) {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    "audio": {
+                        groupId: foundDevice.groupId
+                    },
+                    "video": false
+                });
+            }
 
         } else {
 
