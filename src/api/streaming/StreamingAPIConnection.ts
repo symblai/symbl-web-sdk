@@ -85,7 +85,7 @@ const validateMeetingTitle = (configObj): boolean => {
 
     return true;
 
-}
+};
 
 /**
  * Checks the confidence threshold config
@@ -105,7 +105,7 @@ const validateConfidenceThreshold = (configObj): boolean => {
 
     return true;
 
-}
+};
 
 /**
  * Checks the encoding and sample rate config
@@ -153,7 +153,7 @@ const validateEncoding = (configObj): boolean => {
 
     return true;
 
-}
+};
 
 /**
  * Checks each individual property of configuration object
@@ -197,7 +197,8 @@ const validateDisconnectionConfig = (config): boolean => {
     }
 
     return true;
-}
+
+};
 
 /**
  * Checks each individual property of configuration object
@@ -339,7 +340,7 @@ export class StreamingAPIConnection extends BaseConnection {
             insightTypes,
             "config": configObj,
             speaker,
-            reconnectOnError,
+            reconnectOnError
         } = config;
 
         validateId(id);
