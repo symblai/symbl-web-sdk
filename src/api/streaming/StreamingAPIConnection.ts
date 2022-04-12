@@ -45,6 +45,7 @@ const validateInsightTypes = (insightTypes: Array<string>): boolean => {
         }
 
     }
+
     return true;
 
 };
@@ -61,28 +62,60 @@ const validateId = (id: string): boolean => {
         throw new InvalidValueError("StreamingAPIConnectionConfig argument 'id' field should be a type string.");
 
     }
+
     return true;
 
 };
 
 /**
- * Checks each individual property of configuration object
+ * Checks the meeting title config
  * @param configObj object
  * @returns boolean
  */
-const validateConfigObj = (configObj): boolean => {
+const validateMeetingTitle = (configObj): boolean => {
 
-    const {confidenceThreshold, meetingTitle, encoding, sampleRateHertz} = configObj;
-    if (confidenceThreshold && typeof confidenceThreshold !== "number") {
+    const {meetingTitle} = configObj;
 
-        throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.");
 
-    }
     if (meetingTitle && typeof meetingTitle !== "string") {
 
         throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.meetingTitle' field should be a type string.");
 
     }
+
+    return true;
+
+}
+
+/**
+ * Checks the confidence threshold config
+ * @param configObj object
+ * @returns boolean
+ */
+const validateConfidenceThreshold = (configObj): boolean => {
+
+    const {confidenceThreshold} = configObj;
+
+
+    if (confidenceThreshold && typeof confidenceThreshold !== "number") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.");
+
+    }
+
+    return true;
+
+}
+
+/**
+ * Checks the encoding and sample rate config
+ * @param configObj object
+ * @returns boolean
+ */
+const validateEncoding = (configObj): boolean => {
+
+    const {encoding, sampleRateHertz} = configObj;
+
     if (sampleRateHertz && typeof sampleRateHertz !== "number") {
 
         throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.");
@@ -117,6 +150,68 @@ const validateConfigObj = (configObj): boolean => {
         }
 
     }
+
+    return true;
+
+}
+
+/**
+ * Checks each individual property of configuration object
+ * @param configObj object
+ * @returns boolean
+ */
+const validateDisconnectionConfig = (config): boolean => {
+
+    const {
+        reconnectOnError,
+        disconnectOnStopRequest,
+        disconnectOnStopRequestTimeout,
+        noConnectionTimeout
+    } = config;
+
+    if (Boolean(disconnectOnStopRequest) && typeof disconnectOnStopRequest !== "boolean") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.");
+
+    }
+
+    if (disconnectOnStopRequest === false && disconnectOnStopRequestTimeout) {
+
+        if (typeof disconnectOnStopRequestTimeout !== "number" ||
+        (disconnectOnStopRequestTimeout < SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN || disconnectOnStopRequestTimeout > SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX)) {
+
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX}.`);
+
+        }
+
+    }
+
+    if (noConnectionTimeout) {
+
+        if (typeof noConnectionTimeout !== "number" ||
+        (noConnectionTimeout < SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN || noConnectionTimeout > SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX)) {
+
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX}.`);
+
+        }
+
+    }
+
+    return true;
+}
+
+/**
+ * Checks each individual property of configuration object
+ * @param configObj object
+ * @returns boolean
+ */
+const validateConfigObj = (configObj): boolean => {;
+
+    validateConfidenceThreshold(configObj);
+
+    validateMeetingTitle(configObj);
+
+    validateEncoding(configObj);
     return true;
 
 };
@@ -246,9 +341,6 @@ export class StreamingAPIConnection extends BaseConnection {
             "config": configObj,
             speaker,
             reconnectOnError,
-            disconnectOnStopRequest,
-            disconnectOnStopRequestTimeout,
-            noConnectionTimeout
         } = config;
 
         validateId(id);
@@ -277,33 +369,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
         }
 
-        if (Boolean(disconnectOnStopRequest) && typeof disconnectOnStopRequest !== "boolean") {
-
-            throw new InvalidValueError("StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.");
-
-        }
-
-        if (disconnectOnStopRequest === false && disconnectOnStopRequestTimeout) {
-
-            if (typeof disconnectOnStopRequestTimeout !== "number" ||
-            (disconnectOnStopRequestTimeout < SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN || disconnectOnStopRequestTimeout > SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX)) {
-
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX}.`);
-
-            }
-
-        }
-
-        if (noConnectionTimeout) {
-
-            if (typeof noConnectionTimeout !== "number" ||
-            (noConnectionTimeout < SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN || noConnectionTimeout > SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX)) {
-
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX}.`);
-
-            }
-
-        }
+        validateDisconnectionConfig(config);
 
         return config;
 
