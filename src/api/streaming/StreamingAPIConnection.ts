@@ -370,7 +370,7 @@ export class StreamingAPIConnection extends BaseConnection {
     /**
      * Disconnects from streaming websocket.
      */
-    async disconnect (): Promise<void> {
+    disconnect (): void {
 
         // If the `connectionState` is already DISCONNECTED, log at warning level that a connection closure attempt is being made on an already closed connection.
         if (this.connectionState === ConnectionState.DISCONNECTED) {
@@ -388,7 +388,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 // Else, set the `connectionState` to DISCONNECTING and call the `close` function on the `stream` created via JS SDK
                 this.connectionState = ConnectionState.DISCONNECTING;
-                await this.stream.close();
+                this.stream.close();
                 // Set the `connectionState` to DISCONNECTED
                 this.connectionState = ConnectionState.DISCONNECTED;
                 // Set the value of `_isConnected` to `false` and emit the appropriate event
@@ -540,11 +540,11 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 } else if (this.audioStream.deviceProcessing) {
 
-                    await this.audioStream.detachAudioDevice();
+                    this.audioStream.detachAudioDevice();
 
                 } else {
 
-                    await this.audioStream.detachAudioSourceElement();
+                    this.audioStream.detachAudioSourceElement();
 
                 }
 
@@ -585,7 +585,7 @@ export class StreamingAPIConnection extends BaseConnection {
             if (this.isProcessing() && audioSourceChangedEvent.type === "audio_source_changed") {
 
                 this.restartProcessing = true;
-                await this.audioStream.detachAudioDevice();
+                this.audioStream.detachAudioDevice();
                 await this.stopProcessing();
 
             } else if (!this.isProcessing() && audioSourceChangedEvent.type === "audio_source_connected" && this.restartProcessing) {
@@ -627,9 +627,9 @@ export class StreamingAPIConnection extends BaseConnection {
      * Emits events based on data received from websocket
      * @param data SymblData
      */
-    async onDataReceived (data: SymblData): Promise<void> {
+    onDataReceived (data: SymblData): void {
 
-        await super.emitEvents(data);
+        super.emitEvents(data);
 
     }
 

@@ -107,7 +107,7 @@ export class SubscribeAPIConnection extends BaseConnection {
     /**
      * Disconnects subscriber from active websocket connection
      */
-    async disconnect (): Promise<void> {
+    disconnect (): void {
 
         // If the `connectionState` is already DISCONNECTED, log a warning.
         if (this.connectionState === ConnectionState.DISCONNECTED) {
@@ -125,7 +125,7 @@ export class SubscribeAPIConnection extends BaseConnection {
         } else {
 
             this.connectionState = ConnectionState.DISCONNECTING;
-            await this.stream.close();
+            this.stream.close();
 
             // Set the `connectionState` to DISCONNECTED
             this.connectionState = ConnectionState.DISCONNECTED;
@@ -154,9 +154,9 @@ export class SubscribeAPIConnection extends BaseConnection {
      * `emitEvents` to parse which specifics events are to be fired
      * @param data SymblData
      */
-    async onDataReceived (data: SymblData): Promise<void> {
+    onDataReceived (data: SymblData): void {
 
-        await super.emitEvents(data);
+        super.emitEvents(data);
 
     }
 
