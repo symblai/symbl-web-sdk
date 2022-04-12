@@ -23,8 +23,8 @@ const validConfig = {
         },
         reconnectOnError: true,
         disconnectOnStopRequest: false,
-        disconnectOnStopRequestTimeout: 3600,
-        noConnectionTimeout: 3600,
+        disconnectOnStopRequestTimeout: 1800,
+        noConnectionTimeout: 1800,
 }
 
 describe('streamingAPIConnection.validateConfig', () => {
@@ -409,7 +409,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             const invalidConfig = {
                 ...validConfig,
                 disconnectOnStopRequest: 'non-boolean-invalid-type',
-                disconnectOnStopRequestTimeout: 3000
+                disconnectOnStopRequestTimeout: 1000
             }
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
@@ -430,13 +430,13 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 3600.`)
+                new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 1800.`)
             );
         }
     );
 
     test(
-        `config with 'disconnectOnStopRequest' set to false, but 'disconnectOnStopRequest' is out of range (0 - 3600).`,
+        `config with 'disconnectOnStopRequest' set to false, but 'disconnectOnStopRequest' is out of range (0 - 1800).`,
         async () => {
             const invalidConfig = {
                 ...validConfig,
@@ -446,7 +446,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 3600.`)
+                new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between 0 and 1800.`)
             );
         }
     );
@@ -461,13 +461,13 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new InvalidValueError(`StreamingAPIConnectionConfig: 'noConnectionTimeout' optional field should be a type number.`)
+                new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between 0 and 1800.`)
             );
         }
     );
 
     test(
-        `config with 'noConnectionTimeout' that is out of range (0 - 3600)`,
+        `config with 'noConnectionTimeout' that is out of range (0 - 1800)`,
         async () => {
             const invalidConfig = {
                 ...validConfig,
@@ -476,7 +476,7 @@ describe('streamingAPIConnection.validateConfig', () => {
             await expect(async () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
-                new InvalidValueError(`StreamingAPIConnectionConfig: 'noConnectionTimeout' optional field should be a type number.`)
+                new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between 0 and 1800.`)
             );
         }
     );
