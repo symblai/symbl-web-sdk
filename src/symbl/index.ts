@@ -107,8 +107,6 @@ export default class Symbl {
             // Throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(', ')}`)
         }
 
-        const alphaNumericRegex = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i;
-
         if (!appId && !appSecret && !accessToken) {
 
             throw new InvalidCredentialsError("Please provide an AppID & AppSecret or an AccessToken");
@@ -128,7 +126,7 @@ export default class Symbl {
         }
 
         if (appId &&
-            (appId.length !== 64 || !appId.match(alphaNumericRegex))
+            (appId.length !== 64 || !appId.match(SYMBL_DEFAULTS.AUTH_REGEX))
         ) {
 
             throw new InvalidCredentialsError("AppID is not valid");
@@ -142,7 +140,7 @@ export default class Symbl {
         }
 
         if (appSecret &&
-            (appSecret.length !== 128 || !appSecret.match(alphaNumericRegex))
+            (appSecret.length !== 128 || !appSecret.match(SYMBL_DEFAULTS.AUTH_REGEX))
         ) {
 
             throw new InvalidCredentialsError("AppSecret is not valid");
@@ -205,7 +203,7 @@ export default class Symbl {
              *     symblConfig
              * );
              */
-            const initConfig: any = {};
+            const initConfig: SymblConfig = {};
 
             if (symblConfig.accessToken) {
 
