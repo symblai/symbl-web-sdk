@@ -45,6 +45,7 @@ const validateInsightTypes = (insightTypes: Array<string>): boolean => {
         }
 
     }
+
     return true;
 
 };
@@ -61,28 +62,60 @@ const validateId = (id: string): boolean => {
         throw new InvalidValueError("StreamingAPIConnectionConfig argument 'id' field should be a type string.");
 
     }
+
     return true;
 
 };
 
 /**
- * Checks each individual property of configuration object
+ * Checks the meeting title config
  * @param configObj object
  * @returns boolean
  */
-const validateConfigObj = (configObj): boolean => {
+const validateMeetingTitle = (configObj): boolean => {
 
-    const {confidenceThreshold, meetingTitle, encoding, sampleRateHertz} = configObj;
-    if (confidenceThreshold && typeof confidenceThreshold !== "number") {
+    const {meetingTitle} = configObj;
 
-        throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.");
 
-    }
     if (meetingTitle && typeof meetingTitle !== "string") {
 
         throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.meetingTitle' field should be a type string.");
 
     }
+
+    return true;
+
+};
+
+/**
+ * Checks the confidence threshold config
+ * @param configObj object
+ * @returns boolean
+ */
+const validateConfidenceThreshold = (configObj): boolean => {
+
+    const {confidenceThreshold} = configObj;
+
+
+    if (confidenceThreshold && typeof confidenceThreshold !== "number") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.");
+
+    }
+
+    return true;
+
+};
+
+/**
+ * Checks the encoding and sample rate config
+ * @param configObj object
+ * @returns boolean
+ */
+const validateEncoding = (configObj): boolean => {
+
+    const {encoding, sampleRateHertz} = configObj;
+
     if (sampleRateHertz && typeof sampleRateHertz !== "number") {
 
         throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.");
@@ -117,6 +150,68 @@ const validateConfigObj = (configObj): boolean => {
         }
 
     }
+
+    return true;
+
+};
+
+/**
+ * Checks each individual property of configuration object
+ * @param configObj object
+ * @returns boolean
+ */
+const validateDisconnectionConfig = (config): boolean => {
+
+    const {
+        disconnectOnStopRequest,
+        disconnectOnStopRequestTimeout,
+        noConnectionTimeout
+    } = config;
+
+    if (Boolean(disconnectOnStopRequest) && typeof disconnectOnStopRequest !== "boolean") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.");
+
+    }
+
+    if (disconnectOnStopRequest === false && disconnectOnStopRequestTimeout) {
+
+        if (typeof disconnectOnStopRequestTimeout !== "number" ||
+        (disconnectOnStopRequestTimeout < SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN || disconnectOnStopRequestTimeout > SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX)) {
+
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX}.`);
+
+        }
+
+    }
+
+    if (noConnectionTimeout) {
+
+        if (typeof noConnectionTimeout !== "number" ||
+        (noConnectionTimeout < SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN || noConnectionTimeout > SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX)) {
+
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX}.`);
+
+        }
+
+    }
+
+    return true;
+
+};
+
+/**
+ * Checks each individual property of configuration object
+ * @param configObj object
+ * @returns boolean
+ */
+const validateConfigObj = (configObj): boolean => {
+
+    validateConfidenceThreshold(configObj);
+
+    validateMeetingTitle(configObj);
+
+    validateEncoding(configObj);
     return true;
 
 };
@@ -245,10 +340,7 @@ export class StreamingAPIConnection extends BaseConnection {
             insightTypes,
             "config": configObj,
             speaker,
-            reconnectOnError,
-            disconnectOnStopRequest,
-            disconnectOnStopRequestTimeout,
-            noConnectionTimeout
+            reconnectOnError
         } = config;
 
         validateId(id);
@@ -277,33 +369,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
         }
 
-        if (Boolean(disconnectOnStopRequest) && typeof disconnectOnStopRequest !== "boolean") {
-
-            throw new InvalidValueError("StreamingAPIConnectionConfig: 'disconnectOnStopRequest' field should be a type boolean.");
-
-        }
-
-        if (disconnectOnStopRequest === false && disconnectOnStopRequestTimeout) {
-
-            if (typeof disconnectOnStopRequestTimeout !== "number" ||
-            (disconnectOnStopRequestTimeout < SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN || disconnectOnStopRequestTimeout > SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX)) {
-
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'disconnectOnStopRequestTimeout' field with a positive integer between ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.DISCONNECT_TIMEOUT_MAX}.`);
-
-            }
-
-        }
-
-        if (noConnectionTimeout) {
-
-            if (typeof noConnectionTimeout !== "number" ||
-            (noConnectionTimeout < SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN || noConnectionTimeout > SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX)) {
-
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MIN} and ${SYMBL_DEFAULTS.NO_CONNECTION_TIMEOUT_MAX}.`);
-
-            }
-
-        }
+        validateDisconnectionConfig(config);
 
         return config;
 
@@ -370,7 +436,7 @@ export class StreamingAPIConnection extends BaseConnection {
     /**
      * Disconnects from streaming websocket.
      */
-    async disconnect (): Promise<void> {
+    disconnect (): void {
 
         // If the `connectionState` is already DISCONNECTED, log at warning level that a connection closure attempt is being made on an already closed connection.
         if (this.connectionState === ConnectionState.DISCONNECTED) {
@@ -388,7 +454,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 // Else, set the `connectionState` to DISCONNECTING and call the `close` function on the `stream` created via JS SDK
                 this.connectionState = ConnectionState.DISCONNECTING;
-                await this.stream.close();
+                this.stream.close();
                 // Set the `connectionState` to DISCONNECTED
                 this.connectionState = ConnectionState.DISCONNECTED;
                 // Set the value of `_isConnected` to `false` and emit the appropriate event
@@ -540,11 +606,11 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 } else if (this.audioStream.deviceProcessing) {
 
-                    await this.audioStream.detachAudioDevice();
+                    this.audioStream.detachAudioDevice();
 
                 } else {
 
-                    await this.audioStream.detachAudioSourceElement();
+                    this.audioStream.detachAudioSourceElement();
 
                 }
 
@@ -585,7 +651,7 @@ export class StreamingAPIConnection extends BaseConnection {
             if (this.isProcessing() && audioSourceChangedEvent.type === "audio_source_changed") {
 
                 this.restartProcessing = true;
-                await this.audioStream.detachAudioDevice();
+                this.audioStream.detachAudioDevice();
                 await this.stopProcessing();
 
             } else if (!this.isProcessing() && audioSourceChangedEvent.type === "audio_source_connected" && this.restartProcessing) {
@@ -627,9 +693,9 @@ export class StreamingAPIConnection extends BaseConnection {
      * Emits events based on data received from websocket
      * @param data SymblData
      */
-    async onDataReceived (data: SymblData): Promise<void> {
+    onDataReceived (data: SymblData): void {
 
-        await super.emitEvents(data);
+        super.emitEvents(data);
 
     }
 
@@ -648,11 +714,6 @@ export class StreamingAPIConnection extends BaseConnection {
      * @param data StreamingAPIRequest
      */
     sendJSON (data: StreamingAPIStartRequest | StreamingAPIStopRequest | StreamingAPIModifyRequest): void {
-
-        /*
-         * TODO:
-         * Validate `data` before stringifying
-         */
 
         // `sendAudio` function exposed by the JS SDK currently accepts any serializable data to be sent over the channel
         this.stream.sendAudio(JSON.stringify(data));
