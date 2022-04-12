@@ -156,7 +156,7 @@ export class BaseConnection extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    // eslint-disable-next-line re
+    // eslint-disable-next-line
     async onDataReceived (data: SymblData): Promise<void> {
 
         throw new TypeError("Function not implemented!");

@@ -205,6 +205,7 @@ export class OpusAudioStream extends AudioStream {
         if (this.opusEncoder) {
 
             await this.opusEncoder.pause();
+            // eslint-disable-next-line
             this.opusEncoder.ondataavailable = () => {};
             await this.opusEncoder.close();
             this.opusEncoder = null;
