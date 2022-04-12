@@ -77,7 +77,7 @@ These are configs that have been added that are specific to the Web SDK.
 | Name         | Default | Description |
 |--------------|---------|-------|
 | `sourceNode` | `null`  | For passing in an external [MediaStreamAudioSourceNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioSourceNode/MediaStreamAudioSourceNode) object. By default the Web SDK will handle audio context and source nodes on it's own, though if you wish to handle that externally we've provided that option. |
-| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
+| `reconnectOnError` | `false` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
 
 
 Usage Example:
@@ -343,14 +343,15 @@ const connectionConfig = {
 };
 
 (async () => {
-	const stream = await symbl.createStream(connectionConfig);
-	await symbl.start(stream);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
 ## Muting and unmuting the connected device
 
 You can mute and unmute the connected device by simply calling `symbl.mute()` or `symbl.unmute()`.
+
+Note that if `disconnectOnStopRequest` is passed in as `false` in the `createStream` function call, the `mute` and `unmute` function also invoke the `start` and `stop` functions, that signal the Streaming API to start and stop processing the audio being sent in between these two calls.  
 
 ### Muting
 
@@ -432,61 +433,17 @@ const connectionConfig = {
 };
 
 (async () => {
-	const stream = await symbl.createStream(connectionConfig);
-	await symbl.start(stream);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
 
-## Subscribing to an existing realtime connection with Subscribe API
+## Stopping Streaming API connection
 
-With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
-
-### Current call signature
+In order to end the connection to the Streaming API you'll need to use the following command with your `stream` object:
 
 ```js
-symbl.subscribeToStream(id, {
-	reconnectOnError: true,
-	handlers: {
-		onMessage: (message) => { ... },
-		onSubscribe: () => { ... },
-		onClose: () => { ... },
-		onReconnectFail: (err) => { ... },
-	}
-});
-```
-
-### Deprecated call signature
-
-This way of using the subscribeToSream function has been deprecated. It will still work but might not in future versions. Please convert to the current call signature above. The function passed is equivalent to the `onMessage` handler in the new call signature.
-
-```js
-symbl.subscribeToStream(id, (data) => {
-	console.log('data:', data);
-})
-```
-
-### Subscribe API Options
-
-| Name         | Default | Description |
-|--------------|---------|-------|
-| `reconnectOnError` | `true` | If `true` the Web SDK will attempt to reconnect to the WebSocket in case of error. You can also make sure of our `onReconnectFail` callback which will fire in case the reconnection attempt fails. |
-
-### Subscribe API Handlers
-
-| Name | Description |
-|------|-------------|
-| `onMessage(message)` | Fired any time a message is received. |
-| `onSubscribe()` | Fired when the connection intially subscribes |
-| `onClose()` | Fired when the connection is closed |
-| `onReconnectFail(err)` | Fires when the reconnection attempt fails. Related to the `reconnectOnError` config. |
-
-## Stopping realtime connection
-
-In order to end the connection to the realtime WebSocket you'll need to use the following command with your `connection` object:
-
-```js
-symbl.stopRequest(connection);
+symbl.stopRequest(stream);
 ```
 
 If you do not sever the connection you could use more minutes of time than intended, so it is recommended to always end the connection programmatically.
@@ -504,6 +461,28 @@ As a simple test of the Telephony API you can call a phone number and see a live
 <!-- ## Async Example
 
 * Will update with async example. -->
+
+## Subscribing to an existing Streaming API connection with Subscribe API
+
+With the Subscribe API you can connect to an existing connection via the connection ID. Building on the previous example we can connect to that ID. You'll want to open this example in a different browser while the realtime transcription example is running.
+
+```js
+/**
+ * id: connectionId
+ * cb: message callback
+ * reconnectOnerror: boolean
+ */
+const conversationStream = await symbl.subscribeToStream(id, (message) => { ... }, true);
+```
+
+## Closing the Subscribe API connection
+
+In order to end the connection to the Subscribe API WebSocket, you'll need to use the following command with your `conversationStream` object:
+
+```js
+conversationStream.close();
+```
+
 
 ## Need support?
 

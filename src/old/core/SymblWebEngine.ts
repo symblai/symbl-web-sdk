@@ -422,6 +422,7 @@ export default class SymblWebEngine {
             const deviceManager = this.getDeviceManager(connection);
             await deviceManager.stopAudioSend();
             await connection.stop();
+            await connection.close();
             if (!this.realtimeConfig.sourceNode) {
                 await deviceManager.deviceDisconnect();
             }
@@ -619,8 +620,7 @@ export default class SymblWebEngine {
         this.logger.info(`Symbl: Subscribing to Streaming at ${connectionId}`);
 
         try {
-
-            await this.sdk.subscribeToStream(
+            const subscribedStream = this.sdk.subscribeToStream(
                 connectionId,
                 {
                     reconnectOnError,
@@ -632,6 +632,7 @@ export default class SymblWebEngine {
 
             this.logger.info(`Symbl: Subscribed to Streaming at ${connectionId}`);
 
+            return subscribedStream;
         } catch (err) {
 
             throw new ConnectionError(err);
