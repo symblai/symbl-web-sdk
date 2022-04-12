@@ -7,7 +7,6 @@ import {
 } from "../types";
 import {InvalidValueError} from "../error";
 import Logger from "../logger";
-import registerNetworkConnectivityDetector from "../network";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
 export class BaseConnection extends DelegatedEventTarget {
@@ -157,7 +156,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * @ignore
      */
     // eslint-disable-next-line
-    async onDataReceived (data: SymblData): Promise<void> {
+    onDataReceived (data: SymblData): void {
 
         throw new TypeError("Function not implemented!");
 
