@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "1.0.0-beta.58",
+  "version": "1.0.0",
   "description": "Symbl.ai Web SDK for accessing Symbl.ai APIs directly from the web browser.",
   "homepage": "https://github.com/symblai/symbl-web-sdk",
   "repository": {

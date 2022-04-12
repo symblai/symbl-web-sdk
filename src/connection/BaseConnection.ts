@@ -48,7 +48,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * Checks if data is valid and if so dispatches the data as an event
      * @param data SymblData
      */
-    emitEvents (data: any): void {
+    emitEvents (data: any /* SymblData*/): void {
 
         if (data.type === "error") {
 
@@ -69,7 +69,7 @@ export class BaseConnection extends DelegatedEventTarget {
                     "name": null
                 },
                 "message": {
-                    mapperData,
+                    "data": mapperData,
                     "name": mapperData.message
                         ? mapperData.message.type
                         : null
@@ -156,7 +156,7 @@ export class BaseConnection extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    // eslint-disable-next-line
+    // eslint-disable-next-line re
     async onDataReceived (data: SymblData): Promise<void> {
 
         throw new TypeError("Function not implemented!");
