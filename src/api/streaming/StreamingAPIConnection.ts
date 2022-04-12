@@ -2,6 +2,7 @@ import {AudioStream, AudioStreamFactory} from "../../audio";
 import {
     ConnectionProcessingState,
     ConnectionState,
+    Speaker,
     StreamingAPIConnectionConfig,
     StreamingAPIModifyRequest,
     StreamingAPIStartRequest,
@@ -31,7 +32,7 @@ const validateInsightTypes = (insightTypes: Array<string>): boolean => {
 
     if (!Array.isArray(insightTypes)) {
 
-        return false;
+        throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${SYMBL_DEFAULTS.VALID_INSIGHT_TYPES}`);
 
     }
 
@@ -39,9 +40,103 @@ const validateInsightTypes = (insightTypes: Array<string>): boolean => {
 
         if (!SYMBL_DEFAULTS.VALID_INSIGHT_TYPES.includes(insight)) {
 
-            return false;
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${SYMBL_DEFAULTS.VALID_INSIGHT_TYPES}`);
 
         }
+
+    }
+    return true;
+
+};
+
+/**
+ * Checks if ID exists and is a string
+ * @param id string
+ * @returns boolean
+ */
+const validateId = (id: string): boolean => {
+
+    if (id && typeof id !== "string") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig argument 'id' field should be a type string.");
+
+    }
+    return true;
+
+};
+
+/**
+ * Checks each individual property of configuration object
+ * @param configObj object
+ * @returns boolean
+ */
+const validateConfigObj = (configObj): boolean => {
+
+    const {confidenceThreshold, meetingTitle, encoding, sampleRateHertz} = configObj;
+    if (confidenceThreshold && typeof confidenceThreshold !== "number") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.");
+
+    }
+    if (meetingTitle && typeof meetingTitle !== "string") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.meetingTitle' field should be a type string.");
+
+    }
+    if (sampleRateHertz && typeof sampleRateHertz !== "number") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.");
+
+    }
+
+    if (encoding) {
+
+        if (typeof encoding !== "string") {
+
+            throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.encoding' field should be a type string.");
+
+        }
+        if (!SYMBL_DEFAULTS.VALID_ENCODING.includes(encoding.toUpperCase())) {
+
+            throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${SYMBL_DEFAULTS.VALID_ENCODING}.`);
+
+        }
+
+    }
+    if (sampleRateHertz) {
+
+        if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+
+            throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
+
+        }
+        if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+
+            throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
+
+        }
+
+    }
+    return true;
+
+};
+
+/**
+ * Checks individual properties of Speaker object
+ * @param speaker Speaker
+ * @returns boolean
+ */
+const validateSpeaker = (speaker: Speaker): boolean => {
+
+    const {userId, name} = speaker;
+    if (userId && typeof userId !== "string") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'speaker.userId' field should be a type string.");
+
+    }
+    if (name && typeof name !== "string") {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'speaker.name' field should be a type string.");
 
     }
 
@@ -141,6 +236,8 @@ export class StreamingAPIConnection extends BaseConnection {
      *In case the sample rate is not supported by the AudioEncoding, throw `NotSupportedSampleRateError`
      *If the validation of the `config` is successful, return the validated config
      */
+
+
     static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig | StreamingAPIStartRequest {
 
         const {
@@ -154,85 +251,23 @@ export class StreamingAPIConnection extends BaseConnection {
             noConnectionTimeout
         } = config;
 
-        if (id && typeof id !== "string") {
-
-            throw new InvalidValueError("StreamingAPIConnectionConfig argument 'id' field should be a type string.");
-
-        }
+        validateId(id);
 
         if (insightTypes) {
 
-            if (!validateInsightTypes(insightTypes)) {
-
-                throw new InvalidValueError(`StreamingAPIConnectionConfig: 'insightTypes' should be an array of valid insightType strings - ${SYMBL_DEFAULTS.VALID_INSIGHT_TYPES}`);
-
-            }
+            validateInsightTypes(insightTypes);
 
         }
 
         if (configObj) {
 
-            const {confidenceThreshold, meetingTitle, encoding, sampleRateHertz} = configObj;
-            if (confidenceThreshold && typeof confidenceThreshold !== "number") {
-
-                throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.confidenceThreshold' field should be a type number.");
-
-            }
-            if (meetingTitle && typeof meetingTitle !== "string") {
-
-                throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.meetingTitle' field should be a type string.");
-
-            }
-            if (sampleRateHertz && typeof sampleRateHertz !== "number") {
-
-                throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.sampleRateHertz' field should be a type number.");
-
-            }
-
-            if (encoding) {
-
-                if (typeof encoding !== "string") {
-
-                    throw new InvalidValueError("StreamingAPIConnectionConfig: 'config.encoding' field should be a type string.");
-
-                }
-                if (!SYMBL_DEFAULTS.VALID_ENCODING.includes(encoding.toUpperCase())) {
-
-                    throw new NotSupportedAudioEncodingError(`StreamingAPIConnectionConfig: 'config.encoding' only supports the following types - ${SYMBL_DEFAULTS.VALID_ENCODING}.`);
-
-                }
-
-            }
-            if (sampleRateHertz) {
-
-                if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
-
-                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
-
-                }
-                if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
-
-                    throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
-
-                }
-
-            }
+            validateConfigObj(configObj);
 
         }
 
         if (speaker) {
 
-            const {userId, name} = speaker;
-            if (userId && typeof userId !== "string") {
-
-                throw new InvalidValueError("StreamingAPIConnectionConfig: 'speaker.userId' field should be a type string.");
-
-            }
-            if (name && typeof name !== "string") {
-
-                throw new InvalidValueError("StreamingAPIConnectionConfig: 'speaker.name' field should be a type string.");
-
-            }
+            validateSpeaker(speaker);
 
         }
 
