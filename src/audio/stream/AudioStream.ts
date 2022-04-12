@@ -336,14 +336,6 @@ export class AudioStream extends DelegatedEventTarget {
      */
     detachAudioSourceElement (): void {
 
-        // If (this.audioContext && this.audioContext.state !== "closed") {
-
-        /*
-         * Console.log(this.audioContext);
-         * console.log(this.sourceNode);
-         * console.log(this.processorNode);
-         */
-        // Await this.audioContext.close();
         if (this.sourceNode) {
 
             this.sourceNode.disconnect();
@@ -365,12 +357,6 @@ export class AudioStream extends DelegatedEventTarget {
             },
             1
         );
-
-        // } else {
-
-        //     This.logger.warn("Your audio context is already closed.");
-
-        // }
 
     }
 

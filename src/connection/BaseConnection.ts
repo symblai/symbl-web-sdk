@@ -7,7 +7,6 @@ import {
 } from "../types";
 import {InvalidValueError} from "../error";
 import Logger from "../logger";
-import registerNetworkConnectivityDetector from "../network";
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 
 export class BaseConnection extends DelegatedEventTarget {

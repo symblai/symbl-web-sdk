@@ -163,7 +163,6 @@ const validateEncoding = (configObj): boolean => {
 const validateDisconnectionConfig = (config): boolean => {
 
     const {
-        reconnectOnError,
         disconnectOnStopRequest,
         disconnectOnStopRequestTimeout,
         noConnectionTimeout
@@ -205,7 +204,7 @@ const validateDisconnectionConfig = (config): boolean => {
  * @param configObj object
  * @returns boolean
  */
-const validateConfigObj = (configObj): boolean => {;
+const validateConfigObj = (configObj): boolean => {
 
     validateConfidenceThreshold(configObj);
 
@@ -714,11 +713,6 @@ export class StreamingAPIConnection extends BaseConnection {
      * @param data StreamingAPIRequest
      */
     sendJSON (data: StreamingAPIStartRequest | StreamingAPIStopRequest | StreamingAPIModifyRequest): void {
-
-        /*
-         * TODO:
-         * Validate `data` before stringifying
-         */
 
         // `sendAudio` function exposed by the JS SDK currently accepts any serializable data to be sent over the channel
         this.stream.sendAudio(JSON.stringify(data));
