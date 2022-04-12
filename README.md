@@ -214,7 +214,7 @@ const connectionConfig = {
 	const stream = await symbl.createStream(connectionConfig);
 
 	// Send the start request
-	await stream.start(stream);
+	await symbl.start(stream);
 })();
 
 ```
@@ -260,7 +260,7 @@ const connectionConfig = {
 	const stream = await symbl.createStream(connectionConfig);
 
 	// Send the start request
-	await stream.start(stream);
+	await symbl.start(stream);
 })();
 ```
 
@@ -343,7 +343,7 @@ const connectionConfig = {
 };
 
 (async () => {
-	const stream = await symbl.createStream(connectionConfig);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
@@ -433,7 +433,7 @@ const connectionConfig = {
 };
 
 (async () => {
-	const stream = await symbl.createStream(connectionConfig);
+	const connection = await symbl.startRealtimeRequest(connectionConfig);
 })();
 ```
 
