@@ -41,7 +41,6 @@ export class BaseConnection extends DelegatedEventTarget {
         this.disconnect = this.disconnect.bind(this);
         this.onDataReceived = this.onDataReceived.bind(this);
         this.getSessionId = this.getSessionId.bind(this);
-        registerNetworkConnectivityDetector(this.sdk);
 
     }
 

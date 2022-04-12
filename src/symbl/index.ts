@@ -62,7 +62,6 @@ export default class Symbl {
         this.createConnection = this.createConnection.bind(this);
         this.createAndStartNewConnection = this.createAndStartNewConnection.bind(this);
         this.subscribeToConnection = this.subscribeToConnection.bind(this);
-
         registerNetworkConnectivityDetector(this.sdk);
 
         if (symblConfig) {
