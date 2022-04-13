@@ -69,18 +69,14 @@ describe("SubscribeAPIConnection.disconnect", () => {
 
     test(
         "Verify `connectionState` is set to DISCONNECTING and the `close` function on the `stream` created via JS SDK is called.",
-        (done) => {
+        async () => {
             // need help...
             (<any>subscribeAPIConnection).connectionState = ConnectionState.CONNECTED;
             const closeSpy = jest.spyOn(subscribeAPIConnection.stream, 'close');
 
-            subscribeAPIConnection.disconnect().then(() => {
-                expect((<any>subscribeAPIConnection).connectionState).toBe(ConnectionState.DISCONNECTED);
-                expect(closeSpy).toBeCalledTimes(1);
-                done();
-            });
-            
-            expect((<any>subscribeAPIConnection).connectionState).toBe(ConnectionState.DISCONNECTING);
+            subscribeAPIConnection.disconnect()
+            expect((<any>subscribeAPIConnection).connectionState).toBe(ConnectionState.DISCONNECTED);
+            expect(closeSpy).toBeCalledTimes(1);
         }
     );
 

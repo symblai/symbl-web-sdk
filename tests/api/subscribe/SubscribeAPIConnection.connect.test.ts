@@ -19,7 +19,10 @@ describe('SubscribeAPIConnection.connect()', () => {
         symbl = new Symbl(authConfig);
         subscribeAPIConnection = new SubscribeAPIConnection("abc123") as any;
         subscribeAPIConnection.sdk = {
-            subscribeToStream: jest.fn()
+            subscribeToStream: jest.fn(),
+            oauth2: {
+                init: jest.fn()
+            }
         }
     });
 
@@ -31,7 +34,6 @@ describe('SubscribeAPIConnection.connect()', () => {
                 expect(subscribeAPIConnection.isConnected()).toBe(true);
                 done();
             });
-            expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.CONNECTING);
         }
     );
 

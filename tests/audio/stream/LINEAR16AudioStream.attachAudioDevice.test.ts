@@ -1,21 +1,3 @@
-/*
-[UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "InvalidAudioInputDeviceError: Invalid deviceId passed as argument.".] {
-  code: 'ERR_UNHANDLED_REJECTION'
-}
-*/
-
-
-
-
-// (AudioContext.prototype as any).createMediaStreamSource = m2;
-// import AudioContext, {mocks} from "../../__mocks__/AudioContext.mock";
-/**
- * return {
-    SoundPlayer: jest.fn().mockImplementation(() => {
-      return {playSoundFile: () => {}};
-    }),
-  };
- */
 import {AudioContext} from "standardized-audio-context-mock";
 import Symbl from "../../../src/symbl";
 // import 
@@ -57,16 +39,11 @@ import { SymblEvent } from "../../../src/events";
         const context = new AudioContext();
         (context as any).createScriptProcessor = jest.fn();
         const sourceNode = (<any>context).createMediaStreamSource(new MediaStream());
+        sourceNode.disconnect = jest.fn();
         // sourceNode.context = context;
         audioStream = new LINEAR16AudioStream(sourceNode);
-
         
     });
-
-    beforeEach(() => {
-
-       
-    })
 
      test(
          'LINEAR16AudioStream.attachAudioDevice -deviceId is invalid - throw InvalidAudioInputDeviceError',
