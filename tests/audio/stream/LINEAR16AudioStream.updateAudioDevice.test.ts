@@ -1,21 +1,3 @@
-/*
-LINEAR16AudioStream.updateAudioDevice - Check that `detachAudioDevice`,
-    `attachAudioDevice` and `attachAudioProcessor` are invoked - No mediaStream passed
-
-    Error: expect(jest.fn()).toBeCalledTimes(expected)
-
-    Expected number of calls: 1
-    Received number of calls: 0
-
-LINEAR16AudioStream.updateAudioDevice - Check that `detachAudioDevice`,
-    `attachAudioDevice` and `attachAudioProcessor` are invoked - mediaStream passed
-
-    Error: expect(jest.fn()).toBeCalledTimes(expected)
-
-    Expected number of calls: 1
-    Received number of calls: 0
-*/
-
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { LINEAR16AudioStream } from '../../../src/audio';

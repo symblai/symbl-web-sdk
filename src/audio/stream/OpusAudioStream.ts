@@ -81,6 +81,7 @@ export class OpusAudioStream extends AudioStream {
         }
 
         await this.opusEncoder.start();
+
         this.opusEncoder.ondataavailable = this.processAudio;
 
     }
