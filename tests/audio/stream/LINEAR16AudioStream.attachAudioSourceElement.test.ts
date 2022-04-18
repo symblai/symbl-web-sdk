@@ -2,7 +2,6 @@ import {AudioContext} from 'standardized-audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { LINEAR16AudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
-import 'whatwg-fetch';
 
 /*
 - Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
