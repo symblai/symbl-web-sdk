@@ -1,9 +1,3 @@
-/* 
-LINEAR16AudioStream.attachAudioProcessor - Test that audio processor was not attached successfully
-
-    TypeError: Cannot read property 'onaudioprocess' of undefined
-*/
-
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { LINEAR16AudioStream } from '../../../src/audio';

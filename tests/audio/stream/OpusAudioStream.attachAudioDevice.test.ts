@@ -1,6 +1,5 @@
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
-import { SymblEvent } from "../../../src/events";
 import { OpusAudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 

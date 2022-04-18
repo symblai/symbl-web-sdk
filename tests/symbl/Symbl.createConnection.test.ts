@@ -2,7 +2,7 @@ import Symbl from "../../src/symbl";
 import { ConnectionFactory, BaseConnection } from '../../src/connection';
 import { LINEAR16AudioStream, OpusAudioStream } from '../../src/audio';
 import { StreamingAPIConnection  } from "../../src/api";
-import { NotSupportedSampleRateError  } from "../../src/error";
+import { InvalidValueError, NotSupportedSampleRateError, SessionIDNotUniqueError  } from "../../src/error";
 import { APP_ID, APP_SECRET } from '../constants';
 import { uuid } from '../../src/utils';
 import { SymblConnectionType } from '../../src/types';
@@ -154,5 +154,31 @@ test(
         expect(uuid).toBeCalledTimes(1);
         expect(startProcessingMock).toBeCalledTimes(0);
         expect(connection instanceof StreamingAPIConnection);
+    }
+);
+
+test(
+    "Symbl.createConnection - Calling createConnection with invalid sessionID that is not a string",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET
+        };
+        const id = 123456789;
+        const symbl = new Symbl(authConfig);
+        await expect(async () => { await symbl.createConnection(id as any) }).rejects.toThrowError(new InvalidValueError("Session ID must be a string."));
+    }
+);
+
+test(
+    "Symbl.createConnection - Calling createConnection with invalid sessionID that is not properly formatted",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET
+        };
+        const id = "123_940-2390394-1984$8598";
+        const symbl = new Symbl(authConfig);
+        await expect(async () => { await symbl.createConnection(id as any) }).rejects.toThrowError(new SessionIDNotUniqueError("Session ID should be a unique combination of numbers and characters or a UUID."));
     }
 );

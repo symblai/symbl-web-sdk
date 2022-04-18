@@ -186,7 +186,7 @@ export default class Symbl {
      * Validates and initializes Symbl with application configuration
      * @param {object} appConfig - Symbl configuration object
      */
-    async init (symblConfig: SymblConfig) : Promise<void> {
+    async init (symblConfig?: SymblConfig) : Promise<void> {
 
         if (!symblConfig && this.symblConfig) {
 
@@ -352,6 +352,12 @@ export default class Symbl {
      * @returns Promise<void>
      */
     static wait (time: number, unit: string = TimeUnit.MS) : Promise<void> {
+
+        if (!time) {
+
+            throw new InvalidValueError("Please provide a number for `time`");
+
+        }
 
         let timeout;
 
