@@ -628,6 +628,7 @@ export class StreamingAPIConnection extends BaseConnection {
             if (this.restartProcessing) {
 
                 await this.startProcessing(this.config);
+                this.modifySampleRate(this.audioStream.getSampleRate());
                 this.restartProcessing = false;
 
             }
@@ -638,6 +639,27 @@ export class StreamingAPIConnection extends BaseConnection {
         // Return from function
         return this;
 
+    }
+
+    /**
+     * Sends out a modify_request event.
+     */
+    modifySampleRate(sampleRateHertz: number) {
+
+        if (!sampleRateHertz || typeof sampleRateHertz !== "number") {
+
+            throw InvalidValueError("Sample rate argument must be a number.");
+
+        }
+
+        this.sendJSON({
+          type: 'modify_request',
+          speechRecognition: {
+            sampleRateHertz,
+          },
+        });
+
+        this.dispatchEvent(new SymblEvent("session_modified"));
     }
 
     /**
