@@ -498,11 +498,8 @@ export class StreamingAPIConnection extends BaseConnection {
 
         } else {
 
-
-            // If `options` is passed in, validate it and in failure to do so, throw the appropriate error emited by validateConfig.
             if (options) {
 
-                StreamingAPIConnection.validateConfig(options);
                 this.config = Object.assign(
                     this.config,
                     options
@@ -554,6 +551,8 @@ export class StreamingAPIConnection extends BaseConnection {
                 this.config.config.sampleRateHertz = this.audioStream.getSampleRate();
 
             }
+
+            StreamingAPIConnection.validateConfig(this.config);
 
 
             const copiedHandlers = this.config.handlers;
@@ -649,7 +648,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
         if (!sampleRateHertz || typeof sampleRateHertz !== "number") {
 
-            throw InvalidValueError("Sample rate argument must be a number.");
+            throw new InvalidValueError("Sample rate argument must be a number.");
 
         }
 

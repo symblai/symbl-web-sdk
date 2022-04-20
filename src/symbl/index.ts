@@ -66,7 +66,7 @@ export default class Symbl {
 
         if (symblConfig) {
 
-            const {appId, appSecret, accessToken, basePath} = symblConfig;
+            const {appId, appSecret, accessToken, basePath, logLevel} = symblConfig;
             if (appId && appSecret) {
 
                 this.sdk.oauth2.appId = appId;
@@ -83,6 +83,12 @@ export default class Symbl {
 
             }
 
+            if (logLevel) {
+                this.sdk.logger.setLevel(logLevel);
+            }
+
+        } else {
+            this.sdk.logger.setLevel("info");
         }
 
 
