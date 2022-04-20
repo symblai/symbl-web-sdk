@@ -1,5 +1,4 @@
 import {
-    AudioStream,
     LINEAR16AudioStream,
     OpusAudioStream
 } from "../../../src/audio/stream";
