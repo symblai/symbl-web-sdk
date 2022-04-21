@@ -29,23 +29,23 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-      - name: Authenticate with Symbl for Access Token
+      - name: Authenticate with Symbl
         id: accessTokenRequest
         uses: fjogeleit/http-request-action@v1
         with:
           url: 'https://api.symbl.ai/oauth2/token:generate'
           method: 'POST'
           data: '{"type":"application","appId":"${{ secrets.APP_ID }}","appSecret":"${{ secrets.APP_SECRET }}"}'
-        
-        name: Parse Access token from JSON response
-        uses: sergeysova/jq-action@v2
+
+        name: Parse Access token
         id: accessTokenParsed
+        uses: sergeysova/jq-action@v2
         with:
           cmd: 'jq .accessToken ${{ steps.accessTokenRequest.outputs.response }}'
+          multiline: true
       - 
-        name: Access Token pushed to env variable 
-        run: |
-          echo "ACCESS_TOKEN=${{ steps.accessTokenParsed.outputs.value }}" >> $GITHUB_ENV
+        name: Push to ENV
+        run: echo "ACCESS_TOKEN=${{ steps.accessTokenParsed.outputs.value }}" >> $GITHUB_ENV
 
       - name: Run tests
         run: npm run test
