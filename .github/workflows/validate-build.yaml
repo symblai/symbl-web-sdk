@@ -41,7 +41,7 @@ jobs:
         id: accessTokenParsed
         uses: sergeysova/jq-action@v2
         with:
-          cmd: 'jq .accessToken ${{ steps.accessTokenRequest.outputs.response }}'
+          cmd: '${{ steps.accessTokenRequest.outputs.response }} | jq ".accessToken"'
           multiline: true
 
       - name: Push to ENV
