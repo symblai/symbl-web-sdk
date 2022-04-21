@@ -38,8 +38,9 @@ jobs:
           data: '{"type":"application","appId":"${{ secrets.APP_ID }}","appSecret":"${{ secrets.APP_SECRET }}"}'
         
       - name: Access Token pushed to env variable
+        uses: sergeysova/jq-action@v2
         run: |
-          echo "ACCESS_TOKEN=${{ steps.accessTokenRequest.outputs.response["accessToken"] }}" >> $GITHUB_ENV
+          echo "${{ steps.accessTokenRequest.outputs.response }}" | jq '.accessToken' >> env.ACCESS_TOKEN
 
       - name: Run tests
         run: npm run test
