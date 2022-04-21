@@ -37,15 +37,16 @@ jobs:
           method: 'POST'
           data: '{"type":"application","appId":"${{ secrets.APP_ID }}","appSecret":"${{ secrets.APP_SECRET }}"}'
 
-        name: Parse Access token
+      - name: Parse Access Token
         id: accessTokenParsed
         uses: sergeysova/jq-action@v2
         with:
           cmd: 'jq .accessToken ${{ steps.accessTokenRequest.outputs.response }}'
           multiline: true
-      - 
-        name: Push to ENV
+
+      - name: Push to ENV
         run: echo "ACCESS_TOKEN=${{ steps.accessTokenParsed.outputs.value }}" >> $GITHUB_ENV
 
       - name: Run tests
         run: npm run test
+
