@@ -55,7 +55,7 @@ export default class Symbl {
         }
 
         this.symblConfig = symblConfig;
-        this.logger = new Logger();
+        this.logger = new Logger((symblConfig.logLevel || null));
 
         this._validateSymblConfig = this._validateSymblConfig.bind(this);
         this.init = this.init.bind(this);
@@ -104,7 +104,9 @@ export default class Symbl {
         const {appId, accessToken, appSecret, logLevel} = symblConfig;
 
         if (logLevel && VALID_LOG_LEVELS.indexOf(logLevel) === -1) {
-            // Throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(', ')}`)
+
+            throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(", ")}`);
+
         }
 
         if (!appId && !appSecret && !accessToken) {

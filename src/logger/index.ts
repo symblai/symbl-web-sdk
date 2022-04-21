@@ -1,10 +1,8 @@
 import consola from "consola";
-// Import console from 'console';
 
 export default class Logger {
 
-    // Logger: typeof consola = consola;
-    logger = console;
+    logger: typeof consola = consola;
 
     logLevel: string;
 
@@ -36,7 +34,7 @@ export default class Logger {
             this.logLevel = level;
 
         }
-        // This.logger = consola.create(options);
+        this.logger = consola.create(options);
 
     }
 
