@@ -2,11 +2,11 @@ name: Validate build
 
 on: push
 
-# env:
-#   APP_ID: '${{ secrets.SYMBL_APPID }}'
-#   APP_SECRET: '${{ secrets.SYMBL_APPSECRET }}'
-#   ACCESS_TOKEN: null
-#   EXPIRED_ACCESS_TOKEN: '${{ secrets.SYMBL_EXPIRED }}'
+env:
+  APP_ID: '${{ secrets.APP_ID }}'
+  APP_SECRET: '${{ secrets.APP_SECRET }}'
+  ACCESS_TOKEN: null
+  EXPIRED_ACCESS_TOKEN: '${{ secrets.EXPIRED_ACCESS_TOKEN }}'
 
 jobs:
   validate_build:
@@ -36,7 +36,7 @@ jobs:
         with:
           url: 'https://api.symbl.ai/oauth2/token:generate'
           method: 'POST'
-          data: '{"type":"application","appId":"${{ secrets.SYMBL_APPID }}","appSecret":"${{ secrets.SYMBL_APPSECRET }}"}'
+          data: '{"type":"application","appId":"${{ secrets.APP_ID }}","appSecret":"${{ secrets.APP_SECRET }}"}'
         
       - name: Access Token pushed to env variable
         run: echo ${{ steps.accessTokenRequest.outputs.response.accessToken }} >> env.ACCESS_TOKEN
