@@ -82,7 +82,7 @@ export class OpusAudioStream extends AudioStream {
 
             } else if (!this.config.sourceNode && !this.sourceNode) {
 
-                delete this.config.sourceNode
+                delete this.config.sourceNode;
 
             }
 

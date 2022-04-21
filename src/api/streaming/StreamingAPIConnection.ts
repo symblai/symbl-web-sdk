@@ -644,7 +644,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Sends out a modify_request event to the WebSocket which modifies the sample rate.
      * @param sampleRateHertz number
      */
-    modifySampleRate(sampleRateHertz: number) {
+    modifySampleRate (sampleRateHertz: number) {
 
         if (!sampleRateHertz || typeof sampleRateHertz !== "number") {
 
@@ -653,13 +653,14 @@ export class StreamingAPIConnection extends BaseConnection {
         }
 
         this.sendJSON({
-          type: 'modify_request',
-          speechRecognition: {
-            sampleRateHertz,
-          },
+            "speechRecognition": {
+                sampleRateHertz
+            },
+            "type": "modify_request"
         });
 
         this.dispatchEvent(new SymblEvent("session_modified"));
+
     }
 
     /**

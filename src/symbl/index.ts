@@ -91,7 +91,9 @@ export default class Symbl {
             }
 
         } else {
+
             this.sdk.logger.setLevel("info");
+
         }
 
 
