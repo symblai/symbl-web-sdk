@@ -40,7 +40,7 @@ jobs:
           appId: ${{ secrets.SYMBL_APPID }}
           appSecret: ${{ secrets.SYMBL_APPSECRET }}
         
-        name: Access Token pushed to env variable
+      - name: Access Token pushed to env variable
         run: echo ${{ steps.accessTokenRequest.outputs.response.accessToken }} >> env.ACCESS_TOKEN
 
       - name: Run tests
