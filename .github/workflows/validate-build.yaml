@@ -38,7 +38,7 @@ jobs:
           data: '{"type":"application","appId":"${{ secrets.APP_ID }}","appSecret":"${{ secrets.APP_SECRET }}"}'
         
       - name: Access Token pushed to env variable
-        run: echo "ACCESS_TOKEN=${{ steps.accessTokenRequest.outputs.response.accessToken }}" >> $GITHUB_ENV
+        run: echo "ACCESS_TOKEN=${{ steps.accessTokenRequest.outputs.response.data }}" >> $GITHUB_ENV
 
       - name: Run tests
         run: npm run test
