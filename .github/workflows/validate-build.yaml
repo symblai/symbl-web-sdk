@@ -39,7 +39,7 @@ jobs:
         
       - name: Access Token pushed to env variable
         run: |
-          echo "ACCESS_TOKEN=${{ steps.accessTokenRequest.outputs.response.accessToken }}" >> $GITHUB_ENV
+          echo "ACCESS_TOKEN=${{ steps.accessTokenRequest.outputs.response["accessToken"] }}" >> $GITHUB_ENV
 
       - name: Run tests
         run: npm run test
