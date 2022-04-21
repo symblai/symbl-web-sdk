@@ -36,9 +36,11 @@ jobs:
         with:
           url: 'https://api.symbl.ai/oauth2/token:generate'
           method: 'POST'
-          type: 'application'
-          appId: ${{ secrets.SYMBL_APPID }}
-          appSecret: ${{ secrets.SYMBL_APPSECRET }}
+          data: '{
+            "type": "application"
+            "appId": "${{ secrets.SYMBL_APPID }}"
+            "appSecret": "${{ secrets.SYMBL_APPSECRET }}"
+          }'
         
       - name: Access Token pushed to env variable
         run: echo ${{ steps.accessTokenRequest.outputs.response.accessToken }} >> env.ACCESS_TOKEN
