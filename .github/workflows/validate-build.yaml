@@ -2,11 +2,10 @@ name: Validate build
 
 on: push
 
-# env:
-#   APP_ID: '${{ secrets.SYMBL_APPID }}'
-#   APP_SECRET: '${{ secrets.SYMBL_APPSECRET }}'
-#   ACCESS_TOKEN: null
-#   EXPIRED_ACCESS_TOKEN: '${{ secrets.SYMBL_EXPIRED }}'
+env:
+  APP_ID: '${{ secrets.APP_ID }}'
+  APP_SECRET: '${{ secrets.APP_SECRET }}'
+  EXPIRED_ACCESS_TOKEN: '${{ secrets.EXPIRED_ACCESS_TOKEN }}'
 
 jobs:
   validate_build:
@@ -30,18 +29,23 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-        # name: Authenticate with Symbl for Access Token
-        # id: accessTokenRequest
-        # uses: fjogeleit/http-request-action@v1
-        # with:
-        #   url: 'https://api.symbl.ai/oauth2/token:generate'
-        #   method: 'POST'
-        #   type: 'application'
-        #   appId: ${{ secrets.SYMBL_APPID }}
-        #   appSecret: ${{ secrets.SYMBL_APPSECRET }}
-        
-        # name: Access Token pushed to env variable
-        # run: echo ${{ steps.accessTokenRequest.outputs.response.accessToken }} >> env.ACCESS_TOKEN
+      - name: Authenticate with Symbl
+        id: accessTokenRequest
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://api.symbl.ai/oauth2/token:generate'
+          method: 'POST'
+          data: '{"type":"application","appId":"${{ secrets.APP_ID }}","appSecret":"${{ secrets.APP_SECRET }}"}'
+
+      - name: Parse Access Token
+        id: accessTokenParsed
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: "jq '.accessToken' <<< '${{ steps.accessTokenRequest.outputs.response }}'"
+
+      - name: Push to ENV
+        run: echo "ACCESS_TOKEN=${{ steps.accessTokenParsed.outputs.value }}" >> $GITHUB_ENV
 
       - name: Run tests
         run: npm run test
+
