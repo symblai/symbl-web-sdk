@@ -41,7 +41,7 @@ jobs:
         id: accessTokenParsed
         uses: sergeysova/jq-action@v2
         with:
-          cmd: 'echo "${{ steps.accessTokenRequest.outputs.response }}" | jq ".accessToken"'
+          cmd: 'jq ".accessToken" <<< "${{ steps.accessTokenRequest.outputs.response }}"'
 
       - name: Push to ENV
         run: echo "ACCESS_TOKEN=${{ steps.accessTokenParsed.outputs.value }}" >> $GITHUB_ENV
