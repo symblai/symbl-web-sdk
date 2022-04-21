@@ -30,18 +30,18 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-        # name: Authenticate with Symbl for Access Token
-        # id: accessTokenRequest
-        # uses: fjogeleit/http-request-action@v1
-        # with:
-        #   url: 'https://api.symbl.ai/oauth2/token:generate'
-        #   method: 'POST'
-        #   type: 'application'
-        #   appId: ${{ secrets.SYMBL_APPID }}
-        #   appSecret: ${{ secrets.SYMBL_APPSECRET }}
+        name: Authenticate with Symbl for Access Token
+        id: accessTokenRequest
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://api.symbl.ai/oauth2/token:generate'
+          method: 'POST'
+          type: 'application'
+          appId: ${{ secrets.SYMBL_APPID }}
+          appSecret: ${{ secrets.SYMBL_APPSECRET }}
         
-        # name: Access Token pushed to env variable
-        # run: echo ${{ steps.accessTokenRequest.outputs.response.accessToken }} >> env.ACCESS_TOKEN
+        name: Access Token pushed to env variable
+        run: echo ${{ steps.accessTokenRequest.outputs.response.accessToken }} >> env.ACCESS_TOKEN
 
       - name: Run tests
         run: npm run test

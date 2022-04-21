@@ -79,12 +79,15 @@ export default class Symbl {
             }
             if (basePath) {
 
-                this.sdk.oauth2.apiClient.basePath = basePath;
+                this.sdk.oauth2.setBasePath(basePath);
+                this.sdk.basePath = basePath;
 
             }
 
             if (logLevel) {
+
                 this.sdk.logger.setLevel(logLevel);
+
             }
 
         } else {

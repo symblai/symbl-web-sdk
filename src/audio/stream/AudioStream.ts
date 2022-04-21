@@ -287,7 +287,7 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        if (sourceElement.type.indexOf("mp4") !== -1) {
+        if (sourceElement.type.indexOf("/mp4") === -1) {
 
             if (sourceElement.src.substring(
                 0,
