@@ -30,7 +30,7 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-        name: Authenticate with Symbl for Access Token
+      - name: Authenticate with Symbl for Access Token
         id: accessTokenRequest
         uses: fjogeleit/http-request-action@v1
         with:
