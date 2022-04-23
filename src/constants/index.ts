@@ -7,7 +7,6 @@ export const SYMBL_DEFAULTS = {
     "DISCONNECT_TIMEOUT_MAX": 1800,
     "DISCONNECT_TIMEOUT_MIN": 0,
     "ID_REGEX": /^[a-zA-Z0-9-]{6,64}$/,
-    "SYMBL_BASE_PATH": "https://api.symbl.ai",
     "LINEAR16_SAMPLE_RATE_HERTZ": [
         8000,
         16000,
@@ -23,6 +22,7 @@ export const SYMBL_DEFAULTS = {
         24000,
         48000
     ],
+    "SYMBL_BASE_PATH": "https://api.symbl.ai",
     "VALID_ENCODING": [
         "LINEAR16",
         "OPUS"
