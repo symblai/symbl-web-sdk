@@ -1,7 +1,7 @@
 import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 let connectivityCheckIntervalRef;
 
-const onlineDetector = async (sdk, e) => {
+const onlineDetector = async (jsSDK, e) => {
     let maxRetries = 600;
     const checkInterval = 3000;
 
@@ -14,17 +14,17 @@ const onlineDetector = async (sdk, e) => {
             try {
                 const response = await fetch('https://symbl-sdk-cdn-bucket.storage.googleapis.com');
                 if (response.ok) {
-                    sdk.setOffline(false);
+                    jsSDK.setOffline(false);
                     if (connectivityCheckIntervalRef)
                         clearInterval(connectivityCheckIntervalRef);
 
                     console.debug(`Connection online!`);
                 } else {
-                    sdk.setOffline(true);
+                    jsSDK.setOffline(true);
                     maxRetries -= 1;
                 }
             } catch (e) {
-                sdk.setOffline(true);
+                jsSDK.setOffline(true);
                 maxRetries -= 1;
             }
         } else {
@@ -37,22 +37,22 @@ const onlineDetector = async (sdk, e) => {
 
 
 const NetworkConnectivityDetector = class {
-    sdk: sdk;
+    jsSDK: sdk;
 
-    constructor (sdk) {
-        this.sdk = sdk;
+    constructor (jsSDK) {
+        this.jsSDK = jsSDK;
         this.forceCheckNetworkConnectivity = this.forceCheckNetworkConnectivity.bind(this);
     }
 
     forceCheckNetworkConnectivity () {
-        onlineDetector(this.sdk, null);
+        onlineDetector(this.jsSDK, null);
     }
 };
 
-const registerNetworkConnectivityDetector = (sdk) => {
+const registerNetworkConnectivityDetector = (jsSDK) => {
     if (window) {
         window.addEventListener('offline', (e) => {
-            sdk.setOffline(true);
+            jsSDK.setOffline(true);
             if (connectivityCheckIntervalRef)
                 clearInterval(connectivityCheckIntervalRef);
 
@@ -60,11 +60,11 @@ const registerNetworkConnectivityDetector = (sdk) => {
         });
 
         window.addEventListener('online', (e) => {
-            onlineDetector(sdk, e);
+            onlineDetector(jsSDK, e);
         });
 
-        onlineDetector(sdk, null);
-        sdk.setNetworkConnectivityDispatcher(new NetworkConnectivityDetector(sdk));
+        onlineDetector(jsSDK, null);
+        jsSDK.setNetworkConnectivityDispatcher(new NetworkConnectivityDetector(jsSDK));
     }
 }
 
