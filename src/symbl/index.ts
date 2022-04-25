@@ -77,13 +77,12 @@ export default class Symbl {
             }
             if (basePath) {
 
-                this.sdk.oauth2.apiClient.basePath = basePath;
-                this.sdk.oauth2.authenticationApi.apiClient.basePath = basePath;
+                this.sdk.oauth2.setBasePath(basePath);
                 this.sdk.basePath = basePath;
 
             }
 
-            this.checkNonAuthConfig(symblConfig);
+            this.setNonAuthConfig(symblConfig);
 
         }
 
@@ -91,10 +90,9 @@ export default class Symbl {
     }
 
     /**
-     * Checks any config values that are not related to authentication
-     * @param symblConfig SymblConfig
+     * @ignore
      */
-    checkNonAuthConfig (symblConfig: SymblConfig): void {
+    private setNonAuthConfig (symblConfig: SymblConfig): void {
 
         const {logLevel, reconnectOnError} = symblConfig;
 
@@ -216,7 +214,7 @@ export default class Symbl {
 
         }
         this._validateSymblConfig(symblConfig);
-        this.checkNonAuthConfig(symblConfig);
+        this.setNonAuthConfig(symblConfig);
 
         try {
 
