@@ -79,7 +79,6 @@ export default class Symbl {
 
                 this.sdk.oauth2.apiClient.basePath = basePath;
                 this.sdk.oauth2.authenticationApi.apiClient.basePath = basePath;
-                // this.sdk.oauth2.setBasePath(basePath)
                 this.sdk.basePath = basePath;
 
             }
@@ -335,7 +334,10 @@ export default class Symbl {
             sessionId
         );
 
-        console.log("SYMBL CONFIG", this.symblConfig.reconnectOnError);
+        this.logger.debug(
+            "SYMBL CONFIG",
+            this.symblConfig.reconnectOnError
+        );
 
         // Invoke the `connect` method to start the connection to the Subscribe API
         await connection.connect(this.symblConfig.reconnectOnError);
