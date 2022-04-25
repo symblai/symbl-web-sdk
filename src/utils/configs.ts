@@ -1,8 +1,12 @@
 export const VALID_LOG_LEVELS: string[] = [
+    "silent",
+    "fatal",
     "error",
     "warn",
-    "debug",
-    "info",
     "log",
-    "trace"
+    "info",
+    "success",
+    "debug",
+    "trace",
+    "verbose"
 ];
