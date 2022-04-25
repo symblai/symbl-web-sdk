@@ -46,6 +46,7 @@ export default class Symbl {
      */
     constructor (symblConfig?: SymblConfig) {
 
+        this.logger = Logger;
         if (symblConfig) {
 
             this._validateSymblConfig(symblConfig);
@@ -53,8 +54,6 @@ export default class Symbl {
         }
 
         this.symblConfig = symblConfig;
-        this.logger = Logger;
-        this.logger.setLevel(symblConfig.logLevel || null);
 
         this._validateSymblConfig = this._validateSymblConfig.bind(this);
         this.init = this.init.bind(this);
@@ -85,12 +84,14 @@ export default class Symbl {
 
             if (logLevel) {
 
+                this.logger.setLevel(logLevel);
                 this.sdk.logger.setLevel(logLevel);
 
             }
 
         } else {
 
+            this.logger.setLevel("info");
             this.sdk.logger.setLevel("info");
 
         }

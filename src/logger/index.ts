@@ -6,7 +6,7 @@ export class Logger {
 
     logLevel: string;
 
-    constructor (logLevel = "warn") {
+    constructor (logLevel: string) {
 
         this.setLevel(logLevel);
 
@@ -133,6 +133,6 @@ export class Logger {
 
 }
 
-const logger = new Logger();
+const logger = new Logger("info");
 
 export default logger;
