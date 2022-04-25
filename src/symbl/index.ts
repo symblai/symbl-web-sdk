@@ -5,8 +5,6 @@ import {
     InvalidValueError,
     RequiredParameterAbsentError,
     SessionIDNotUniqueError
-
-    /* InvalidLogLevelError*/
 } from "../error";
 import {StreamingAPIConnection, SubscribeAPIConnection} from "../api";
 import {
@@ -40,7 +38,7 @@ export default class Symbl {
     /**
      * @ignore
      */
-    private logger: Logger;
+    private logger: typeof Logger;
 
     /**
      * Using SymblConfig an instance of the Symbl SDK is instantiated
@@ -48,6 +46,7 @@ export default class Symbl {
      */
     constructor (symblConfig?: SymblConfig) {
 
+        this.logger = Logger;
         if (symblConfig) {
 
             this._validateSymblConfig(symblConfig);
@@ -55,7 +54,6 @@ export default class Symbl {
         }
 
         this.symblConfig = symblConfig;
-        this.logger = new Logger();
 
         this._validateSymblConfig = this._validateSymblConfig.bind(this);
         this.init = this.init.bind(this);
@@ -66,7 +64,7 @@ export default class Symbl {
 
         if (symblConfig) {
 
-            const {appId, appSecret, accessToken, basePath, logLevel, reconnectOnError} = symblConfig;
+            const {appId, appSecret, accessToken, basePath} = symblConfig;
             if (appId && appSecret) {
 
                 this.sdk.oauth2.appId = appId;
@@ -84,24 +82,37 @@ export default class Symbl {
 
             }
 
-            if (logLevel) {
-                
-                this.sdk.logger.setLevel(logLevel);
+            this.setNonAuthConfig(symblConfig);
 
-            }
+        }
 
-            if (reconnectOnError) {
 
-                this.sdk.setReconnectOnError(true);
+    }
 
-            }
+    /**
+     * @ignore
+     */
+    private setNonAuthConfig (symblConfig: SymblConfig): void {
+
+        const {logLevel, reconnectOnError} = symblConfig;
+
+        if (logLevel) {
+
+            this.logger.setLevel(logLevel);
+            this.sdk.logger.setLevel(logLevel);
 
         } else {
 
+            this.logger.setLevel("info");
             this.sdk.logger.setLevel("info");
 
         }
 
+        if (reconnectOnError) {
+
+            this.sdk.setReconnectOnError(true);
+
+        }
 
     }
 
@@ -121,7 +132,9 @@ export default class Symbl {
         const {appId, accessToken, appSecret, logLevel, reconnectOnError} = symblConfig;
 
         if (logLevel && VALID_LOG_LEVELS.indexOf(logLevel) === -1) {
-            // Throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(', ')}`)
+
+            throw new InvalidValueError(`Log level must be one of: ${VALID_LOG_LEVELS.join(", ")}`);
+
         }
 
         if (reconnectOnError && typeof reconnectOnError !== "boolean") {
@@ -201,6 +214,7 @@ export default class Symbl {
 
         }
         this._validateSymblConfig(symblConfig);
+        this.setNonAuthConfig(symblConfig);
 
         try {
 
@@ -218,6 +232,7 @@ export default class Symbl {
             }
 
             initConfig.basePath = symblConfig.basePath || SYMBL_DEFAULTS.SYMBL_BASE_PATH;
+
 
             await this.sdk.init(symblConfig);
 
@@ -331,7 +346,10 @@ export default class Symbl {
             sessionId
         );
 
-        console.log("SYMBL CONFIG", this.symblConfig.reconnectOnError);
+        this.logger.debug(
+            "SYMBL CONFIG",
+            this.symblConfig.reconnectOnError
+        );
 
         // Invoke the `connect` method to start the connection to the Subscribe API
         await connection.connect(this.symblConfig.reconnectOnError);

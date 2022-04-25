@@ -1,33 +1,22 @@
 import consola from "consola";
-// Import console from 'console';
 
-export default class Logger {
+export class Logger {
 
-    // Logger: typeof consola = consola;
-    logger = console;
+    logger: typeof consola;
 
     logLevel: string;
 
-    constructor (logLevel?: string) {
+    constructor (logLevel: string) {
 
         this.setLevel(logLevel);
 
     }
 
-    /*
-     * Error(message): void {};
-     * warn(message): void {};
-     * info(message): void {};
-     * log(message): void {};
-     * trace(message): void {};
-     * debug(message): void {};
-     */
-
     /**
      * Sets the logging level.
      * @param {string} level - logging level
      */
-    setLevel (level): void {
+    setLevel (level: string): void {
 
         const options: any = {};
         if (level) {
@@ -36,7 +25,7 @@ export default class Logger {
             this.logLevel = level;
 
         }
-        // This.logger = consola.create(options);
+        this.logger = consola.create(options);
 
     }
 
@@ -143,3 +132,7 @@ export default class Logger {
     }
 
 }
+
+const logger = new Logger("info");
+
+export default logger;
