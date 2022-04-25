@@ -66,7 +66,7 @@ export default class Symbl {
 
         if (symblConfig) {
 
-            const {appId, appSecret, accessToken, basePath, logLevel} = symblConfig;
+            const {appId, appSecret, accessToken, basePath, logLevel, reconnectOnError} = symblConfig;
             if (appId && appSecret) {
 
                 this.sdk.oauth2.appId = appId;
@@ -85,8 +85,14 @@ export default class Symbl {
             }
 
             if (logLevel) {
-
+                
                 this.sdk.logger.setLevel(logLevel);
+
+            }
+
+            if (reconnectOnError) {
+
+                this.sdk.setReconnectOnError(true);
 
             }
 
@@ -324,6 +330,8 @@ export default class Symbl {
             SymblConnectionType.SUBSCRIBE,
             sessionId
         );
+
+        console.log("SYMBL CONFIG", this.symblConfig.reconnectOnError);
 
         // Invoke the `connect` method to start the connection to the Subscribe API
         await connection.connect(this.symblConfig.reconnectOnError);
