@@ -64,7 +64,7 @@ export default class Symbl {
 
         if (symblConfig) {
 
-            const {appId, appSecret, accessToken, basePath, logLevel, reconnectOnError} = symblConfig;
+            const {appId, appSecret, accessToken, basePath} = symblConfig;
             if (appId && appSecret) {
 
                 this.sdk.oauth2.appId = appId;
@@ -83,18 +83,25 @@ export default class Symbl {
 
             }
 
-            if (logLevel) {
+            this.checkNonAuthConfig(symblConfig);
 
-                this.logger.setLevel(logLevel);
-                this.sdk.logger.setLevel(logLevel);
+        }
 
-            }
 
-            if (reconnectOnError) {
+    }
 
-                this.sdk.setReconnectOnError(true);
+    /**
+     * Checks any config values that are not related to authentication
+     * @param symblConfig SymblConfig
+     */
+    checkNonAuthConfig (symblConfig: SymblConfig): void {
 
-            }
+        const {logLevel, reconnectOnError} = symblConfig;
+
+        if (logLevel) {
+
+            this.logger.setLevel(logLevel);
+            this.sdk.logger.setLevel(logLevel);
 
         } else {
 
@@ -103,6 +110,11 @@ export default class Symbl {
 
         }
 
+        if (reconnectOnError) {
+
+            this.sdk.setReconnectOnError(true);
+
+        }
 
     }
 
@@ -204,6 +216,7 @@ export default class Symbl {
 
         }
         this._validateSymblConfig(symblConfig);
+        this.checkNonAuthConfig(symblConfig);
 
         try {
 
@@ -221,6 +234,7 @@ export default class Symbl {
             }
 
             initConfig.basePath = symblConfig.basePath || SYMBL_DEFAULTS.SYMBL_BASE_PATH;
+
 
             await this.sdk.init(symblConfig);
 
