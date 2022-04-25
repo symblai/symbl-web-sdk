@@ -27,7 +27,7 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    private logger: Logger = new Logger();
+    private logger: typeof Logger = Logger;
 
     /**
      * Creates instance of JS SDK for network connectivity testing

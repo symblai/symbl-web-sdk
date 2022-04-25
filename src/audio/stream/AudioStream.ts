@@ -9,7 +9,7 @@ export class AudioStream extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    protected logger: Logger;
+    protected logger: typeof Logger = Logger;
 
     public sourceNode: MediaStreamAudioSourceNode | MediaElementAudioSourceNode;
 
@@ -60,7 +60,6 @@ export class AudioStream extends DelegatedEventTarget {
     constructor (sourceNode?: MediaStreamAudioSourceNode) {
 
         super();
-        this.logger = new Logger();
         if (sourceNode) {
 
             this.sourceNode = sourceNode;

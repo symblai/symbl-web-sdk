@@ -9,7 +9,7 @@ let networkConnectivityDetector: NetworkConnectivityDetector;
 const registerNetworkConnectivityDetector = (jsSDK: sdk) => {
 
     let connectivityCheckIntervalRef;
-    const logger = new Logger();
+    const logger = Logger;
     if (window) {
 
         if (!networkConnectivityDetector) {

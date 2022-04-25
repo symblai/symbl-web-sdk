@@ -5,8 +5,6 @@ import {
     InvalidValueError,
     RequiredParameterAbsentError,
     SessionIDNotUniqueError
-
-    /* InvalidLogLevelError*/
 } from "../error";
 import {StreamingAPIConnection, SubscribeAPIConnection} from "../api";
 import {
@@ -40,7 +38,7 @@ export default class Symbl {
     /**
      * @ignore
      */
-    private logger: Logger;
+    private logger: typeof Logger;
 
     /**
      * Using SymblConfig an instance of the Symbl SDK is instantiated
@@ -55,7 +53,8 @@ export default class Symbl {
         }
 
         this.symblConfig = symblConfig;
-        this.logger = new Logger((symblConfig.logLevel || null));
+        this.logger = Logger;
+        this.logger.setLevel(symblConfig.logLevel || null);
 
         this._validateSymblConfig = this._validateSymblConfig.bind(this);
         this.init = this.init.bind(this);
@@ -105,7 +104,7 @@ export default class Symbl {
 
         if (logLevel && VALID_LOG_LEVELS.indexOf(logLevel) === -1) {
 
-            throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(", ")}`);
+            throw new InvalidValueError(`Log level must be one of: ${VALID_LOG_LEVELS.join(", ")}`);
 
         }
 

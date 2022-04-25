@@ -24,14 +24,13 @@ export class BaseConnection extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    protected logger: Logger = new Logger();
+    protected logger: typeof Logger = Logger;
 
     constructor (sessionId: string) {
 
         super();
 
         this.sessionId = sessionId;
-        this.logger = new Logger();
         // Add function bindings here
 
         this.on = this.on.bind(this);
