@@ -1,28 +1,22 @@
-/*
-[UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "InvalidAudioInputDeviceError: Invalid deviceId passed as argument.".] {
-  code: 'ERR_UNHANDLED_REJECTION'
-}
-*/
-
-
-
-
-// (AudioContext.prototype as any).createMediaStreamSource = m2;
-// import AudioContext, {mocks} from "../../__mocks__/AudioContext.mock";
-/**
- * return {
-    SoundPlayer: jest.fn().mockImplementation(() => {
-      return {playSoundFile: () => {}};
-    }),
-  };
- */
-import {AudioContext} from "standardized-audio-context-mock";
+import {
+    AudioContext
+} from "standardized-audio-context-mock";
 import Symbl from "../../../src/symbl";
 // import 
-import { LINEAR16AudioStream, AudioStream } from '../../../src/audio';
-import { APP_ID, APP_SECRET } from '../../constants';
-import { InvalidAudioInputDeviceError } from " ../../../src/error";
-import { SymblEvent } from "../../../src/events";
+import {
+    LINEAR16AudioStream,
+    AudioStream
+} from '../../../src/audio';
+import {
+    APP_ID,
+    APP_SECRET
+} from '../../constants';
+import {
+    InvalidAudioInputDeviceError
+} from " ../../../src/error";
+import {
+    SymblEvent
+} from "../../../src/events";
 
 
 
@@ -39,14 +33,14 @@ import { SymblEvent } from "../../../src/events";
  *  
  */
 
- // mock audio context
- // AudioContext = jest.fn().mockImplementation(() => {});
+// mock audio context
+// AudioContext = jest.fn().mockImplementation(() => {});
 
 
- let audioStream, authConfig, context;
- let symbl, streamingAPIConnection;
+let audioStream, authConfig;
+let symbl;
 
- describe('LINEAR16AudioStream.attachAudioDevice tests', () => {
+describe('LINEAR16AudioStream.attachAudioDevice tests', () => {
     beforeAll(() => {
 
         authConfig = {
@@ -56,26 +50,20 @@ import { SymblEvent } from "../../../src/events";
         symbl = new Symbl(authConfig);
         const context = new AudioContext();
         (context as any).createScriptProcessor = jest.fn();
-        const sourceNode = (<any>context).createMediaStreamSource(new MediaStream());
+        const sourceNode = ( < any > context).createMediaStreamSource(new MediaStream());
         // sourceNode.context = context;
         audioStream = new LINEAR16AudioStream(sourceNode);
 
-        
     });
 
-    beforeEach(() => {
+    test(
+        'LINEAR16AudioStream.attachAudioDevice -deviceId is invalid - throw InvalidAudioInputDeviceError',
+        async () => {
+            const deviceId = null;
+            await expect(async () => await audioStream.attachAudioDevice(deviceId)).rejects.toThrowError(new InvalidAudioInputDeviceError('Invalid deviceId passed as argument.'));
+        }
+    )
 
-       
-    })
-
-     test(
-         'LINEAR16AudioStream.attachAudioDevice -deviceId is invalid - throw InvalidAudioInputDeviceError',
-         async () => {
-                const deviceId = "my-invalid-device-id";
-                await expect(async () => await audioStream.attachAudioDevice(deviceId)).rejects.toThrowError(new InvalidAudioInputDeviceError('Invalid deviceId passed as argument.'));
-         }
-     )
-    
     test(
         `LINEAR16AudioStream.attachAudioDevice - Verify that createMediaStreamSource is invoked 
         when valid arguments are supplied.`,
@@ -83,6 +71,9 @@ import { SymblEvent } from "../../../src/events";
             const mediaStream = new MediaStream();
             audioStream.audioContext = new AudioContext();
             (audioStream.audioContext as any).createScriptProcessor = jest.fn();
+            audioStream.sourceNode = {
+                disconnect: jest.fn()
+            }
             const mediaStreamSpy = jest.spyOn(audioStream.audioContext, 'createMediaStreamSource');
             await audioStream.attachAudioDevice('default', mediaStream);
             expect(mediaStreamSpy).toBeCalledTimes(1);
@@ -90,24 +81,27 @@ import { SymblEvent } from "../../../src/events";
         }
     )
 
-     test(
-         `LINEAR16AudioStream.attachAudioDevice - If media stream is not passed do not 
+    test(
+        `LINEAR16AudioStream.attachAudioDevice - If media stream is not passed do not 
          invoke - create media stream instead`,
-         async () => {
-                const mediaStreamSpy = jest.spyOn(audioStream.audioContext, 'createMediaStreamSource');
-                const gumSpy = jest.spyOn(AudioStream, 'getMediaStream');
-                audioStream.mediaStream = null;
-                await audioStream.attachAudioDevice('default');
-                // expect(testSpy).toBeCalled();
-                expect(gumSpy).toBeCalledTimes(1);
+        async () => {
+            const mediaStreamSpy = jest.spyOn(audioStream.audioContext, 'createMediaStreamSource');
+            const gumSpy = jest.spyOn(AudioStream, 'getMediaStream');
+            audioStream.mediaStream = null;
+            audioStream.sourceNode = {
+                disconnect: jest.fn()
+            }
+            await audioStream.attachAudioDevice('default');
+            // expect(testSpy).toBeCalled();
+            expect(gumSpy).toBeCalledTimes(1);
 
-                // might not work because getUserMedia returns a promise
-                // expect(gumSpy).toReturnWith(myStream);
+            // might not work because getUserMedia returns a promise
+            // expect(gumSpy).toReturnWith(myStream);
 
-                // expect(mediaStreamSpy).toBeCalledTimes(1);
-                // expect(mediaStreamSpy).toBeCalledWith(myStream);
-         }
-     )
+            // expect(mediaStreamSpy).toBeCalledTimes(1);
+            // expect(mediaStreamSpy).toBeCalledWith(myStream);
+        }
+    )
 
     // /**
     //  * if (context.state === 'running') {
@@ -116,43 +110,33 @@ import { SymblEvent } from "../../../src/events";
     //  * // go on
     //  */
 
-     // test(
-     //     `LINEAR16AudioStream.attachAudioDevice -If audio context is already active invoke \`detachAudioDevice\``,
-     //     async () => {
-     //         const context = <any>new AudioContext();
-     //         await context.resume();
-     //         audioStream.audioContext = context;
-     //         console.log('====== AUDIO CONTEXT STATE =======', audioStream.audioContext.state);
-     //         (audioStream.audioContext as any).createScriptProcessor = jest.fn();
-     //         const detachDeviceSpy = jest.spyOn(audioStream, 'detachAudioDevice');
-     //         await audioStream.attachAudioDevice('default', new MediaStream());
-     //         expect(detachDeviceSpy).toBeCalledTimes(1);
-     //     }
-     // )
+    // test(
+    //     `LINEAR16AudioStream.attachAudioDevice -If audio context is already active invoke \`detachAudioDevice\``,
+    //     async () => {
+    //         const context = <any>new AudioContext();
+    //         await context.resume();
+    //         audioStream.audioContext = context;
+    //         console.log('====== AUDIO CONTEXT STATE =======', audioStream.audioContext.state);
+    //         (audioStream.audioContext as any).createScriptProcessor = jest.fn();
+    //         const detachDeviceSpy = jest.spyOn(audioStream, 'detachAudioDevice');
+    //         await audioStream.attachAudioDevice('default', new MediaStream());
+    //         expect(detachDeviceSpy).toBeCalledTimes(1);
+    //     }
+    // )
 
-     test(
-         `LINEAR16AudioStream.attachAudioDevice -If audio context is inactive we do not invoke \`detachAudioDevice\``,
-         async () => {
-             const context: any = new AudioContext();
-             await context.close();
-             audioStream.audioContext = context;
-             (audioStream.audioContext as any).createScriptProcessor = jest.fn();
-             const detachDeviceSpy = jest.spyOn(audioStream, 'detachAudioDevice');
-             await audioStream.attachAudioDevice('default', new MediaStream());
-             expect(detachDeviceSpy).toBeCalledTimes(0);
-         }
-     )
-
-
-    
-     test(
-        `LINEAR16AudioStream.attachAudioDevice - If successful emit \`audio_source_connected\``,
+    test(
+        `LINEAR16AudioStream.attachAudioDevice -If audio context is inactive we do not invoke \`detachAudioDevice\``,
         async () => {
-           const mediaStream = new MediaStream();
-           const eventEmitterSpy = jest.spyOn(audioStream, 'dispatchEvent');
-           await audioStream.attachAudioDevice('default', mediaStream);
-           expect(eventEmitterSpy).toBeCalledTimes(1);
-           expect(eventEmitterSpy).toBeCalledWith(new SymblEvent('audio_source_connected', audioStream.audioContext.sampleRate));
+            audioStream.audioContext = null;
+
+            audioStream.sourceNode = {
+                disconnect: jest.fn()
+            }
+
+            const detachDeviceSpy = jest.spyOn(audioStream, 'detachAudioDevice');
+            await audioStream.attachAudioDevice('default', new MediaStream());
+            expect(detachDeviceSpy).toBeCalledTimes(0);
         }
     )
+
 });

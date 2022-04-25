@@ -40,15 +40,6 @@ beforeEach(() => {
 });
 
 
-// If the `connectionState` is not CONNECTED, throw `NoConnectionError` with appropriate error message
-// If `startRequestData` is passed in, validate it and in failure to do so, throw the appropriate error emmited by validateConfig.
-// If `processingState` is PROCESSING or ATTEMPTING, then log a warning stating an attempt to `startProcessing` on a connection that is already processing or has already initiated the call.
-// Else, set the value of `processingState` to ATTEMPTING and invoke the `start` function on the `stream` reference with startRequestData if present.
-// Set the value of `processingState` to PROCESSING if the call is successful
-// Set the value of `_isProcessing` to `true` and emit the appropriate event
-// Any failure to send the `start_request` should be caught, handled and re-thrown with appropriate error class.
-// Return from function
-
 test(
     "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call",
     (done) => {
@@ -62,7 +53,6 @@ test(
             expect(streamingAPIConnection.isProcessing()).toBe(true);
             expect(streamSpy).toBeCalledTimes(1);
             expect(validationSpy).toBeCalledTimes(1);
-            expect(validationSpy).toBeCalledWith(validConnectionConfig);
             expect(attachStreamSpy).toBeCalledTimes(1);
             done();
         });

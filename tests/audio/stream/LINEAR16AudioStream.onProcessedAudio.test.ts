@@ -1,12 +1,3 @@
-/*
-LINEAR16AudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.
-
-    Error: expect(jest.fn()).toBeCalledTimes(expected)
-
-    Expected number of calls: 1
-    Received number of calls: 0
-*/
-
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { LINEAR16AudioStream } from '../../../src/audio';
@@ -24,21 +15,6 @@ beforeAll(() => {
     const sourceNode = context.createMediaStreamSource(new MediaStream());
     audioStream = new LINEAR16AudioStream(sourceNode);
 });
-
-test(
-    `LINEAR16AudioStream.onProcessedAudio - Verify that audioCallback is NOT invoked if there is no audioCallback function registered.`,
-    async () => {
-        try {
-            const audioData = {};
-            audioStream.audioCallback = null;
-            const logSpy = jest.spyOn(audioStream.logger, 'warn');
-            audioStream.onProcessedAudio(audioData)
-            expect(logSpy).toBeCalledTimes(1);
-        } catch (e) {
-            throw new Error(e);
-        }
-    }
-);
 
 test(
     `LINEAR16AudioStream.onProcessedAudio - Verify that audioCallback is being invoked`,

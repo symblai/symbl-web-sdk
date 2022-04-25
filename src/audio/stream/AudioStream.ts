@@ -286,23 +286,27 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        if (sourceElement.src.substring(
-            0,
-            5
-        ) !== "blob:") {
+        if (sourceElement.type.indexOf("/mp4") === -1) {
 
-            const src = await fetch(sourceElement.src);
-            const data = await src.blob();
-            const metadata = {
-                "type": sourceElement.type
-            };
-            const file = new File(
-                [data],
-                "sample_audio_file.wav",
-                metadata
-            );
-            sourceElement.src = URL.createObjectURL(file);
-            sourceElement.type = "audio/wav";
+            if (sourceElement.src.substring(
+                0,
+                5
+            ) !== "blob:") {
+
+                const src = await fetch(sourceElement.src);
+                const data = await src.blob();
+                const metadata = {
+                    "type": sourceElement.type
+                };
+                const file = new File(
+                    [data],
+                    "sample_audio_file.wav",
+                    metadata
+                );
+                sourceElement.src = URL.createObjectURL(file);
+                sourceElement.type = "audio/wav";
+
+            }
 
         }
 

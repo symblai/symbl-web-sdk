@@ -2,14 +2,11 @@
 import Symbl from "../../src/symbl";
 import { LINEAR16AudioStream, OpusAudioStream } from "../../src/audio";
 import { ConnectionFactory } from '../../src/connection';
-import { StreamingAPIConnection, SubscribeAPIConnection } from '../../src/api';
 // jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../constants';
 import { InvalidValueError } from '../../src/error';
 import {
-    SymblConnectionType,
-    ConnectionState,
-    ConnectionProcessingState
+    SymblConnectionType
 } from "../../src/types/connection";
 
 // Validate the `connectionType` to be a valid enum present in the `ConnectionType` enum

@@ -6,6 +6,7 @@ interface SymblConfig {
     accessToken?: string;
     basePath?: string;
     logLevel?: string;
+    reconnectOnError?: boolean;
 }
 
 type InsightType = "action_item" | "question" | "follow_up";

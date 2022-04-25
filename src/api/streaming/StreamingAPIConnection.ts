@@ -498,11 +498,8 @@ export class StreamingAPIConnection extends BaseConnection {
 
         } else {
 
-
-            // If `options` is passed in, validate it and in failure to do so, throw the appropriate error emited by validateConfig.
             if (options) {
 
-                StreamingAPIConnection.validateConfig(options);
                 this.config = Object.assign(
                     this.config,
                     options
@@ -554,6 +551,8 @@ export class StreamingAPIConnection extends BaseConnection {
                 this.config.config.sampleRateHertz = this.audioStream.getSampleRate();
 
             }
+
+            StreamingAPIConnection.validateConfig(this.config);
 
 
             const copiedHandlers = this.config.handlers;
@@ -628,6 +627,7 @@ export class StreamingAPIConnection extends BaseConnection {
             if (this.restartProcessing) {
 
                 await this.startProcessing(this.config);
+                this.modifySampleRate(this.audioStream.getSampleRate());
                 this.restartProcessing = false;
 
             }
@@ -637,6 +637,29 @@ export class StreamingAPIConnection extends BaseConnection {
 
         // Return from function
         return this;
+
+    }
+
+    /**
+     * Sends out a modify_request event to the WebSocket which modifies the sample rate.
+     * @param sampleRateHertz number
+     */
+    modifySampleRate (sampleRateHertz: number) {
+
+        if (!sampleRateHertz || typeof sampleRateHertz !== "number") {
+
+            throw new InvalidValueError("Sample rate argument must be a number.");
+
+        }
+
+        this.sendJSON({
+            "speechRecognition": {
+                sampleRateHertz
+            },
+            "type": "modify_request"
+        });
+
+        this.dispatchEvent(new SymblEvent("session_modified"));
 
     }
 

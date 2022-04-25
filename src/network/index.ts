@@ -46,6 +46,7 @@ const registerNetworkConnectivityDetector = (jsSDK: sdk) => {
                 "online",
                 () => {
 
+                    jsSDK.setOffline(false);
                     networkConnectivityDetector.onlineDetector();
 
                 }
