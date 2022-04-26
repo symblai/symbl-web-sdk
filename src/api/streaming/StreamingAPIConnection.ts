@@ -379,7 +379,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Check if already connected and if not connect to the websocket stream to send data.
      * @returns connection object
      */
-    async connect (reconnectOnError?: boolean): Promise<void> {
+    async connect (): Promise<void> {
 
         // If the `connectionState` is already CONNECTED, log at warning level that a connection attempt is being made on an already open connection.
         if (this.connectionState === ConnectionState.CONNECTED) {
@@ -392,11 +392,6 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 // Else, set the `connectionState` to CONNECTING and establish a new connection with the Streaming API via JS SDK
                 this.connectionState = ConnectionState.CONNECTING;
-                if (reconnectOnError) {
-
-                    this.config.reconnectOnError = true;
-
-                }
                 const copiedHandlers = this.config.handlers;
                 const copiedConfig = JSON.parse(JSON.stringify(this.config));
                 copiedConfig.handlers = copiedHandlers;
