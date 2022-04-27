@@ -1,7 +1,7 @@
 import Symbl from "../../../src/symbl";
-import { LINEAR16AudioStream } from "../../../src/audio";
+import { LINEAR16AudioStream, OpusAudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
-import { NoConnectionError } from "../../../src/error";
+import { NoConnectionError, InvalidValueError } from "../../../src/error";
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 
@@ -38,6 +38,40 @@ beforeEach(() => {
         })
     }
 });
+
+test(
+    "StreamingAPIConnection.startProcessing - Test mismatch between encoding type and AudioStream type",
+    async () => {
+
+
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+
+        streamingAPIConnection.stream = {
+            start: jest.fn()
+        }
+
+        streamingAPIConnection.audioStream = new OpusAudioStream();
+
+        await expect(async () => await streamingAPIConnection.startProcessing({
+            config: {
+                encoding: "LINEAR16"
+            }
+        })).rejects.toThrowError(new InvalidValueError("There is a mismatch between the audioStream type and the encoding type passed in the config."));
+
+    }
+)
+
+
+test(
+    "StreamingAPIConnection.startProcessing - Test that encoding type is set if null and audiostream is passed",
+    async () => {
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        await streamingAPIConnection.startProcessing(null);
+        expect(streamingAPIConnection.config.config.encoding).toBe("LINEAR16");
+    }
+);
+
 
 
 test(

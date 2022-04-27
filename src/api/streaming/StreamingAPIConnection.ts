@@ -493,33 +493,74 @@ export class StreamingAPIConnection extends BaseConnection {
 
         } else {
 
-            if (options) {
+            if (!options) {
 
-                this.config = Object.assign(
-                    this.config,
-                    options
-                );
+                options = {};
 
             }
 
-            let encoding;
-            if (this.config.config && this.config.config.encoding) {
+            this.config = Object.assign(
+                this.config,
+                options
+            );
 
-                this.config.config.encoding = this.config.config.encoding.toUpperCase();
-                ({encoding} = this.config.config);
+            const setDefaultEncoding = (options, audioStream?) => {
+
+                // All requests must have a encoding type.
+                if (!options.config) {
+
+                    options.config = {}
+
+                }
+
+                if (!options.config.encoding) {
+
+                    options.config.encoding = audioStream ? audioStream.type : SymblAudioStreamType.LINEAR16;
+
+                }
+
+                return options;
+            }
+
+            let encoding: string;
+            let {audioStream} = this;
+            if (audioStream) {
+
+                encoding = audioStream.type;
+
+                if (this.config.config
+                    && this.config.config.encoding
+                    && this.config.config.encoding.toUpperCase() !== encoding) {
+
+                    throw new InvalidValueError("There is a mismatch between the audioStream type and the encoding type passed in the config.")
+
+                }
+
+                this.config = setDefaultEncoding(this.config, audioStream);
 
             } else {
 
-                encoding = SymblAudioStreamType.LINEAR16;
+                if (this.config.config && this.config.config.encoding) {
+
+                    this.config.config.encoding = this.config.config.encoding.toUpperCase();
+                    ({encoding} = this.config.config);
+
+                } else {
+
+                    encoding = SymblAudioStreamType.LINEAR16;
+
+                }
+
+                this.config = setDefaultEncoding(this.config);
+
+                if (!audioStream) {
+
+                    audioStream = new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
+
+                }
 
             }
 
-            let {audioStream} = this;
-            if (!audioStream) {
-
-                audioStream = new AudioStreamFactory().instantiateStream(encoding.toUpperCase() as SymblAudioStreamType);
-
-            }
             this.attachAudioStream(audioStream);
 
             if (this.audioStream.deviceProcessing) {
@@ -546,6 +587,8 @@ export class StreamingAPIConnection extends BaseConnection {
                 this.config.config.sampleRateHertz = this.audioStream.getSampleRate();
 
             }
+
+            this.config.config.encoding = this.config.config.encoding.toUpperCase();
 
             StreamingAPIConnection.validateConfig(this.config);
 
