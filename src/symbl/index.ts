@@ -118,11 +118,6 @@ export default class Symbl {
 
         }
 
-        if (reconnectOnError) {
-
-            this.sdk.setReconnectOnError(true);
-
-        }
 
     }
 
@@ -359,13 +354,8 @@ export default class Symbl {
             sessionId
         );
 
-        this.logger.debug(
-            "SYMBL CONFIG",
-            this.symblConfig.reconnectOnError
-        );
-
         // Invoke the `connect` method to start the connection to the Subscribe API
-        await connection.connect(this.symblConfig.reconnectOnError);
+        await connection.connect();
 
         // If connection is successful, return the instance of the `SubscribeAPIConnection`
         return connection as SubscribeAPIConnection;
