@@ -1,12 +1,12 @@
 import Logger from "../logger";
 import {NetworkConnectivityDetector} from "./NetworkConnectivityDetector";
-import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+const sdk = require("@symblai/symbl-js/build/client.sdk.min").sdk;
 
 let offlineEventListenerRegistered = false,
     onlineEventListenerRegistered = false;
 let networkConnectivityDetector: NetworkConnectivityDetector;
 
-const registerNetworkConnectivityDetector = (jsSDK: sdk) => {
+const registerNetworkConnectivityDetector = (jsSDK: typeof sdk) => {
 
     let connectivityCheckIntervalRef;
     const logger = Logger;

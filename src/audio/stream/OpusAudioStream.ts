@@ -66,7 +66,7 @@ export class OpusAudioStream extends AudioStream {
 
         if (reInitialise && this.opusEncoder) {
 
-            this.resetOpusEncoder();
+            await this.resetOpusEncoder();
 
         }
 
@@ -76,9 +76,10 @@ export class OpusAudioStream extends AudioStream {
                 ? this.mediaStream
                 : await AudioStream.getMediaStream();
 
+
             if (this.sourceNode) {
 
-                this.config.sourceNode = <MediaStreamAudioSourceNode> this.sourceNode;
+                this.config.sourceNode = this.sourceNode as any;
 
             } else if (!this.config.sourceNode && !this.sourceNode) {
 
@@ -102,7 +103,7 @@ export class OpusAudioStream extends AudioStream {
      */
     async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        const element = super.attachAudioSourceElement(audioSourceDomElement);
+        const element = await super.attachAudioSourceElement(audioSourceDomElement);
         await this.attachAudioProcessor(true);
 
         const event = new SymblEvent(

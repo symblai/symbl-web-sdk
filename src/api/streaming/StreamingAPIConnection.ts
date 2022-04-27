@@ -333,7 +333,7 @@ export class StreamingAPIConnection extends BaseConnection {
      */
 
 
-    static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig | StreamingAPIStartRequest {
+    static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
 
         const {
             id,
@@ -654,7 +654,12 @@ export class StreamingAPIConnection extends BaseConnection {
             "type": "modify_request"
         });
 
-        this.dispatchEvent(new SymblEvent("session_modified"));
+        this.dispatchEvent(new SymblEvent(
+            "session_modified",
+            {
+                sampleRateHertz
+            }
+        ));
 
     }
 
@@ -662,7 +667,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Stops and restarts processing on a change of audio source being pushed to the websocket
      * @param audioSourceChangedEvent Event
      */
-    async onAudioSourceChanged (audioSourceChangedEvent: Event): Promise<void> {
+    private async onAudioSourceChanged (audioSourceChangedEvent: Event): Promise<void> {
 
         if (this.isConnected()) {
 
@@ -721,7 +726,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Sends the raw audio data to the websocket connection for processing
      * @param audioData ArrayBuffer
      */
-    sendAudio (audioData: ArrayBuffer | Uint8Array | Uint16Array): void {
+    sendAudio (audioData: any): void {
 
         this.stream.sendAudio(audioData);
 
@@ -731,7 +736,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Sends JSON requests to start, stop, or modify an ongoing websocket connection
      * @param data StreamingAPIRequest
      */
-    sendJSON (data: StreamingAPIStartRequest | StreamingAPIStopRequest | StreamingAPIModifyRequest): void {
+    sendJSON (data: any): void {
 
         // `sendAudio` function exposed by the JS SDK currently accepts any serializable data to be sent over the channel
         this.stream.sendAudio(JSON.stringify(data));

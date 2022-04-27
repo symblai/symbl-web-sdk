@@ -46,6 +46,11 @@ export class AudioStream extends DelegatedEventTarget {
     /**
      * @ignore
      */
+    private activeElement: any;
+
+    /**
+     * @ignore
+     */
     private recentlyDisconnectedDevice = false;
 
     /**
@@ -119,8 +124,16 @@ export class AudioStream extends DelegatedEventTarget {
      */
     static async getMediaStream (deviceId = "default"): Promise<MediaStream> {
 
+        if (!deviceId) {
+
+            throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
+
+        }
+
         let stream = await navigator.mediaDevices.getUserMedia({
-            "audio": true,
+            "audio": {
+                deviceId
+            },
             "video": false
         });
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -130,25 +143,21 @@ export class AudioStream extends DelegatedEventTarget {
             throw new NoAudioInputDeviceDetectedError("No input devices found.");
 
         }
-        if (deviceId) {
 
-            let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
-            if (!foundDevice) {
+        let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
 
-                // Safari fix because Safari doens't always support "default" as deviceId.
-                foundDevice = inputDevices[0];
+        // If that device Id wasn't found, grab the first one.
+        if (!foundDevice) {
 
-            }
+            // Safari fix because Safari doens't always support "default" as deviceId.
+            foundDevice = inputDevices[0];
+
             stream = await navigator.mediaDevices.getUserMedia({
                 "audio": {
                     "groupId": foundDevice.groupId
                 },
                 "video": false
             });
-
-        } else {
-
-            throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
 
         }
 
@@ -268,12 +277,6 @@ export class AudioStream extends DelegatedEventTarget {
             ? newAudioSourceDomElement.firstChild
             : newAudioSourceDomElement;
 
-        if (!sourceElement.type) {
-
-            throw new InvalidAudioElementError("Audio element must have a `type` field.");
-
-        }
-
         if (this.audioContext) {
 
             this.detachAudioSourceElement();
@@ -286,7 +289,7 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        if (sourceElement.type.indexOf("/mp4") === -1) {
+        if (sourceElement.src.indexOf("/mp4") === -1) {
 
             if (sourceElement.src.substring(
                 0,
@@ -295,16 +298,11 @@ export class AudioStream extends DelegatedEventTarget {
 
                 const src = await fetch(sourceElement.src);
                 const data = await src.blob();
-                const metadata = {
-                    "type": sourceElement.type
-                };
                 const file = new File(
                     [data],
-                    "sample_audio_file.wav",
-                    metadata
+                    "sample_audio_file.wav"
                 );
                 sourceElement.src = URL.createObjectURL(file);
-                sourceElement.type = "audio/wav";
 
             }
 
