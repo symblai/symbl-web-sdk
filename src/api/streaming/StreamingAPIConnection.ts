@@ -647,6 +647,25 @@ export class StreamingAPIConnection extends BaseConnection {
 
         }
 
+        if (!this.audioStream) {
+
+            throw new InvalidValueError("There is no audio stream attached to this connection.");
+
+        }
+
+        const encoding = this.audioStream.type;
+
+        if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+
+            throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
+
+        }
+        if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+
+            throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
+
+        }
+
         this.sendJSON({
             "speechRecognition": {
                 sampleRateHertz

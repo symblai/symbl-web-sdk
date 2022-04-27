@@ -5,6 +5,8 @@ import {SymblEvent} from "../../events";
 
 export class OpusAudioStream extends AudioStream {
 
+    public type = "OPUS";
+
     /**
      * @ignore
      */

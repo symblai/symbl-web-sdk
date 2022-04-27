@@ -46,17 +46,17 @@ export class AudioStream extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    private activeElement: any;
-
-    /**
-     * @ignore
-     */
     private recentlyDisconnectedDevice = false;
 
     /**
      * Used to determine if an audio stream is processing using an input device or DOM element.
      */
     public deviceProcessing = true;
+
+    /**
+     * Determines audio stream type.
+     */
+    public type: string;
 
     /**
      * Creates an audio stream to be used to send audio data to the websocket connection

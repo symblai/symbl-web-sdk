@@ -190,9 +190,7 @@ export default class Symbl {
 
         if (accessToken) {
 
-            const tokenPayload = JSON.parse(atob(
-                accessToken.split(".")[1]
-            ).toString());
+            const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]).toString());
             const expiry = Math.floor(tokenPayload.exp - (Date.now() / 1000));
             if (expiry <= 0) {
 
