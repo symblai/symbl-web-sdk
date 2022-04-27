@@ -1,4 +1,4 @@
-import consola from "consola";
+import consola, { LogLevel } from "consola";
 
 export class Logger {
 
@@ -21,7 +21,7 @@ export class Logger {
         const options: any = {};
         if (level) {
 
-            options.level = level;
+            options.level = LogLevel[level];
             this.logLevel = level;
 
         }
