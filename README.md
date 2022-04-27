@@ -1375,7 +1375,7 @@ audioStream.updateAudioSourceElement(myAudioElement);
 
 ## Known Issues
 
-In this version of the Web SDK, a few Known Issues have been observed. You can see the complete list of Known Issues [here](https://docs.symbl.ai/docs/changelog/#known-issues). You can also keep track of these issues as they are addressed via the Issues tab of the github repo [here](https://github.com/symblai/symbl-web-sdk/issues)
+In this version of the Web SDK, a few Known Issues have been observed. You can see the complete list of Known Issues [here](https://docs.symbl.ai/docs/changelog/#known-issues). You can also keep track of these issues as they are addressed via the Issues tab of the github repo [here](https://github.com/symblai/symbl-web-sdk/issues).
 
 
 ## Read more
