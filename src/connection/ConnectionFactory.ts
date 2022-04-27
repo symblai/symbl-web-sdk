@@ -3,6 +3,9 @@ import {
     SubscribeAPIConnection
 } from "../api";
 import {
+    BaseConnection
+} from "../connection";
+import {
     AudioStream
 } from "../audio";
 import {
@@ -20,9 +23,9 @@ export class ConnectionFactory {
      * @param connectionType SymblConnectionType
      * @param sessionId string
      * @param audioStream AudioStream
-     * @returns StreamingAPIConnection | SubscribeAPIConnection
+     * @returns StreamingAPIConnection or SubscribeAPIConnection
      */
-    instantiateConnection (connectionType: SymblConnectionType, sessionId: string, audioStream?: AudioStream): StreamingAPIConnection | SubscribeAPIConnection {
+    instantiateConnection (connectionType: SymblConnectionType, sessionId: string, audioStream?: AudioStream) : BaseConnection {
 
         if (!sessionId) {
 
@@ -41,7 +44,7 @@ export class ConnectionFactory {
             );
 
             // Return the instantiated `Connection` type
-            return connection as StreamingAPIConnection;
+            return connection;
 
         case SymblConnectionType.SUBSCRIBE:
             if (audioStream) {
@@ -53,7 +56,7 @@ export class ConnectionFactory {
             connection = new SubscribeAPIConnection(sessionId);
 
             // Return the instantiated `Connection` type
-            return connection as SubscribeAPIConnection;
+            return connection;
 
         default:
             // If the validation fails for `connectionType`, throw `InvalidValueError`

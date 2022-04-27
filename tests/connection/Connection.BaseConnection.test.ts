@@ -2,8 +2,8 @@ import { BaseConnection } from '../../src/connection';
 
 test(
     "BaseConnection - connect() throws error",
-    () => {
-        expect(() => {BaseConnection.prototype.connect()}).toThrowError(new TypeError("Function not implemented!"));
+    async () => {
+        await expect(async () => {await BaseConnection.prototype.connect()}).rejects.toThrowError(new TypeError("Function not implemented!"));
     }
 );
 

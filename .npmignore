@@ -1,5 +1,8 @@
+.env
 .github
 dist
+examples
+.vscode
 coverage
 public
 scripts
@@ -12,4 +15,4 @@ jest.config.ts
 tsconfig.json
 webpack.config.js
 build-tsc/*.map
-build-tsc/*.d.ts
+docs

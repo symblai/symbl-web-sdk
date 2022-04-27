@@ -3,6 +3,8 @@ import {SymblEvent} from "../../events";
 
 export class LINEAR16AudioStream extends AudioStream {
 
+    public type = "LINEAR16";
+
     /**
      * Converts audio data from Big Endian to Little Endian and sends to audio processor
      * @param audioEvent any

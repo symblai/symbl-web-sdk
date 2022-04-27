@@ -1,4 +1,4 @@
-import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+const sdk = require("@symblai/symbl-js/build/client.sdk.min").sdk;
 import DeviceManager from "../workers/DeviceManager";
 import OpusDeviceManager from "../workers/OpusDeviceManager";
 import Logger from "./services/Logger";
@@ -14,7 +14,7 @@ export default class SymblWebEngine {
     /**
      * @ignore
      */
-    sdk: sdk = sdk;
+    sdk: typeof sdk = sdk;
     /* eslint-enable */
 
     /**

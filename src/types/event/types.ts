@@ -129,6 +129,20 @@ interface RealtimeTopicData {
     type: "topic";
 }
 
+interface RealtimeTrackerData {
+    name: string;
+    matches: {
+        type: string;
+        value: string;
+        messageRefs: {
+            id: string;
+            text: string;
+            offset: number;
+        }[];
+        insightRefs: any;
+    }[];
+}
+
 type SymblData = RealtimeSpeechData | RealtimeMessageData | RealtimeInsightData | RealtimeTopicData
 
 export {
@@ -139,5 +153,6 @@ export {
     RealtimeMessageData,
     RealtimeInsightData,
     RealtimeTopicData,
+    RealtimeTrackerData,
     EventTypes
 }
