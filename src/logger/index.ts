@@ -1,4 +1,4 @@
-import consola, { LogLevel } from "consola";
+import consola, {LogLevel} from "consola";
 
 export class Logger {
 
