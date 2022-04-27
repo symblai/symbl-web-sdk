@@ -1,4 +1,4 @@
-import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+const sdk = require("@symblai/symbl-js/build/client.sdk.min").sdk;
 let connectivityCheckIntervalRef;
 
 const onlineDetector = async (jsSDK, e) => {
@@ -37,7 +37,7 @@ const onlineDetector = async (jsSDK, e) => {
 
 
 const NetworkConnectivityDetector = class {
-    jsSDK: sdk;
+    jsSDK: typeof sdk;
 
     constructor (jsSDK) {
         this.jsSDK = jsSDK;

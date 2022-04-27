@@ -34,18 +34,14 @@ test(
     `OpusAudioStream.updateAudioSourceElement - Check that \`detachAudioSourceElement\` and
     \`attachAudioSourceElement\` are invoked.`,
     async () => {
-        try {
-            // setup
-            const audioElement = document.createElement("audio");
-            audioElement.src = "test.mp3";
-            const detachElementSpy = jest.spyOn(audioStream, 'detachAudioSourceElement');
-            const attachElementSpy = jest.spyOn(audioStream, 'attachAudioSourceElement');
-            audioStream.updateAudioSourceElement(audioElement);
-            expect(detachElementSpy).toBeCalledTimes(1);
-            expect(attachElementSpy).toBeCalledTimes(1);
-            expect(attachElementSpy).toBeCalledWith(audioElement)
-        } catch (e) {
-            throw new Error(e)
-        }
+        const audioElement = document.createElement("audio");
+        audioElement.src = "test.mp3";
+        audioStream.attachAudioSourceElement = jest.fn();
+        const detachElementSpy = jest.spyOn(audioStream, 'detachAudioSourceElement');
+        const attachElementSpy = jest.spyOn(audioStream, 'attachAudioSourceElement');
+        await audioStream.updateAudioSourceElement(audioElement);
+        expect(detachElementSpy).toBeCalledTimes(1);
+        expect(attachElementSpy).toBeCalledTimes(1);
+        expect(attachElementSpy).toBeCalledWith(audioElement)
     }
 )

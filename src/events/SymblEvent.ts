@@ -12,7 +12,7 @@ export class SymblEvent {
      * @param data unknown
      * @returns CustomEvent
      */
-    constructor (eventType: EventTypes, data?: unknown) {
+    constructor (eventType: EventTypes, data?) {
 
         const detail: CustomEventInit = {
             "detail": data
@@ -78,7 +78,7 @@ export class DelegatedEventTarget implements EventTarget {
    * @param eventName EventTypes
    * @param callback function
    */
-  on (eventName: EventTypes, callback: (event: SymblEvent) => void): void {
+  on (eventName: EventTypes, callback: (event) => void): void {
 
       this.addEventListener(
           eventName,
