@@ -1,21 +1,4 @@
-/*
-OpusAudioStream.attachAudioProcessor - Test that audio processor was attached successfully
-
-    expect(received).toBe(expected) // Object.is equality
-
-    Expected: [Function bound processAudio]
-    Received: [Function mockConstructor]
-
-OpusAudioStream.attachAudioProcessor - Test that audio processor was reinitialized successfully
-
-    expect(received).toBe(expected) // Object.is equality
-
-    Expected: [Function bound processAudio]
-    Received: [Function mockConstructor]
-*/
-
 import { Recorder } from "symbl-opus-encdec";
-jest.mock("symbl-opus-encdec");
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { OpusAudioStream } from '../../../src/audio';
@@ -24,7 +7,20 @@ import { APP_ID, APP_SECRET } from '../../constants';
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, context, mediaStream, sourceNode;
 let audioStream;
 let streamingAPIConnection;
-beforeAll(() => {
+const opusEncoderMock = {
+    "start": jest.fn(),
+    "pause": jest.fn(),
+    "close": jest.fn(),
+}
+jest.mock('symbl-opus-encdec', () => {
+    return {
+        Recorder: jest.fn().mockImplementation( () => {
+            return opusEncoderMock;
+        })
+    }
+});
+
+beforeEach(() => {
     authConfig = {
         appId: APP_ID,
         appSecret: APP_SECRET
@@ -58,18 +54,24 @@ if (this.opusEncoder) {
 
 test(
     'OpusAudioStream.attachAudioProcessor - Test that audio processor was attached successfully',
-    async () => {
-        audioStream.attachAudioProcessor();
-        expect(audioStream.opusEncoder.ondataavailable).toBe(audioStream.processAudio);
+    (done) => {
+        audioStream.attachAudioProcessor().then(() => {
+            expect(audioStream.opusEncoder.ondataavailable).toBe(audioStream.processAudio);
+            done();
+        });
     }
 )
 
 test(
     'OpusAudioStream.attachAudioProcessor - Test that audio processor was reinitialized successfully',
-    async () => {
-        audioStream.attachAudioProcessor(true);
-        expect(audioStream.opusEncoder.ondataavailable).toBe(audioStream.processAudio);
-        expect(Recorder).toBeCalledTimes(1);
-        expect(Recorder).toBeCalledWith(audioStream.config);
+    (done) => {
+
+        audioStream.attachAudioProcessor(true).then(() => {
+
+            expect(audioStream.opusEncoder.ondataavailable).toBe(audioStream.processAudio);
+            expect(Recorder).toBeCalledTimes(1);
+            expect(Recorder).toBeCalledWith(audioStream.config);
+            done();
+        });
     }
 )

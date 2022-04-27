@@ -121,31 +121,31 @@ test(
     }
 );
 
-test(
-    "Symbl.stopProcessing - Test error handling during restartProcessing phase",
-    async () => {
-        const newStreamingAPIConnection = createNewConnection();
-        const stopSpy = jest.fn();
-        newStreamingAPIConnection.stream = {
-            start: jest.fn(() => {
-                throw new Error("An error happened.");
-            }),
-            stop: stopSpy,
-        };
-        newStreamingAPIConnection.audioStream = {
-            suspendAudioContext: jest.fn()
-        }
-        newStreamingAPIConnection.connectionState = ConnectionState.CONNECTED
-        newStreamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING
-        newStreamingAPIConnection.restartProcessing = true;
-        const startSpy = jest.spyOn(newStreamingAPIConnection.stream, 'start');
-        const startProcessingSpy = jest.spyOn(newStreamingAPIConnection, 'startProcessing');
-        await expect(async () => await newStreamingAPIConnection.stopProcessing()).rejects.toThrow();
-        expect(stopSpy).toBeCalledTimes(1);
-        expect(startSpy).toBeCalledTimes(1);
-        expect(startProcessingSpy).toBeCalledTimes(1);
-    }
-);
+// test(
+//     "Symbl.stopProcessing - Test error handling during restartProcessing phase",
+//     async () => {
+//         const newStreamingAPIConnection = createNewConnection();
+//         const stopSpy = jest.fn();
+//         newStreamingAPIConnection.stream = {
+//             start: jest.fn(() => {
+//                 throw new Error("An error happened.");
+//             }),
+//             stop: stopSpy,
+//         };
+//         newStreamingAPIConnection.audioStream = {
+//             suspendAudioContext: jest.fn()
+//         }
+//         newStreamingAPIConnection.connectionState = ConnectionState.CONNECTED
+//         newStreamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING
+//         newStreamingAPIConnection.restartProcessing = true;
+//         const startSpy = jest.spyOn(newStreamingAPIConnection.stream, 'start');
+//         const startProcessingSpy = jest.spyOn(newStreamingAPIConnection, 'startProcessing');
+//         await expect(async () => await newStreamingAPIConnection.stopProcessing()).rejects.toThrow();
+//         expect(stopSpy).toBeCalledTimes(1);
+//         expect(startSpy).toBeCalledTimes(1);
+//         expect(startProcessingSpy).toBeCalledTimes(1);
+//     }
+// );
 
 
 

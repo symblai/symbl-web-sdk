@@ -1,18 +1,14 @@
-/*
-[UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "TypeError: Cannot read property 'stop' of undefined".] {
-    code: 'ERR_UNHANDLED_REJECTION'
-*/
-
 import Symbl from "../../../src/symbl";
 import { StreamingAPIConnection } from '../../../src/api';
 import { LINEAR16AudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { SymblEvent } from "../../../src/events";
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types"
+import AudioContext from 'audio-context-mock';
 // import Logger from "../../src/logger";
 // import { Stream } from "stream";
 
-let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, validSessionID;
+let authConfig, symbl, validSessionID;
 let audioStream, sourceNode;
 let streamingAPIConnection
 beforeAll(() => {
@@ -36,6 +32,7 @@ beforeAll(() => {
     // };
     validSessionID = "123475-abcde-9876-bce";
     const context = new AudioContext();
+    context.resume();
     sourceNode = context.createMediaStreamSource(new MediaStream());
     audioStream = new LINEAR16AudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection("abc123", audioStream);  
@@ -51,7 +48,7 @@ test(
         streamingAPIConnection._isConnected = true;
         streamingAPIConnection._isProcessing = true;
         const stopSpy = jest.spyOn(streamingAPIConnection, 'stopProcessing');
-        streamingAPIConnection.onAudioSourceChanged(new SymblEvent('audio_source_disconnected'));
+        streamingAPIConnection.onAudioSourceChanged(new SymblEvent('audio_source_changed'));
         expect(stopSpy).toBeCalledTimes(1);
         expect(streamingAPIConnection.restartProcessing).toBe(true);
 

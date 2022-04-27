@@ -1,9 +1,3 @@
-/*
-[UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "TypeError: Cannot read property 'disconnect' of null".] {
-  code: 'ERR_UNHANDLED_REJECTION'
-}
-*/
-
 import AudioContext from 'audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { OpusAudioStream } from '../../../src/audio';
@@ -40,18 +34,14 @@ test(
     `OpusAudioStream.updateAudioSourceElement - Check that \`detachAudioSourceElement\` and
     \`attachAudioSourceElement\` are invoked.`,
     async () => {
-        try {
-            // setup
-            const audioElement = document.createElement("audio");
-            audioElement.src = "test.mp3";
-            const detachElementSpy = jest.spyOn(audioStream, 'detachAudioSourceElement');
-            const attachElementSpy = jest.spyOn(audioStream, 'attachAudioSourceElement');
-            audioStream.updateAudioSourceElement(audioElement);
-            expect(detachElementSpy).toBeCalledTimes(1);
-            expect(attachElementSpy).toBeCalledTimes(1);
-            expect(attachElementSpy).toBeCalledWith(audioElement)
-        } catch (e) {
-            throw new Error(e)
-        }
+        const audioElement = document.createElement("audio");
+        audioElement.src = "test.mp3";
+        audioStream.attachAudioSourceElement = jest.fn();
+        const detachElementSpy = jest.spyOn(audioStream, 'detachAudioSourceElement');
+        const attachElementSpy = jest.spyOn(audioStream, 'attachAudioSourceElement');
+        await audioStream.updateAudioSourceElement(audioElement);
+        expect(detachElementSpy).toBeCalledTimes(1);
+        expect(attachElementSpy).toBeCalledTimes(1);
+        expect(attachElementSpy).toBeCalledWith(audioElement)
     }
 )

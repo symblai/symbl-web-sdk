@@ -14,6 +14,18 @@ test(
 );
 
 test(
+    "constructor for Symbl class - passing in basePath, appId and appSecret",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET,
+            basePath: "https://some-api.base.path.net"
+        };
+        expect(() => new Symbl(authConfig)).not.toThrow();
+    }
+);
+
+test(
     "constructor for Symbl class - passing in accessToken",
     async () => {
         const authConfig = {

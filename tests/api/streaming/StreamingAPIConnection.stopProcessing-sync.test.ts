@@ -29,6 +29,9 @@ const createNewConnection = () => {
     const sourceNode = audioContext.createMediaStreamSource();
     const audioStream = new LINEAR16AudioStream(sourceNode);
     audioStream.suspendAudioContext = jest.fn();
+    (audioStream as any).sourceNode = {
+        disconnect: jest.fn()
+    }
     streamingAPIConnection = new StreamingAPIConnection("123abc" + Math.random(), audioStream);
     streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
     streamingAPIConnection.restartProcessing = false;
@@ -75,6 +78,7 @@ test(
         newStreamingAPIConnection.connectionState = ConnectionState.CONNECTED
         newStreamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING
         newStreamingAPIConnection.restartProcessing = true;
+        newStreamingAPIConnection.modifySampleRate = jest.fn();
         const stopSpy = jest.spyOn(newStreamingAPIConnection.stream, 'stop');
         const startSpy = jest.spyOn(newStreamingAPIConnection.stream, 'start');
         newStreamingAPIConnection.stopProcessing().then(() => {
@@ -99,8 +103,6 @@ test(
             expect(stopSpy).toBeCalledTimes(1);
             done();
         });
-        expect(newStreamingAPIConnection.processingState).toBe(ConnectionProcessingState.STOPPING)
-
     }
 );
 

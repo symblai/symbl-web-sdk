@@ -5,8 +5,6 @@ import {
     InvalidValueError,
     RequiredParameterAbsentError,
     SessionIDNotUniqueError
-
-    /* InvalidLogLevelError*/
 } from "../error";
 import {StreamingAPIConnection, SubscribeAPIConnection} from "../api";
 import {
@@ -21,7 +19,7 @@ import Logger from "../logger";
 import {SYMBL_DEFAULTS} from "../constants";
 import {VALID_LOG_LEVELS} from "../utils/configs";
 import registerNetworkConnectivityDetector from "../network";
-import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+const sdk = require("@symblai/symbl-js/build/client.sdk.min").sdk;
 import {uuid} from "../utils";
 
 
@@ -30,7 +28,7 @@ export default class Symbl {
     /**
      * @ignore
      */
-    private sdk: sdk = sdk;
+    private sdk: typeof sdk = sdk;
 
     /**
      * @ignore
@@ -40,7 +38,7 @@ export default class Symbl {
     /**
      * @ignore
      */
-    private logger: Logger;
+    private logger: typeof Logger;
 
     /**
      * Using SymblConfig an instance of the Symbl SDK is instantiated
@@ -48,6 +46,7 @@ export default class Symbl {
      */
     constructor (symblConfig?: SymblConfig) {
 
+        this.logger = Logger;
         if (symblConfig) {
 
             this._validateSymblConfig(symblConfig);
@@ -55,7 +54,6 @@ export default class Symbl {
         }
 
         this.symblConfig = symblConfig;
-        this.logger = new Logger();
 
         this._validateSymblConfig = this._validateSymblConfig.bind(this);
         this.init = this.init.bind(this);
@@ -79,9 +77,44 @@ export default class Symbl {
             }
             if (basePath) {
 
-                this.sdk.oauth2.apiClient.basePath = basePath;
+                this.sdk.oauth2.setBasePath(basePath);
+                this.sdk.basePath = basePath;
 
             }
+
+            this.setNonAuthConfig(symblConfig);
+
+        }
+
+
+    }
+
+    /**
+     * @ignore
+     */
+    private setNonAuthConfig (symblConfig: SymblConfig): void {
+
+        if (symblConfig) {
+
+            const {logLevel, reconnectOnError} = symblConfig;
+
+            if (logLevel) {
+
+                this.logger.setLevel(logLevel);
+                this.sdk.logger.setLevel(logLevel);
+
+            } else {
+
+                this.logger.setLevel("info");
+                this.sdk.logger.setLevel("info");
+
+            }
+
+            // If (reconnectOnError) {
+
+            //     This.sdk.setReconnectOnError(true);
+
+            // }
 
         }
 
@@ -101,10 +134,18 @@ export default class Symbl {
 
         }
 
-        const {appId, accessToken, appSecret, logLevel} = symblConfig;
+        const {appId, accessToken, appSecret, logLevel, reconnectOnError} = symblConfig;
 
         if (logLevel && VALID_LOG_LEVELS.indexOf(logLevel) === -1) {
-            // Throw new InvalidLogLevelError(`Log level must be one of: ${VALID_LOG_LEVELS.join(', ')}`)
+
+            throw new InvalidValueError(`Log level must be one of: ${VALID_LOG_LEVELS.join(", ")}`);
+
+        }
+
+        if (reconnectOnError && typeof reconnectOnError !== "boolean") {
+
+            throw new InvalidValueError("`reconnectOnError` must be a boolean value.");
+
         }
 
         if (!appId && !appSecret && !accessToken) {
@@ -149,10 +190,7 @@ export default class Symbl {
 
         if (accessToken) {
 
-            const tokenPayload = JSON.parse(Buffer.from(
-                accessToken.split(".")[1],
-                "base64"
-            ).toString());
+            const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]).toString());
             const expiry = Math.floor(tokenPayload.exp - (Date.now() / 1000));
             if (expiry <= 0) {
 
@@ -166,27 +204,11 @@ export default class Symbl {
 
     }
 
-    /*
-     * ValidateStreamingAPIConnectionConfig(options: StreamingAPIConnectionConfig): boolean {
-     *     if (!options) {
-     */
-
-    //     }
-
-    //     If (!options.id) {
-
-    //     }
-
-    /*
-     *     Return true
-     * }
-     */
-
     /**
      * Validates and initializes Symbl with application configuration
      * @param {object} appConfig - Symbl configuration object
      */
-    async init (symblConfig: SymblConfig) : Promise<void> {
+    async init (symblConfig?: SymblConfig) : Promise<void> {
 
         if (!symblConfig && this.symblConfig) {
 
@@ -194,15 +216,10 @@ export default class Symbl {
 
         }
         this._validateSymblConfig(symblConfig);
+        this.setNonAuthConfig(symblConfig);
 
         try {
 
-            /*
-             * Logger.log(
-             *     "symblConfig",
-             *     symblConfig
-             * );
-             */
             const initConfig: SymblConfig = {};
 
             if (symblConfig.accessToken) {
@@ -216,14 +233,9 @@ export default class Symbl {
 
             }
 
-            initConfig.basePath = symblConfig.basePath || "https://api.symbl.ai";
+            initConfig.basePath = symblConfig.basePath || SYMBL_DEFAULTS.SYMBL_BASE_PATH;
 
-            /*
-             * Console.log(
-             *     "this.sdk",
-             *     symblConfig
-             * );
-             */
+
             await this.sdk.init(symblConfig);
 
         } catch (err) {
@@ -240,7 +252,7 @@ export default class Symbl {
      * @param audioStream AudioStream
      * @returns StreamingAPIConnection
      */
-    async createConnection (sessionId?: string, audioStream?: AudioStream, reconnectOnError?: boolean) : Promise<StreamingAPIConnection> {
+    async createConnection (sessionId?: string, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
 
         if (sessionId) {
 
@@ -277,7 +289,7 @@ export default class Symbl {
             );
 
             // Invoke the `connect` function to establish an idle connection with Streaming API. (It will not process Audio in this state)
-            await connection.connect(reconnectOnError);
+            await connection.connect();
             return connection as StreamingAPIConnection;
 
         } catch (ex) {
@@ -297,15 +309,20 @@ export default class Symbl {
      * @param audioStream AudioStream
      * @returns StreamingAPIConnection
      */
-    async createAndStartNewConnection (options: StreamingAPIConnectionConfig, audioStream?: AudioStream, reconnectOnError?: boolean) : Promise<StreamingAPIConnection> {
+    async createAndStartNewConnection (options: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+
+        if (typeof options !== "object") {
+
+            throw new InvalidValueError("`options` must be an instance of StreamingAPIConnectionConfig.");
+
+        }
 
         // Invoke `createConnection` with the above arguments.
         const connection = await this.createConnection(
             options
                 ? options.id
                 : null,
-            audioStream,
-            reconnectOnError
+            audioStream
         );
 
         // Invoke `startProcessing` on the instance of `StreamingAPIConnection`
@@ -352,6 +369,12 @@ export default class Symbl {
      * @returns Promise<void>
      */
     static wait (time: number, unit: string = TimeUnit.MS) : Promise<void> {
+
+        if (!time) {
+
+            throw new InvalidValueError("Please provide a number for `time`");
+
+        }
 
         let timeout;
 

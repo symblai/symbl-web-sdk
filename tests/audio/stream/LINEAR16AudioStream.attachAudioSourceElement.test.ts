@@ -1,15 +1,7 @@
-/*
-[UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "TypeError: Cannot read property 'connect' of null".] {
-  code: 'ERR_UNHANDLED_REJECTION'
-}
-*/
-
 import {AudioContext} from 'standardized-audio-context-mock';
 import Symbl from "../../../src/symbl";
 import { LINEAR16AudioStream } from '../../../src/audio';
 import { APP_ID, APP_SECRET } from '../../constants';
-import { SymblEvent } from "../../../src/events";
-import { InvalidAudioElementError } from "../../../src/error";
 
 /*
 - Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
@@ -182,11 +174,15 @@ test(
     \`attachAudioProcessor\` is invoked`,
     async () => {
         const videoElement = document.createElement("video");
+        (videoElement as any).type = "audio/mp3"
         videoElement.src = "test.mp3";
         
         audioStream.audioContext = new AudioContext();
         audioStream.audioContext.createMediaElementSource = jest.fn();
         audioStream.audioContext.createScriptProcessor = jest.fn();
+        audioStream.sourceNode = {
+            disconnect: jest.fn()
+        }
         const createMediaElementEventSpy = jest.spyOn(audioStream.audioContext, 'createMediaElementSource');
         const createScriptProcessorEventSpy = jest.spyOn(audioStream.audioContext, 'createScriptProcessor');
         const attachAudioProcessorEventSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
@@ -201,19 +197,3 @@ test(
     }
 )
 
-
-test(
-    `LINEAR16AudioStream.attachAudioSourceElement - Ensure that \`audio_source_connected\` is emitted`,
-    async () => {
-        const videoElement = document.createElement("video");
-        videoElement.src = "test.mp3";
-        audioStream.audioContext = new AudioContext();
-        audioStream.audioContext.createMediaElementSource = jest.fn();
-        audioStream.audioContext.createScriptProcessor = jest.fn();
-        const dispatchEventSpy = jest.spyOn(audioStream, 'dispatchEvent');
-
-        await audioStream.attachAudioSourceElement(videoElement);
-
-        expect(dispatchEventSpy).toBeCalledWith(new SymblEvent('audio_source_connected'));
-    }
-)

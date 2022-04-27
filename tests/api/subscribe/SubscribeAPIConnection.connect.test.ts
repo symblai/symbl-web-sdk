@@ -3,7 +3,6 @@ import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")
 import { LINEAR16AudioStream, OpusAudioStream } from "../../../src/audio";
 import { SubscribeAPIConnection } from '../../../src/api';
-import { NoConnectionError, HandshakeError } from "../../../src/error";
 import { ConnectionState } from "../../../src/types/connection";
 // jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../../constants';
@@ -19,7 +18,10 @@ describe('SubscribeAPIConnection.connect()', () => {
         symbl = new Symbl(authConfig);
         subscribeAPIConnection = new SubscribeAPIConnection("abc123") as any;
         subscribeAPIConnection.sdk = {
-            subscribeToStream: jest.fn()
+            subscribeToStream: jest.fn(),
+            oauth2: {
+                init: jest.fn()
+            }
         }
     });
 
@@ -31,7 +33,6 @@ describe('SubscribeAPIConnection.connect()', () => {
                 expect(subscribeAPIConnection.isConnected()).toBe(true);
                 done();
             });
-            expect(subscribeAPIConnection.connectionState).toBe(ConnectionState.CONNECTING);
         }
     );
 

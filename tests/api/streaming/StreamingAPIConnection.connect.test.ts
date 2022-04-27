@@ -3,7 +3,6 @@ import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
 jest.mock("@symblai/symbl-js/build/client.sdk.min")
 import { LINEAR16AudioStream, OpusAudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
-import { NoConnectionError, HandshakeError } from "../../../src/error";
 // jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState } from "../../../src/types";

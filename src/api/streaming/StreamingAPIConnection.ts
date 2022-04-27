@@ -333,7 +333,7 @@ export class StreamingAPIConnection extends BaseConnection {
      */
 
 
-    static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig | StreamingAPIStartRequest {
+    static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
 
         const {
             id,
@@ -379,7 +379,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Check if already connected and if not connect to the websocket stream to send data.
      * @returns connection object
      */
-    async connect (reconnectOnError?: boolean): Promise<void> {
+    async connect (): Promise<void> {
 
         // If the `connectionState` is already CONNECTED, log at warning level that a connection attempt is being made on an already open connection.
         if (this.connectionState === ConnectionState.CONNECTED) {
@@ -392,11 +392,6 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 // Else, set the `connectionState` to CONNECTING and establish a new connection with the Streaming API via JS SDK
                 this.connectionState = ConnectionState.CONNECTING;
-                if (reconnectOnError) {
-
-                    this.config.reconnectOnError = true;
-
-                }
                 const copiedHandlers = this.config.handlers;
                 const copiedConfig = JSON.parse(JSON.stringify(this.config));
                 copiedConfig.handlers = copiedHandlers;
@@ -498,11 +493,8 @@ export class StreamingAPIConnection extends BaseConnection {
 
         } else {
 
-
-            // If `options` is passed in, validate it and in failure to do so, throw the appropriate error emited by validateConfig.
             if (options) {
 
-                StreamingAPIConnection.validateConfig(options);
                 this.config = Object.assign(
                     this.config,
                     options
@@ -554,6 +546,8 @@ export class StreamingAPIConnection extends BaseConnection {
                 this.config.config.sampleRateHertz = this.audioStream.getSampleRate();
 
             }
+
+            StreamingAPIConnection.validateConfig(this.config);
 
 
             const copiedHandlers = this.config.handlers;
@@ -628,6 +622,7 @@ export class StreamingAPIConnection extends BaseConnection {
             if (this.restartProcessing) {
 
                 await this.startProcessing(this.config);
+                this.modifySampleRate(this.audioStream.getSampleRate());
                 this.restartProcessing = false;
 
             }
@@ -641,10 +636,57 @@ export class StreamingAPIConnection extends BaseConnection {
     }
 
     /**
+     * Sends out a modify_request event to the WebSocket which modifies the sample rate.
+     * @param sampleRateHertz number
+     */
+    modifySampleRate (sampleRateHertz: number) {
+
+        if (!sampleRateHertz || typeof sampleRateHertz !== "number") {
+
+            throw new InvalidValueError("Sample rate argument must be a number.");
+
+        }
+
+        if (!this.audioStream) {
+
+            throw new InvalidValueError("There is no audio stream attached to this connection.");
+
+        }
+
+        const encoding = this.audioStream.type;
+
+        if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+
+            throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
+
+        }
+        if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+
+            throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
+
+        }
+
+        this.sendJSON({
+            "speechRecognition": {
+                sampleRateHertz
+            },
+            "type": "modify_request"
+        });
+
+        this.dispatchEvent(new SymblEvent(
+            "session_modified",
+            {
+                sampleRateHertz
+            }
+        ));
+
+    }
+
+    /**
      * Stops and restarts processing on a change of audio source being pushed to the websocket
      * @param audioSourceChangedEvent Event
      */
-    async onAudioSourceChanged (audioSourceChangedEvent: Event): Promise<void> {
+    private async onAudioSourceChanged (audioSourceChangedEvent: Event): Promise<void> {
 
         if (this.isConnected()) {
 
@@ -703,7 +745,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Sends the raw audio data to the websocket connection for processing
      * @param audioData ArrayBuffer
      */
-    sendAudio (audioData: ArrayBuffer | Uint8Array | Uint16Array): void {
+    sendAudio (audioData: any): void {
 
         this.stream.sendAudio(audioData);
 
@@ -713,7 +755,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * Sends JSON requests to start, stop, or modify an ongoing websocket connection
      * @param data StreamingAPIRequest
      */
-    sendJSON (data: StreamingAPIStartRequest | StreamingAPIStopRequest | StreamingAPIModifyRequest): void {
+    sendJSON (data: any): void {
 
         // `sendAudio` function exposed by the JS SDK currently accepts any serializable data to be sent over the channel
         this.stream.sendAudio(JSON.stringify(data));

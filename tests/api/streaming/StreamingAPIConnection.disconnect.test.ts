@@ -48,14 +48,11 @@ beforeAll(() => {
 
 test(
     "StreamingAPIConnection.connect - Testing a successful disconnection attempt",
-    (done) => {
+    async () => {
         streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
-        streamingAPIConnection.disconnect().then(() => {
-            expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
-            expect(streamingAPIConnection.isConnected()).toBe(false);
-            done();
-        });
-        expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTING);
+        streamingAPIConnection.disconnect()
+        expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
+        expect(streamingAPIConnection.isConnected()).toBe(false);
     }
 );
 

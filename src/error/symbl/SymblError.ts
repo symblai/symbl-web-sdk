@@ -4,7 +4,7 @@ import {SymblEvent} from "../../events";
 
 export default class SymblError extends Error {
 
-    logger: Logger = new Logger();
+    logger: typeof Logger = Logger;
 
     constructor (message: string, name: string) {
 
