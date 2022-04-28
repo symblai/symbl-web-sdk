@@ -171,7 +171,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * @ignore
      */
     // eslint-disable-next-line
-    async startProcessing (options: StreamingAPIConnectionConfig): Promise<StreamingAPIConnection> {
+    async startProcessing (options?: StreamingAPIConnectionConfig | null): Promise<StreamingAPIConnection> {
 
         throw new TypeError("Not implemented!");
 

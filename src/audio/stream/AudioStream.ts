@@ -205,13 +205,6 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
-    private async attachElement (audioSourceDomElement: any): Promise<any> {
-
-    }
-
-    private detachElement(): void {
-    }
-
     /**
      * Connects a DOM element with an audio source to the websocket stream
      * @param audioSourceDomElement any

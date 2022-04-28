@@ -22,7 +22,7 @@ export class OpusAudioStream extends AudioStream {
         "maxFramesPerPage": 40,
         "numberOfChannels": 1,
         "rawOpus": true,
-        "streamPages": true,
+        "streamPages": true
     }
 
     /**
@@ -92,7 +92,7 @@ export class OpusAudioStream extends AudioStream {
             if (!this.deviceProcessing) {
 
                 this.config.monitorGain = 1;
-            
+
             } else {
 
                 delete this.config.monitorGain;

@@ -33,19 +33,23 @@ export class LINEAR16AudioStream extends AudioStream {
 
         if (!this.deviceProcessing) {
 
-            const outputBuffer = audioEvent.outputBuffer
+            const outputBuffer = audioEvent.outputBuffer;
             const inputBuffer = audioEvent.inputBuffer;
 
             // Loop through the output channels (in this case there is only one)
             for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
-              const input = inputBuffer.getChannelData(channel);
-              const output = outputBuffer.getChannelData(channel);
 
-              // Loop through the 4096 samples
-              for (let sample = 0; sample < inputBuffer.length; sample++) {
-                // make output equal to the same as the input
-                output[sample] = input[sample];
-              }
+                const input = inputBuffer.getChannelData(channel);
+                const output = outputBuffer.getChannelData(channel);
+
+                // Loop through the 4096 samples
+                for (let sample = 0; sample < inputBuffer.length; sample++) {
+
+                    // Make output equal to the same as the input
+                    output[sample] = input[sample];
+
+                }
+
             }
 
         }

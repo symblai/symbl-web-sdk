@@ -474,7 +474,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * @param options StreamingAPIConnectionConfig object
      * @returns StreamingAPIConnection object
      */
-    async startProcessing (options?: StreamingAPIConnectionConfig): Promise<StreamingAPIConnection> {
+    async startProcessing (options?: StreamingAPIConnectionConfig | null): Promise<StreamingAPIConnection> {
 
         // If the `connectionState` is not CONNECTED, throw `NoConnectionError` with appropriate error message
         if (this.connectionState !== ConnectionState.CONNECTED) {
@@ -504,23 +504,26 @@ export class StreamingAPIConnection extends BaseConnection {
                 options
             );
 
-            const setDefaultEncoding = (options, audioStream?) => {
+            const setDefaultEncoding = (processingOptions, audioStream?) => {
 
                 // All requests must have a encoding type.
-                if (!options.config) {
+                if (!processingOptions.config) {
 
-                    options.config = {}
-
-                }
-
-                if (!options.config.encoding) {
-
-                    options.config.encoding = audioStream ? audioStream.type : SymblAudioStreamType.LINEAR16;
+                    processingOptions.config = {};
 
                 }
 
-                return options;
-            }
+                if (!processingOptions.config.encoding) {
+
+                    processingOptions.config.encoding = audioStream
+                        ? audioStream.type
+                        : SymblAudioStreamType.LINEAR16;
+
+                }
+
+                return processingOptions;
+
+            };
 
             let encoding: string;
             let {audioStream} = this;
@@ -528,15 +531,18 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 encoding = audioStream.type;
 
-                if (this.config.config
-                    && this.config.config.encoding
-                    && this.config.config.encoding.toUpperCase() !== encoding) {
+                if (this.config.config &&
+                    this.config.config.encoding &&
+                    this.config.config.encoding.toUpperCase() !== encoding) {
 
-                    throw new InvalidValueError("There is a mismatch between the audioStream type and the encoding type passed in the config.")
+                    throw new InvalidValueError("There is a mismatch between the audioStream type and the encoding type passed in the config.");
 
                 }
 
-                this.config = setDefaultEncoding(this.config, audioStream);
+                this.config = setDefaultEncoding(
+                    this.config,
+                    audioStream
+                );
 
             } else {
 
