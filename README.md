@@ -42,7 +42,7 @@ You can also import the file into your HTML appliaction using our CDN.
 #### Versioned CDN
 
 ```html
-<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v1.0.0/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v1.0.2/symbl.min.js"></script>
 ```
 
 #### Latest CDN
@@ -128,53 +128,51 @@ This example will open up a WebSocket connection with the Symbl Streaming API an
 View the [Importing](#importing) section for the various ways to import the Web SDK.
 
 ```js
+(async () => {
 
-try {
+  try {
 
-    // We recommend to remove appId and appSecret authentication for production applications.
-    // See authentication section for more details
-    const symbl = new Symbl({
-        appId: '<your App ID>',
-        appSecret: '<your App Secret>',
-        // accessToken: '<your Access Toknen>'
-    });
-    
-    // Open a Symbl Streaming API WebSocket Connection.
-    const connection = await symbl.createConnection();
-    
-    // Start processing audio from your default input device.
-    await connection.startProcessing({
-      config: {
-        encoding: "OPUS" // Encoding can be "LINEAR16" or "OPUS"
-      }
-    });
-
-    // Retrieve real-time transcription from the conversation
-    connection.on("speech_recognition", (speechData) => {
-      const { punctuated } = speechData;
-      const name = speechData.user ? speechData.user.name : "User";
-      console.log(`${name}: `, punctuated.transcript);
-    });
-
-    // Retrieve the topics of the conversation in real-time.
-    connection.on("topic", (topicData) => {
-      topicData.forEach((topic) => {
-        console.log("Topic: " + topic.phrases);
+      // We recommend to remove appId and appSecret authentication for production applications.
+      // See authentication section for more details
+      const symbl = new Symbl({
+          appId: '<your App ID>',
+          appSecret: '<your App Secret>',
+          // accessToken: '<your Access Toknen>'
       });
-    });
-    
-    // This is just a helper method meant for testing purposes.
-    // Waits 60 seconds before continuing to the next API call.
-    await symbl.wait(60000);
-    
-    // Stops processing audio, but keeps the WebSocket connection open.
-    await connection.stopProcessing();
-    
-    // Closes the WebSocket connection.
-    connection.disconnect();
-} catch(e) {
-    // Handle errors here.
-}
+      
+      // Open a Symbl Streaming API WebSocket Connection.
+      const connection = await symbl.createConnection();
+      
+      // Start processing audio from your default input device.
+      await connection.startProcessing();
+
+      // Retrieve real-time transcription from the conversation
+      connection.on("speech_recognition", (speechData) => {
+        const { punctuated } = speechData;
+        const name = speechData.user ? speechData.user.name : "User";
+        console.log(`${name}: `, punctuated.transcript);
+      });
+
+      // Retrieve the topics of the conversation in real-time.
+      connection.on("topic", (topicData) => {
+        topicData.forEach((topic) => {
+          console.log("Topic: " + topic.phrases);
+        });
+      });
+      
+      // This is just a helper method meant for testing purposes.
+      // Waits 60 seconds before continuing to the next API call.
+      await Symbl.wait(60000);
+      
+      // Stops processing audio, but keeps the WebSocket connection open.
+      await connection.stopProcessing();
+      
+      // Closes the WebSocket connection.
+      connection.disconnect();
+  } catch(e) {
+      // Handle errors here.
+  }
+})();
 ```
 
 ## Read more
