@@ -1,0 +1,9 @@
+.header-links {
+  display: flex;
+  justify-content: left;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: white;
+}
