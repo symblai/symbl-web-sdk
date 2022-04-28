@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys */
-import consola from "consola/src/browser";
+import consola from "consola";
 
 const LogLevel = {
     "error": 0,
