@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "build-tsc",
+    "outDir": "build",
     "lib": [ "dom", "esnext" ],
     "noImplicitAny": false,
     "allowJs": true,
@@ -9,6 +9,7 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
+    "declarationDir": "./types",
     "esModuleInterop": true
   },
   "include": ["./src"],

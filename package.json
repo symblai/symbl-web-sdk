@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Symbl.ai Web SDK for accessing Symbl.ai APIs directly from the web browser.",
   "homepage": "https://github.com/symblai/symbl-web-sdk",
   "repository": {
@@ -15,8 +15,8 @@
     "web",
     "sdk"
   ],
-  "main": "./build-tsc/index.js",
-  "types": "./build-tsc/index.d.js",
+  "main": "./build/index.js",
+  "types": "./types/index.d.ts",
   "devDependencies": {
     "@babel/preset-env": "^7.14.7",
     "@babel/preset-typescript": "^7.14.5",
@@ -47,6 +47,7 @@
     "typedoc": "^0.22.15",
     "typescript": "^4.3.5",
     "uglify-js": "^3.15.4",
+    "uglifyjs-folder": "^3.1.2",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "vinyl-fs": "^3.0.3",
     "vinyl-source-stream": "^2.0.0",
@@ -60,9 +61,9 @@
     "test-verbose": "jest --verbose tests --env=jsdom",
     "lint": "eslint src --quiet",
     "doc": "typedoc src",
-    "build:ts": "rm -rf ./build-tsc build/types && tsc",
-    "build:minify": "uglifyjs --compress --mangle -- build-tsc/**/*.js > build/index.js",
-    "build": "npm run build:ts && webpack --config webpack.config.js --mode production",
+    "build:ts": "rm -rf ./build ./types && tsc",
+    "build:minify": "uglifyjs-folder -x .js build -eo build",
+    "build": "npm run build:ts && npm run build:minify && webpack --config webpack.config.js --mode production",
     "publish-next": "npm install && npm run build && npm publish --access public --tag next",
     "publish-beta": "npm install && npm run build && npm publish --access public --tag beta",
     "publish-prod": "npm install && npm run build && npm publish --access public"

@@ -1,9 +1,10 @@
 import {AudioStream} from "./AudioStream";
 import {SymblEvent} from "../../events";
+import {SymblAudioStreamType} from "../../types";
 
 export class LINEAR16AudioStream extends AudioStream {
 
-    public type = "LINEAR16";
+    public type = SymblAudioStreamType.LINEAR16;
 
     /**
      * Converts audio data from Big Endian to Little Endian and sends to audio processor
@@ -29,6 +30,29 @@ export class LINEAR16AudioStream extends AudioStream {
 
         // Send audio stream to websocket.
         super.onProcessedAudio(targetBuffer.buffer);
+
+        if (!this.deviceProcessing) {
+
+            const outputBuffer = audioEvent.outputBuffer;
+            const inputBuffer = audioEvent.inputBuffer;
+
+            // Loop through the output channels (in this case there is only one)
+            for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+
+                const input = inputBuffer.getChannelData(channel);
+                const output = outputBuffer.getChannelData(channel);
+
+                // Loop through the 4096 samples
+                for (let sample = 0; sample < inputBuffer.length; sample++) {
+
+                    // Make output equal to the same as the input
+                    output[sample] = input[sample];
+
+                }
+
+            }
+
+        }
 
     }
 

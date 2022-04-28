@@ -1,11 +1,11 @@
 import {AudioStream} from "./AudioStream";
-import {OpusConfig} from "../../types";
+import {OpusConfig, SymblAudioStreamType} from "../../types";
 import {Recorder} from "symbl-opus-encdec";
 import {SymblEvent} from "../../events";
 
 export class OpusAudioStream extends AudioStream {
 
-    public type = "OPUS";
+    public type = SymblAudioStreamType.OPUS;
 
     /**
      * @ignore
@@ -54,9 +54,9 @@ export class OpusAudioStream extends AudioStream {
      * Sends audio data to the processor
      * @param audioData unknown
      */
-    processAudio (audioData: unknown): void {
+    processAudio (audioEvent: any): void {
 
-        super.onProcessedAudio(audioData);
+        super.onProcessedAudio(audioEvent);
 
     }
 
@@ -86,6 +86,16 @@ export class OpusAudioStream extends AudioStream {
             } else if (!this.config.sourceNode && !this.sourceNode) {
 
                 delete this.config.sourceNode;
+
+            }
+
+            if (!this.deviceProcessing) {
+
+                this.config.monitorGain = 1;
+
+            } else {
+
+                delete this.config.monitorGain;
 
             }
 
