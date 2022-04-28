@@ -184,10 +184,6 @@ export class AudioStream extends DelegatedEventTarget {
 
             await this.audioContext.suspend();
 
-        } else {
-
-            this.logger.warn("Audio context is not running.");
-
         }
 
     }
