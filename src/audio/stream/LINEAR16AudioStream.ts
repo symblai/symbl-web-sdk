@@ -90,6 +90,83 @@ export class LINEAR16AudioStream extends AudioStream {
      * Attaches <audio> DOM element to the audio processor
      * @param audioSourceDomElement HTMLAudioElement
      */
+    private async attachElement (audioSourceDomElement: any): Promise<any> {
+
+        const element = await super.attachElement(audioSourceDomElement);
+        this.attachAudioProcessor();
+        const event = new SymblEvent(
+            "audio_source_connected",
+            this.audioContext.sampleRate
+        );
+        window.setTimeout(
+            () => {
+
+                this.dispatchEvent(event);
+
+            },
+            1
+        );
+        return element;
+
+    }
+
+    /**
+     * Detaches <audio> DOM element from the audio processor
+     */
+    private detachElement (): void {
+
+        super.detachElement();
+
+    }
+
+    /**
+     * Detaches current DOM element and attaches new <audio> DOM element to audio processor
+     * @param audioSourceDomElement HTMLAudioElement
+     */
+    async updateElement (audioSourceDomElement: any): Promise<any> {
+
+        const newElement = await super.updateElement(audioSourceDomElement);
+        this.attachAudioProcessor();
+        return newElement;
+
+    }
+
+    /**
+     * Attaches <audio> DOM element to the audio processor
+     * @param audioSourceDomElement HTMLAudioElement
+     */
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        const element = await this.attachElement(audioSourceDomElement);
+        return element;
+
+    }
+
+    /**
+     * Detaches <audio> DOM element from the audio processor
+     */
+    detachAudioSourceElement (): void {
+
+        this.detachElement();
+
+    }
+
+    /**
+     * Detaches current DOM element and attaches new <audio> DOM element to audio processor
+     * @param audioSourceDomElement HTMLAudioElement
+     */
+    async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        const newElement = await super.updateAudioSourceElement(audioSourceDomElement);
+        this.attachAudioProcessor();
+        return newElement;
+
+    }
+
+    /**
+     * Attaches <audio> DOM element to the audio processor
+     * @param audioSourceDomElement HTMLAudioElement
+     */
     async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
         const element = await super.attachAudioSourceElement(audioSourceDomElement);
