@@ -1,6 +1,9 @@
 name: Upload to CDN
 
-on: push
+on:  
+  push:
+    tags:
+      - 'v1*'
 
 jobs:
   build_and_push:
