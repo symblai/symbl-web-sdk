@@ -33,19 +33,23 @@ export class LINEAR16AudioStream extends AudioStream {
 
         if (!this.deviceProcessing) {
 
-            const outputBuffer = audioEvent.outputBuffer
+            const outputBuffer = audioEvent.outputBuffer;
             const inputBuffer = audioEvent.inputBuffer;
 
             // Loop through the output channels (in this case there is only one)
             for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
-              const input = inputBuffer.getChannelData(channel);
-              const output = outputBuffer.getChannelData(channel);
 
-              // Loop through the 4096 samples
-              for (let sample = 0; sample < inputBuffer.length; sample++) {
-                // make output equal to the same as the input
-                output[sample] = input[sample];
-              }
+                const input = inputBuffer.getChannelData(channel);
+                const output = outputBuffer.getChannelData(channel);
+
+                // Loop through the 4096 samples
+                for (let sample = 0; sample < inputBuffer.length; sample++) {
+
+                    // Make output equal to the same as the input
+                    output[sample] = input[sample];
+
+                }
+
             }
 
         }
@@ -90,9 +94,9 @@ export class LINEAR16AudioStream extends AudioStream {
      * Attaches <audio> DOM element to the audio processor
      * @param audioSourceDomElement HTMLAudioElement
      */
-    private async attachElement (audioSourceDomElement: any): Promise<any> {
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        const element = await super.attachElement(audioSourceDomElement);
+        const element = await super.attachAudioSourceElement(audioSourceDomElement);
         this.attachAudioProcessor();
         const event = new SymblEvent(
             "audio_source_connected",
@@ -113,41 +117,9 @@ export class LINEAR16AudioStream extends AudioStream {
     /**
      * Detaches <audio> DOM element from the audio processor
      */
-    private detachElement (): void {
-
-        super.detachElement();
-
-    }
-
-    /**
-     * Detaches current DOM element and attaches new <audio> DOM element to audio processor
-     * @param audioSourceDomElement HTMLAudioElement
-     */
-    async updateElement (audioSourceDomElement: any): Promise<any> {
-
-        const newElement = await super.updateElement(audioSourceDomElement);
-        this.attachAudioProcessor();
-        return newElement;
-
-    }
-
-    /**
-     * Attaches <audio> DOM element to the audio processor
-     * @param audioSourceDomElement HTMLAudioElement
-     */
-    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
-
-        const element = await this.attachElement(audioSourceDomElement);
-        return element;
-
-    }
-
-    /**
-     * Detaches <audio> DOM element from the audio processor
-     */
     detachAudioSourceElement (): void {
 
-        this.detachElement();
+        super.detachAudioSourceElement();
 
     }
 
@@ -157,39 +129,9 @@ export class LINEAR16AudioStream extends AudioStream {
      */
     async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        const element = await this.updateElement(audioSourceDomElement);
-        return element;
-
-    }
-
-    /**
-     * Attaches <video> DOM element to the video processor
-     * @param videoSourceDomElement HTMLVideoElement
-     */
-    async attachVideoSourceElement (videoSourceDomElement: any): Promise<any> {
-
-        const element = await this.attachElement(videoSourceDomElement);
-        return element;
-
-    }
-
-    /**
-     * Detaches <video> DOM element from the video processor
-     */
-    detachVideoSourceElement (): void {
-
-        this.detachElement();
-
-    }
-
-    /**
-     * Detaches current DOM element and attaches new <video> DOM element to video processor
-     * @param videoSourceDomElement HTMLVideoElement
-     */
-    async updateVideoSourceElement (videoSourceDomElement: any): Promise<any> {
-
-        const element = await this.updateElement(videoSourceDomElement);
-        return element;
+        const newElement = await super.updateAudioSourceElement(audioSourceDomElement);
+        this.attachAudioProcessor();
+        return newElement;
 
     }
 

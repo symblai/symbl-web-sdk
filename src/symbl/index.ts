@@ -111,11 +111,11 @@ export default class Symbl {
 
             }
 
-            if (reconnectOnError) {
+            // If (reconnectOnError) {
 
-                this.sdk.setReconnectOnError(true);
+            //     This.sdk.setReconnectOnError(true);
 
-            }
+            // }
 
         }
 
@@ -253,7 +253,7 @@ export default class Symbl {
      * @param audioStream AudioStream
      * @returns StreamingAPIConnection
      */
-    async createConnection (sessionId?: string, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+    async createConnection (sessionId?: string | null, audioStream?: AudioStream | null) : Promise<StreamingAPIConnection> {
 
         if (sessionId) {
 
@@ -310,7 +310,7 @@ export default class Symbl {
      * @param audioStream AudioStream
      * @returns StreamingAPIConnection
      */
-    async createAndStartNewConnection (options?: StreamingAPIConnectionConfig, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
+    async createAndStartNewConnection (options?: StreamingAPIConnectionConfig | null, audioStream?: AudioStream) : Promise<StreamingAPIConnection> {
 
         if (!options) {
 
