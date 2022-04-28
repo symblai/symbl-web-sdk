@@ -22,6 +22,7 @@ export const SYMBL_DEFAULTS = {
         24000,
         48000
     ],
+    "SYMBL_BASE_PATH": "https://api.symbl.ai",
     "VALID_ENCODING": [
         "LINEAR16",
         "OPUS"

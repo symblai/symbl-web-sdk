@@ -1,7 +1,7 @@
 import Symbl from "../../../src/symbl";
-import { LINEAR16AudioStream } from "../../../src/audio";
+import { LINEAR16AudioStream, OpusAudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
-import { NoConnectionError } from "../../../src/error";
+import { NoConnectionError, InvalidValueError } from "../../../src/error";
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
 
@@ -39,15 +39,40 @@ beforeEach(() => {
     }
 });
 
+test(
+    "StreamingAPIConnection.startProcessing - Test mismatch between encoding type and AudioStream type",
+    async () => {
 
-// If the `connectionState` is not CONNECTED, throw `NoConnectionError` with appropriate error message
-// If `startRequestData` is passed in, validate it and in failure to do so, throw the appropriate error emmited by validateConfig.
-// If `processingState` is PROCESSING or ATTEMPTING, then log a warning stating an attempt to `startProcessing` on a connection that is already processing or has already initiated the call.
-// Else, set the value of `processingState` to ATTEMPTING and invoke the `start` function on the `stream` reference with startRequestData if present.
-// Set the value of `processingState` to PROCESSING if the call is successful
-// Set the value of `_isProcessing` to `true` and emit the appropriate event
-// Any failure to send the `start_request` should be caught, handled and re-thrown with appropriate error class.
-// Return from function
+
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+
+        streamingAPIConnection.stream = {
+            start: jest.fn()
+        }
+
+        streamingAPIConnection.audioStream = new OpusAudioStream();
+
+        await expect(async () => await streamingAPIConnection.startProcessing({
+            config: {
+                encoding: "LINEAR16"
+            }
+        })).rejects.toThrowError(new InvalidValueError("There is a mismatch between the audioStream type and the encoding type passed in the config."));
+
+    }
+)
+
+
+test(
+    "StreamingAPIConnection.startProcessing - Test that encoding type is set if null and audiostream is passed",
+    async () => {
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        await streamingAPIConnection.startProcessing(null);
+        expect(streamingAPIConnection.config.config.encoding).toBe("LINEAR16");
+    }
+);
+
+
 
 test(
     "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call",
@@ -62,7 +87,6 @@ test(
             expect(streamingAPIConnection.isProcessing()).toBe(true);
             expect(streamSpy).toBeCalledTimes(1);
             expect(validationSpy).toBeCalledTimes(1);
-            expect(validationSpy).toBeCalledWith(validConnectionConfig);
             expect(attachStreamSpy).toBeCalledTimes(1);
             done();
         });

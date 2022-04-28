@@ -9,7 +9,7 @@ export class AudioStream extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    protected logger: Logger;
+    protected logger: typeof Logger = Logger;
 
     public sourceNode: MediaStreamAudioSourceNode | MediaElementAudioSourceNode;
 
@@ -54,13 +54,17 @@ export class AudioStream extends DelegatedEventTarget {
     public deviceProcessing = true;
 
     /**
+     * Determines audio stream type.
+     */
+    public type: string;
+
+    /**
      * Creates an audio stream to be used to send audio data to the websocket connection
      * @param sourceNode MediaStreamAudioSourceNode
      */
     constructor (sourceNode?: MediaStreamAudioSourceNode) {
 
         super();
-        this.logger = new Logger();
         if (sourceNode) {
 
             this.sourceNode = sourceNode;
@@ -120,8 +124,16 @@ export class AudioStream extends DelegatedEventTarget {
      */
     static async getMediaStream (deviceId = "default"): Promise<MediaStream> {
 
+        if (!deviceId) {
+
+            throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
+
+        }
+
         let stream = await navigator.mediaDevices.getUserMedia({
-            "audio": true,
+            "audio": {
+                deviceId
+            },
             "video": false
         });
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -131,25 +143,21 @@ export class AudioStream extends DelegatedEventTarget {
             throw new NoAudioInputDeviceDetectedError("No input devices found.");
 
         }
-        if (deviceId) {
 
-            let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
-            if (!foundDevice) {
+        let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
 
-                // Safari fix because Safari doens't always support "default" as deviceId.
-                foundDevice = inputDevices[0];
+        // If that device Id wasn't found, grab the first one.
+        if (!foundDevice) {
 
-            }
+            // Safari fix because Safari doens't always support "default" as deviceId.
+            foundDevice = inputDevices[0];
+
             stream = await navigator.mediaDevices.getUserMedia({
                 "audio": {
                     "groupId": foundDevice.groupId
                 },
                 "video": false
             });
-
-        } else {
-
-            throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
 
         }
 
@@ -269,12 +277,6 @@ export class AudioStream extends DelegatedEventTarget {
             ? newAudioSourceDomElement.firstChild
             : newAudioSourceDomElement;
 
-        if (!sourceElement.type) {
-
-            throw new InvalidAudioElementError("Audio element must have a `type` field.");
-
-        }
-
         if (this.audioContext) {
 
             this.detachAudioSourceElement();
@@ -287,23 +289,22 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        if (sourceElement.src.substring(
-            0,
-            5
-        ) !== "blob:") {
+        if (sourceElement.src.indexOf("/mp4") === -1) {
 
-            const src = await fetch(sourceElement.src);
-            const data = await src.blob();
-            const metadata = {
-                "type": sourceElement.type
-            };
-            const file = new File(
-                [data],
-                "sample_audio_file.wav",
-                metadata
-            );
-            sourceElement.src = URL.createObjectURL(file);
-            sourceElement.type = "audio/wav";
+            if (sourceElement.src.substring(
+                0,
+                5
+            ) !== "blob:") {
+
+                const src = await fetch(sourceElement.src);
+                const data = await src.blob();
+                const file = new File(
+                    [data],
+                    "sample_audio_file.wav"
+                );
+                sourceElement.src = URL.createObjectURL(file);
+
+            }
 
         }
 

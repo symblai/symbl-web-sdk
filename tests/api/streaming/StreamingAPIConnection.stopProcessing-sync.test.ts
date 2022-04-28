@@ -78,6 +78,7 @@ test(
         newStreamingAPIConnection.connectionState = ConnectionState.CONNECTED
         newStreamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING
         newStreamingAPIConnection.restartProcessing = true;
+        newStreamingAPIConnection.modifySampleRate = jest.fn();
         const stopSpy = jest.spyOn(newStreamingAPIConnection.stream, 'stop');
         const startSpy = jest.spyOn(newStreamingAPIConnection.stream, 'start');
         newStreamingAPIConnection.stopProcessing().then(() => {

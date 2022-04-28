@@ -1,13 +1,13 @@
 import {DelegatedEventTarget, NetworkEvent} from "../events";
 import Logger from "../logger";
-import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+const sdk = require("@symblai/symbl-js/build/client.sdk.min").sdk;
 
 export class NetworkConnectivityDetector extends DelegatedEventTarget {
 
     /**
      * @ignore
      */
-    private sdk: sdk;
+    private sdk: typeof sdk;
 
     /**
      * @ignore
@@ -27,13 +27,13 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    private logger: Logger = new Logger();
+    private logger: typeof Logger = Logger;
 
     /**
      * Creates instance of JS SDK for network connectivity testing
      * @param sdk sdk
      */
-    constructor (jsSDK: sdk) {
+    constructor (jsSDK: typeof sdk) {
 
         super();
         this.sdk = jsSDK;

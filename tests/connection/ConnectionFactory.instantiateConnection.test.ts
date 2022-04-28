@@ -32,7 +32,7 @@ test(
     async () => {
         const factory = new ConnectionFactory();
         const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validSessionID) as any
-        expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
+        expect((connection as any).connectionType).toBe(SymblConnectionType.STREAMING);
         expect(connection.audioStream).toBeUndefined();
     }
 );
@@ -43,7 +43,7 @@ test(
 
         const factory = new ConnectionFactory();
         const connection = await factory.instantiateConnection(SymblConnectionType.SUBSCRIBE, validSessionID)
-        expect(connection.connectionType).toBe(SymblConnectionType.SUBSCRIBE);
+        expect((connection as any).connectionType).toBe(SymblConnectionType.SUBSCRIBE);
     }
 );
 
@@ -56,7 +56,7 @@ test(
         const sourceNode = audioContext.createMediaStreamSource(mediaStream)
         const stream = new LINEAR16AudioStream(sourceNode);
         const connection = await factory.instantiateConnection(SymblConnectionType.STREAMING, validSessionID, stream) as any;
-        expect(connection.connectionType).toBe(SymblConnectionType.STREAMING);
+        expect((connection as any).connectionType).toBe(SymblConnectionType.STREAMING);
         expect(connection.audioStream).toBe(stream);
     }
 );

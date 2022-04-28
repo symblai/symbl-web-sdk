@@ -1,13 +1,18 @@
 import {DelegatedEventTarget, SymblEvent} from "../events";
+import {StreamingAPIConnection} from "../api";
 import {
     RealtimeInsightData,
     RealtimeMessageData,
     RealtimeTopicData,
+    RealtimeTrackerData,
+    StreamingAPIConnectionConfig,
     SymblData
 } from "../types";
+import {AudioStream} from "../audio";
 import {InvalidValueError} from "../error";
 import Logger from "../logger";
-import {sdk} from "@symblai/symbl-js/build/client.sdk.min";
+const sdk = require("@symblai/symbl-js/build/client.sdk.min").sdk;
+
 
 export class BaseConnection extends DelegatedEventTarget {
 
@@ -19,19 +24,18 @@ export class BaseConnection extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    protected sdk: sdk = sdk;
+    protected sdk: typeof sdk = sdk;
 
     /**
      * @ignore
      */
-    protected logger: Logger = new Logger();
+    protected logger: typeof Logger = Logger;
 
     constructor (sessionId: string) {
 
         super();
 
         this.sessionId = sessionId;
-        this.logger = new Logger();
         // Add function bindings here
 
         this.on = this.on.bind(this);
@@ -82,7 +86,7 @@ export class BaseConnection extends DelegatedEventTarget {
                     "name": "topic"
                 },
                 "tracker_response": {
-                    "data": mapperData.trackers,
+                    "data": mapperData.trackers as RealtimeTrackerData[],
                     "name": "tracker"
                 }
             };
@@ -137,7 +141,8 @@ export class BaseConnection extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    connect (): void {
+    // eslint-disable-next-line
+    async connect (): Promise<void> {
 
         throw new TypeError("Function not implemented!");
 
@@ -163,12 +168,92 @@ export class BaseConnection extends DelegatedEventTarget {
     }
 
     /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async startProcessing (options?: StreamingAPIConnectionConfig | null): Promise<StreamingAPIConnection> {
+
+        throw new TypeError("Not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async stopProcessing (): Promise<StreamingAPIConnection> {
+
+        throw new TypeError("Not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    modifySampleRate (sampleRateHertz: number) {
+
+        throw new TypeError("Not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async updateAudioStream (audioStream: AudioStream): Promise<void> {
+
+        throw new TypeError("Not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sendAudio (audioData: any): void {
+
+        throw new TypeError("Not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sendJSON (data: any): void {
+
+        throw new TypeError("Not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    isProcessing (): boolean {
+
+        throw new TypeError("Not implemented!");
+
+    }
+
+    /**
      * Returns the current session/connection id
      * @returns string
      */
     getSessionId (): string {
 
         return this.sessionId;
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
+
+        throw new TypeError("Not implemented!");
 
     }
 

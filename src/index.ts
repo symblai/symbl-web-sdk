@@ -9,3 +9,5 @@ export * from "./utils";
 import Symbl from "./symbl";
 
 export {Symbl};
+declare let window;
+window.Symbl = Symbl;

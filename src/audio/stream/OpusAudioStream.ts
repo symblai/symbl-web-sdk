@@ -1,9 +1,11 @@
 import {AudioStream} from "./AudioStream";
-import {OpusConfig} from "../../types";
+import {OpusConfig, SymblAudioStreamType} from "../../types";
 import {Recorder} from "symbl-opus-encdec";
 import {SymblEvent} from "../../events";
 
 export class OpusAudioStream extends AudioStream {
+
+    public type = SymblAudioStreamType.OPUS;
 
     /**
      * @ignore
@@ -52,9 +54,9 @@ export class OpusAudioStream extends AudioStream {
      * Sends audio data to the processor
      * @param audioData unknown
      */
-    processAudio (audioData: unknown): void {
+    processAudio (audioEvent: any): void {
 
-        super.onProcessedAudio(audioData);
+        super.onProcessedAudio(audioEvent);
 
     }
 
@@ -66,7 +68,7 @@ export class OpusAudioStream extends AudioStream {
 
         if (reInitialise && this.opusEncoder) {
 
-            this.resetOpusEncoder();
+            await this.resetOpusEncoder();
 
         }
 
@@ -75,7 +77,28 @@ export class OpusAudioStream extends AudioStream {
             this.mediaStream = this.mediaStream
                 ? this.mediaStream
                 : await AudioStream.getMediaStream();
-            this.config.sourceNode = <MediaStreamAudioSourceNode> this.sourceNode;
+
+
+            if (this.sourceNode) {
+
+                this.config.sourceNode = this.sourceNode as any;
+
+            } else if (!this.config.sourceNode && !this.sourceNode) {
+
+                delete this.config.sourceNode;
+
+            }
+
+            if (!this.deviceProcessing) {
+
+                this.config.monitorGain = 1;
+
+            } else {
+
+                delete this.config.monitorGain;
+
+            }
+
             this.opusEncoder = new Recorder(this.config);
 
         }
@@ -92,7 +115,7 @@ export class OpusAudioStream extends AudioStream {
      */
     async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        const element = super.attachAudioSourceElement(audioSourceDomElement);
+        const element = await super.attachAudioSourceElement(audioSourceDomElement);
         await this.attachAudioProcessor(true);
 
         const event = new SymblEvent(
@@ -130,6 +153,7 @@ export class OpusAudioStream extends AudioStream {
     async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
         const newElement = await super.updateAudioSourceElement(audioSourceDomElement);
+        this.attachAudioProcessor(true);
         return newElement;
 
     }

@@ -56,6 +56,8 @@ interface StreamingAPIConnectionConfig {
         meetingTitle?: string;
         encoding?: string;
         sampleRateHertz?: number;
+        languageCode?: string;
+        timezoneOffset?: number;
     };
 
     /**

@@ -1,42 +1,38 @@
+/* eslint-disable sort-keys */
 import consola from "consola";
-// Import console from 'console';
 
-export default class Logger {
+const LogLevel = {
+    "error": 0,
+    "warn": 1,
+    "log": 2,
+    "info": 3,
+    "debug": 4,
+    "trace": 5
+};
 
-    // Logger: typeof consola = consola;
-    logger = console;
+export class Logger {
+
+    logger: typeof consola;
 
     logLevel: string;
 
-    constructor (logLevel?: string) {
+    constructor (logLevel: string) {
 
         this.setLevel(logLevel);
 
     }
 
-    /*
-     * Error(message): void {};
-     * warn(message): void {};
-     * info(message): void {};
-     * log(message): void {};
-     * trace(message): void {};
-     * debug(message): void {};
-     */
-
     /**
      * Sets the logging level.
      * @param {string} level - logging level
      */
-    setLevel (level): void {
+    setLevel (level: string): void {
 
-        const options: any = {};
-        if (level) {
-
-            options.level = level;
-            this.logLevel = level;
-
-        }
-        // This.logger = consola.create(options);
+        this.logLevel = level;
+        const options = {
+            "level": LogLevel[level]
+        };
+        this.logger = consola.create(options);
 
     }
 
@@ -143,3 +139,7 @@ export default class Logger {
     }
 
 }
+
+const logger = new Logger("warn");
+
+export default logger;
