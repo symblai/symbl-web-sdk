@@ -474,7 +474,7 @@ export class StreamingAPIConnection extends BaseConnection {
      * @param options StreamingAPIConnectionConfig object
      * @returns StreamingAPIConnection object
      */
-    async startProcessing (options: StreamingAPIConnectionConfig): Promise<StreamingAPIConnection> {
+    async startProcessing (options?: StreamingAPIConnectionConfig): Promise<StreamingAPIConnection> {
 
         // If the `connectionState` is not CONNECTED, throw `NoConnectionError` with appropriate error message
         if (this.connectionState !== ConnectionState.CONNECTED) {
