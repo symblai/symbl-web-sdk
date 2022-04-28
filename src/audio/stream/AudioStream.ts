@@ -184,6 +184,10 @@ export class AudioStream extends DelegatedEventTarget {
 
             await this.audioContext.suspend();
 
+        } else {
+
+            this.logger.warn("Audio context is not running.");
+
         }
 
     }
@@ -201,7 +205,13 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
-    private validateElement(audioSourceDomElement: any) {
+    /**
+     * Connects a DOM element with an audio source to the websocket stream
+     * @param audioSourceDomElement any
+     */
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        // Const validateElement = element => {
 
         if (!audioSourceDomElement) {
 
@@ -247,16 +257,11 @@ export class AudioStream extends DelegatedEventTarget {
             } else if (source && source.nodeName === "SOURCE") {
 
 
-                return this.validateElement(source);
+                return this.attachAudioSourceElement(source);
 
             }
 
         }
-
-
-    }
-
-    private async attachElement (audioSourceDomElement: any): Promise<any> {
 
         let newAudioSourceDomElement = audioSourceDomElement;
 
@@ -274,7 +279,7 @@ export class AudioStream extends DelegatedEventTarget {
 
         if (this.audioContext) {
 
-            this.detachElement();
+            this.detachAudioSourceElement();
 
         }
 
@@ -315,9 +320,22 @@ export class AudioStream extends DelegatedEventTarget {
 
         return newAudioSourceDomElement;
 
+        /*
+         * Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
+         * Failure to do so should be handled and appropriate error should be thrown
+         * Check if the `audioContext` already exists and is `running`.
+         * If it is, emit `audio_source_disconnected` event and then close the `audioContext`
+         * Re-create AudioContext, MediaStream from the active/default audio device if available and invoke `createScriptProcessor` on the `audioContext`
+         * Re-assign the class variables
+         * Emit `audio_source_connected` event with the updated `sampleRate`
+         */
+
     }
 
-    private detachElement(): void {
+    /**
+     * Disconnects the audio source DOM element from the websocket connection
+     */
+    detachAudioSourceElement (): void {
 
         if (this.sourceNode) {
 
@@ -341,34 +359,6 @@ export class AudioStream extends DelegatedEventTarget {
             1
         );
 
-
-    }
-
-    private async updateElement (audioSourceDomElement: any): Promise<any> {
-
-        this.detachElement();
-        const newElement = await this.attachElement(audioSourceDomElement);
-        return newElement;
-
-    }
-
-    /**
-     * Connects a DOM element with an audio source to the websocket stream
-     * @param audioSourceDomElement any
-     */
-    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
-
-        return this.attachElement(audioSourceDomElement);
-
-    }
-
-    /**
-     * Disconnects the audio source DOM element from the websocket connection
-     */
-    detachAudioSourceElement (): void {
-
-        this.detachElement();
-
     }
 
     /**
@@ -377,36 +367,9 @@ export class AudioStream extends DelegatedEventTarget {
      */
     async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        return this.updateElement;
-
-    }
-
-    /**
-     * Connects a DOM element with an audio source to the websocket stream
-     * @param audioSourceDomElement any
-     */
-    async attachVideoSourceElement (videoSourceDomElement: any): Promise<any> {
-
-        return this.attachElement(videoSourceDomElement);
-
-    }
-
-    /**
-     * Disconnects the video source DOM element from the websocket connection
-     */
-    detachVideoSourceElement (): void {
-
-        this.detachElement();
-
-    }
-
-    /**
-     * Detaches from any currently connected DOM Video element and attaches to provided element
-     * @param videoSourceDomElement HTMLVideoElement
-     */
-    async updateVideoSourceElement (videoSourceDomElement: any): Promise<any> {
-
-        return this.updateElement;
+        this.detachAudioSourceElement();
+        const newElement = await this.attachAudioSourceElement(audioSourceDomElement);
+        return newElement;
 
     }
 
