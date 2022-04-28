@@ -15,8 +15,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
-        libraryTarget: 'var',
-        library: 'symbl'
+        libraryTarget: 'global',
     },
      performance: {
         hints: false,
