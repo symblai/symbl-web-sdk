@@ -1,4 +1,14 @@
+/* eslint-disable sort-keys */
 import consola from "consola";
+
+const LogLevel = {
+    "error": 0,
+    "warn": 1,
+    "log": 2,
+    "info": 3,
+    "debug": 4,
+    "trace": 5
+};
 
 export class Logger {
 
@@ -18,13 +28,10 @@ export class Logger {
      */
     setLevel (level: string): void {
 
-        const options: any = {};
-        if (level) {
-
-            options.level = level;
-            this.logLevel = level;
-
-        }
+        this.logLevel = level;
+        const options = {
+            "level": LogLevel[level]
+        };
         this.logger = consola.create(options);
 
     }
@@ -133,6 +140,6 @@ export class Logger {
 
 }
 
-const logger = new Logger("info");
+const logger = new Logger("warn");
 
 export default logger;
