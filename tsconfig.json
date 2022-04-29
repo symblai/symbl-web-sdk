@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "build-tsc",
+    "outDir": "build",
     "lib": [ "dom", "esnext" ],
     "noImplicitAny": false,
     "allowJs": true,

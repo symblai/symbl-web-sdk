@@ -6,8 +6,7 @@ export * from "./events";
 export * from "./logger";
 export * from "./network";
 export * from "./utils";
+export * from "./types";
 import Symbl from "./symbl";
 
 export {Symbl};
-declare let window;
-window.Symbl = Symbl;

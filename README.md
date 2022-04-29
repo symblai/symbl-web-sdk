@@ -42,7 +42,7 @@ You can also import the file into your HTML appliaction using our CDN.
 #### Versioned CDN
 
 ```html
-<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v1.0.2/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v1.0.3/symbl.min.js"></script>
 ```
 
 #### Latest CDN
@@ -62,22 +62,6 @@ const symbl = new Symbl({
 
 >For production environments we recommend using the Versioned CDN.
 
-
-### Typescript
-
-You can install the Web SDK types by adding this config to your `tsconfig.json`:
-
-```json
-{
- "compilerOptions": {
-    ...,
-    "typeRoots": [
-      "node_modules/@types",
-      "node_modules/@symblai/symbl-web-sdk/build-tsc/types/index.d.ts"
-    ]
-  }
-}
-```
 
 ### Importing
 
