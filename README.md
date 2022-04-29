@@ -19,8 +19,6 @@ Windows | ✅ | ✅ | ✅ | ✅ |
 Linux| ✅ | - | ✅ | ✅ | 
 
 
->Currently, the OPUS encoder support in Safari browser is not available. 
-
 ## Prerequisites
 
 Before using the Web SDK you must [Sign up with Symbl.ai](https://platform.symbl.ai) to generate your own App ID and App Secret values, which is used for authentication.
