@@ -111,11 +111,11 @@ export default class Symbl {
 
             }
 
-            // If (reconnectOnError) {
+            if (reconnectOnError) {
 
-            //     This.sdk.setReconnectOnError(true);
+                this.sdk.setReconnectOnError(true);
 
-            // }
+            }
 
         }
 
