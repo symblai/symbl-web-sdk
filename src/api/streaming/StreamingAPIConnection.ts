@@ -253,6 +253,11 @@ export class StreamingAPIConnection extends BaseConnection {
     /**
      * @ignore
      */
+    protected conversationId: string;
+
+    /**
+     * @ignore
+     */
     private config: StreamingAPIConnectionConfig;
 
     /**
@@ -316,6 +321,17 @@ export class StreamingAPIConnection extends BaseConnection {
         this.attachAudioStream = this.attachAudioStream.bind(this);
         this.onAudioSourceChanged = this.onAudioSourceChanged.bind(this);
         this.on = this.on.bind(this);
+        this.getConversationId = this.getConversationId.bind(this);
+
+        // Set the conversation ID once it's created.
+        this.on(
+            "conversation_created",
+            (conversationData) => {
+
+                this.conversationId = conversationData.data.conversationId;
+
+            }
+        );
 
     }
 
@@ -870,6 +886,22 @@ export class StreamingAPIConnection extends BaseConnection {
         }
         // Call the `attachAudioStream` function with the new `audioStream`
         this.attachAudioStream(audioStream);
+
+    }
+
+    /**
+     * Returns the current converation id
+     * @returns string
+     */
+    getConversationId (): string {
+
+        if (!this.conversationId) {
+
+            this.logger.info("The conversation ID hasn't been created, yet.");
+
+        }
+
+        return this.conversationId;
 
     }
 
