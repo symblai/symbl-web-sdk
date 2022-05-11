@@ -6,8 +6,8 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
     target: 'web',
     entry: {
-        "symbl": './build-tsc/index.js',
-        "symbl.min": './build-tsc/index.js',
+        "symbl": './build/index.js',
+        "symbl.min": './build/index.js',
     },
     resolve: {
         modules: ['node_modules/@symblai/api-client/src', 'node_modules']
