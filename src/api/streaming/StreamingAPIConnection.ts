@@ -255,7 +255,12 @@ export class StreamingAPIConnection extends BaseConnection {
     /**
      * @ignore
      */
-    protected conversationId: string;
+    private conversationId: string;
+
+    /**
+     * @ignore
+     */
+    private conversationIdPromise: Promise<string>;
 
     /**
      * @ignore
@@ -326,14 +331,18 @@ export class StreamingAPIConnection extends BaseConnection {
         this.getConversationId = this.getConversationId.bind(this);
 
         // Set the conversation ID once it's created.
-        this.on(
-            "conversation_created",
-            (conversationData) => {
+        this.conversationIdPromise = new Promise(resolve => {
+            this.on(
+                "conversation_created",
+                (conversationData) => {
 
-                this.conversationId = conversationData.data.conversationId;
+                    this.conversationId = conversationData.data.conversationId;
+                    resolve(this.conversationId);
 
-            }
-        );
+                }
+            );
+
+        });
 
     }
 
@@ -907,15 +916,9 @@ export class StreamingAPIConnection extends BaseConnection {
      * Returns the current converation id
      * @returns string
      */
-    getConversationId (): string {
+    async getConversationId (): Promise<string> {
 
-        if (!this.conversationId) {
-
-            this.logger.info("The conversation ID hasn't been created, yet.");
-
-        }
-
-        return this.conversationId;
+        return this.conversationIdPromise;
 
     }
 
