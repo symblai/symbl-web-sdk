@@ -914,7 +914,14 @@ export class StreamingAPIConnection extends BaseConnection {
      */
     async getConversationId (): Promise<string> {
 
+        if (!this.conversationId && !this.isProcessing()) {
+
+            throw new Error("You must start processing before attempting to grab a conversationId.");
+
+        }
+
         return this.conversationIdPromise;
+
 
     }
 
