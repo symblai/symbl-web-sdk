@@ -21,6 +21,8 @@ import {
 import {BaseConnection} from "../../connection";
 import {SYMBL_DEFAULTS} from "../../constants";
 import {SymblEvent} from "../../events";
+import { Stream } from "stream";
+import { type } from "os";
 
 
 /**
@@ -350,6 +352,18 @@ export class StreamingAPIConnection extends BaseConnection {
 
 
     static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
+
+        if (
+            (config) && (
+                typeof config !== "object" ||
+                Array.isArray(config) ||
+                config === null
+            )
+        ) {
+
+            throw new InvalidValueError("Please provide a valid StreamingAPIConnectionConfig.");
+
+        }
 
         const {
             id,
