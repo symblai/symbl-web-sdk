@@ -4,9 +4,6 @@ import {
     ConnectionState,
     Speaker,
     StreamingAPIConnectionConfig,
-    StreamingAPIModifyRequest,
-    StreamingAPIStartRequest,
-    StreamingAPIStopRequest,
     SymblAudioStreamType,
     SymblConnectionType,
     SymblData,
@@ -21,8 +18,6 @@ import {
 import {BaseConnection} from "../../connection";
 import {SYMBL_DEFAULTS} from "../../constants";
 import {SymblEvent} from "../../events";
-import { Stream } from "stream";
-import { type } from "os";
 
 
 /**
@@ -331,7 +326,8 @@ export class StreamingAPIConnection extends BaseConnection {
         this.getConversationId = this.getConversationId.bind(this);
 
         // Set the conversation ID once it's created.
-        this.conversationIdPromise = new Promise(resolve => {
+        this.conversationIdPromise = new Promise((resolve) => {
+
             this.on(
                 "conversation_created",
                 (conversationData) => {
