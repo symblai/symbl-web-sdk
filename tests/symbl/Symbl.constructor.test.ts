@@ -1,6 +1,7 @@
 import Symbl from "../../src/symbl/index";
-import { InvalidCredentialsError, AccessTokenExpiredError } from "../../src/error/symbl/index";
+import { InvalidCredentialsError, AccessTokenExpiredError, InvalidValueError } from "../../src/error";
 import { APP_ID, APP_SECRET, ACCESS_TOKEN, EXPIRED_ACCESS_TOKEN } from '../constants';
+import {VALID_LOG_LEVELS} from "../../src/utils/configs";
 
 test(
     "constructor for Symbl class - passing in appId and appSecret",
@@ -22,6 +23,32 @@ test(
             basePath: "https://some-api.base.path.net"
         };
         expect(() => new Symbl(authConfig)).not.toThrow();
+    }
+);
+
+test(
+    "constructor for Symbl class - passing in basePath, appId and appSecret, logLevel and reconnectOnError",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET,
+            basePath: "https://some-api.base.path.net",
+            logLevel: "debug",
+            reconnectOnError: true,
+        };
+        expect(() => new Symbl(authConfig)).not.toThrow();
+    }
+);
+
+test(
+    "constructor for Symbl class - invalid logLevel",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET,
+            logLevel: "errors"
+        };
+        expect(() => new Symbl(authConfig)).toThrow(new InvalidValueError(`Log level must be one of: ${VALID_LOG_LEVELS.join(", ")}`));
     }
 );
 

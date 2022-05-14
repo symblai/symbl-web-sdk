@@ -65,9 +65,10 @@ test(
 test(
     'OpusAudioStream.attachAudioProcessor - Test that audio processor was reinitialized successfully',
     (done) => {
-
+        audioStream.opusEncoder = opusEncoderMock;
+        const resetSpy = jest.spyOn(audioStream, 'resetOpusEncoder');
         audioStream.attachAudioProcessor(true).then(() => {
-
+            expect(resetSpy).toBeCalledTimes(1);
             expect(audioStream.opusEncoder.ondataavailable).toBe(audioStream.processAudio);
             expect(Recorder).toBeCalledTimes(1);
             expect(Recorder).toBeCalledWith(audioStream.config);

@@ -135,12 +135,12 @@ const validateEncoding = (configObj): boolean => {
     }
     if (sampleRateHertz) {
 
-        if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+        if ((!encoding || encoding?.toUpperCase() === SymblAudioStreamType.LINEAR16) && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
 
             throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
 
         }
-        if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+        if (encoding?.toUpperCase() === SymblAudioStreamType.OPUS && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
 
             throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
 
@@ -255,11 +255,6 @@ export class StreamingAPIConnection extends BaseConnection {
     /**
      * @ignore
      */
-    private conversationIdPromise: Promise<string>;
-
-    /**
-     * @ignore
-     */
     private config: StreamingAPIConnectionConfig;
 
     /**
@@ -324,21 +319,6 @@ export class StreamingAPIConnection extends BaseConnection {
         this.onAudioSourceChanged = this.onAudioSourceChanged.bind(this);
         this.on = this.on.bind(this);
         this.getConversationId = this.getConversationId.bind(this);
-
-        // Set the conversation ID once it's created.
-        this.conversationIdPromise = new Promise((resolve) => {
-
-            this.on(
-                "conversation_created",
-                (conversationData) => {
-
-                    this.conversationId = conversationData.data.conversationId;
-                    resolve(this.conversationId);
-
-                }
-            );
-
-        });
 
     }
 
@@ -739,14 +719,20 @@ export class StreamingAPIConnection extends BaseConnection {
 
         const encoding = this.audioStream.type;
 
-        if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+        if ((!encoding || encoding?.toUpperCase() === SymblAudioStreamType.LINEAR16) && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
 
             throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
 
         }
-        if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+        if (encoding?.toUpperCase() === SymblAudioStreamType.OPUS && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
 
             throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
+
+        }
+
+        if (this.connectionState !== ConnectionState.CONNECTED) {
+
+            throw new NoConnectionError("There is no established connection with the websocket.");
 
         }
 
@@ -866,21 +852,25 @@ export class StreamingAPIConnection extends BaseConnection {
     private attachAudioStream (audioStream: AudioStream): void {
 
         this.audioStream = audioStream;
-        try {
+        // Try {
 
-            this.audioStream.off(
-                "audio_source_changed",
-                this.onAudioSourceChanged
-            );
+        /*
+         *     This.audioStream.off(
+         *         "audio_source_changed",
+         *         this.onAudioSourceChanged
+         *     );
+         */
 
-        } catch (ex) {
+        // } catch (ex) {
 
-            this.logger.debug(
-                "Error",
-                ex
-            );
+        /*
+         *     This.logger.debug(
+         *         "Error",
+         *         ex
+         *     );
+         */
 
-        }
+        // }
         this.audioStream.on(
             "audio_source_changed",
             this.onAudioSourceChanged
@@ -912,16 +902,9 @@ export class StreamingAPIConnection extends BaseConnection {
      * Returns the current converation id
      * @returns string
      */
-    async getConversationId (): Promise<string> {
+    getConversationId (): string {
 
-        if (!this.conversationId && !this.isProcessing()) {
-
-            throw new Error("You must start processing before attempting to grab a conversationId.");
-
-        }
-
-        return this.conversationIdPromise;
-
+        return this.conversationId;
 
     }
 

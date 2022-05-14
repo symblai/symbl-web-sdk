@@ -173,7 +173,7 @@ export class BaseConnection extends DelegatedEventTarget {
     // eslint-disable-next-line
     async startProcessing (options?: StreamingAPIConnectionConfig | null): Promise<StreamingAPIConnection> {
 
-        throw new TypeError("Not implemented!");
+        throw new TypeError("Function not implemented!");
 
     }
 
@@ -183,7 +183,7 @@ export class BaseConnection extends DelegatedEventTarget {
     // eslint-disable-next-line
     async stopProcessing (): Promise<StreamingAPIConnection> {
 
-        throw new TypeError("Not implemented!");
+        throw new TypeError("Function not implemented!");
 
     }
 
@@ -193,7 +193,7 @@ export class BaseConnection extends DelegatedEventTarget {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     modifySampleRate (sampleRateHertz: number) {
 
-        throw new TypeError("Not implemented!");
+        throw new TypeError("Function not implemented!");
 
     }
 
@@ -203,7 +203,7 @@ export class BaseConnection extends DelegatedEventTarget {
     // eslint-disable-next-line
     async updateAudioStream (audioStream: AudioStream): Promise<void> {
 
-        throw new TypeError("Not implemented!");
+        throw new TypeError("Function not implemented!");
 
     }
 
@@ -213,7 +213,7 @@ export class BaseConnection extends DelegatedEventTarget {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     sendAudio (audioData: any): void {
 
-        throw new TypeError("Not implemented!");
+        throw new TypeError("Function not implemented!");
 
     }
 
@@ -223,7 +223,7 @@ export class BaseConnection extends DelegatedEventTarget {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     sendJSON (data: any): void {
 
-        throw new TypeError("Not implemented!");
+        throw new TypeError("Function not implemented!");
 
     }
 
@@ -233,7 +233,7 @@ export class BaseConnection extends DelegatedEventTarget {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isProcessing (): boolean {
 
-        throw new TypeError("Not implemented!");
+        throw new TypeError("Function not implemented!");
 
     }
 
@@ -253,7 +253,7 @@ export class BaseConnection extends DelegatedEventTarget {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
 
-        throw new TypeError("Not implemented!");
+        throw new TypeError("Function not implemented!");
 
     }
 

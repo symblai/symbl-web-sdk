@@ -94,6 +94,72 @@ test(
 );
 
 
+
+test(
+    "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call with null audioStream",
+    (done) => {
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        streamingAPIConnection.audioStream = null;
+        const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+        const validationSpy = jest.spyOn(StreamingAPIConnection, 'validateConfig');
+        const attachStreamSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream');
+        streamingAPIConnection.startProcessing(validConnectionConfig).then(() => {
+            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
+            expect(streamingAPIConnection.isProcessing()).toBe(true);
+            expect(streamingAPIConnection.audioStream.type).toBe("LINEAR16")
+            expect(streamSpy).toBeCalledTimes(1);
+            expect(validationSpy).toBeCalledTimes(1);
+            expect(attachStreamSpy).toBeCalledTimes(1);
+            done();
+        });
+    }
+);
+test(
+    "StreamingAPIConnection.startProcessing - Testing a successful startProcessing call with null audioStream and encoding config passed",
+    (done) => {
+        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        streamingAPIConnection.audioStream = null;
+        const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+        const validationSpy = jest.spyOn(StreamingAPIConnection, 'validateConfig');
+        const attachStreamSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream');
+        validConnectionConfig.config.encoding = "LINEAR16";
+        streamingAPIConnection.startProcessing(validConnectionConfig).then(() => {
+            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
+            expect(streamingAPIConnection.isProcessing()).toBe(true);
+            expect(streamingAPIConnection.audioStream.type).toBe("LINEAR16")
+            expect(streamSpy).toBeCalledTimes(1);
+            expect(validationSpy).toBeCalledTimes(1);
+            expect(attachStreamSpy).toBeCalledTimes(1);
+            done();
+        });
+    }
+);
+test(
+    "StreamingAPIConnection.startProcessing - Calling startProcessing when there is a connection that is already processing",
+    (done) => {
+        streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        const streamSpy = jest.spyOn(streamingAPIConnection.stream, 'start');
+        const validationSpy = jest.spyOn(StreamingAPIConnection, 'validateConfig');
+        const attachStreamSpy = jest.spyOn(streamingAPIConnection, 'attachAudioStream');
+        const logSpy = jest.spyOn(streamingAPIConnection.logger, 'warn');
+        validConnectionConfig.config.encoding = "LINEAR16";
+        streamingAPIConnection.startProcessing(validConnectionConfig).then(() => {
+            expect(streamingAPIConnection.processingState).toBe(ConnectionProcessingState.PROCESSING);
+            expect(streamingAPIConnection.isProcessing()).toBe(true);
+            expect(streamingAPIConnection.audioStream.type).toBe("LINEAR16")
+            expect(streamSpy).toBeCalledTimes(0);
+            expect(validationSpy).toBeCalledTimes(0);
+            expect(attachStreamSpy).toBeCalledTimes(0);
+            expect(logSpy).toBeCalledTimes(1);
+            done();
+        });
+    }
+);
+
+
 test(
     "StreamingAPIConnection.startProcessing - Testing an unsuccessful startProcessing call",
     async () => {

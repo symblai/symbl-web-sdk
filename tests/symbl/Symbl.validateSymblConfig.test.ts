@@ -1,5 +1,5 @@
 import Symbl from "../../src/symbl/index";
-import { InvalidCredentialsError, AccessTokenExpiredError } from "../../src/error/symbl/index";
+import { InvalidCredentialsError, AccessTokenExpiredError } from "../../src/error";
 import { APP_ID, APP_SECRET, ACCESS_TOKEN, EXPIRED_ACCESS_TOKEN } from '../constants';
 
 
@@ -30,12 +30,8 @@ test(
 test(
     "Symbl._validateSymblConfig - passing in no parameters",
     async () => {
-        try {
             const symbl = new Symbl(null);
             await expect(() => symbl._validateSymblConfig(null)).toThrowError(new InvalidCredentialsError('No credentials were passed'));
-        } catch(e) {
-            //
-        }
     }
 );
 
@@ -45,13 +41,8 @@ test(
         const authConfig = {
             appId: APP_ID
         };
-
-        try {
             const symbl = new Symbl();
             await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("AppSecret is missing"));
-        } catch (e) {
-            //
-        }
     }
 );
 
@@ -61,13 +52,8 @@ test(
         const authConfig = {
             appSecret: APP_SECRET
         };
-
-        try {
             const symbl = new Symbl();
             await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("AppID is missing"));
-        } catch (e) {
-            //
-        }
     }
 );
 
@@ -79,13 +65,8 @@ test(
             appSecret: APP_SECRET,
             accessToken: ACCESS_TOKEN
         };
-
-        try {
             const symbl = new Symbl();
             await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("You must use `accessToken` or an `appId`/`appSecret` pair separately."));
-        } catch (e) {
-            //
-        }
     }
 );
 
@@ -93,16 +74,11 @@ test(
     "Symbl._validateSymblConfig - malformed appId",
     async () => {
         const authConfig = {
-            appId: APP_ID,
+            appId: APP_SECRET,
             appSecret: APP_SECRET,
         };
-        
-        try {
             const symbl = new Symbl();
             await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("AppID is not valid"));
-        } catch (e) {
-            //
-        }
     }
 );
 
@@ -111,15 +87,23 @@ test(
     async () => {
         const authConfig = {
             appId: APP_ID,
-            appSecret: APP_SECRET
+            appSecret: APP_ID
         };
-
-        try {
             const symbl = new Symbl();
-            await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("The app secret value is invalid."));
-        } catch (e) {
-            //
-        }
+            await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new InvalidCredentialsError("AppSecret is not valid"));
+    }
+);
+
+test(
+    "Symbl._validateSymblConfig - malformed reconnectOnError",
+    async () => {
+        const authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET,
+            reconnectOnError: "true"
+        };
+            const symbl = new Symbl();
+            await expect(() => symbl._validateSymblConfig(authConfig as any)).toThrowError(new InvalidCredentialsError("`reconnectOnError` must be a boolean value."));
     }
 );
 
@@ -129,12 +113,7 @@ test(
         const authConfig = {
             accessToken: EXPIRED_ACCESS_TOKEN
         };
-
-        try {
             const symbl = new Symbl();
             await expect(() => symbl._validateSymblConfig(authConfig)).toThrowError(new AccessTokenExpiredError("Provided token as expired"));
-        } catch (e) {
-            //
-        }
     }
 );

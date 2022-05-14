@@ -22,6 +22,63 @@ test(
 );
 
 test(
+    "BaseConnection - startProcessing() throws error",
+    async () => {
+        await expect(async () => {await BaseConnection.prototype.startProcessing()}).rejects.toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - stopProcessing() throws error",
+    async () => {
+        await expect(async () => {await BaseConnection.prototype.stopProcessing()}).rejects.toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - modifySampleRate() throws error",
+    () => {
+        expect(() => {BaseConnection.prototype.modifySampleRate({} as any)}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - updateAudioStream() throws error",
+    async () => {
+        await expect(async () => {await BaseConnection.prototype.updateAudioStream({} as any)}).rejects.toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - sendAudio() throws error",
+    () => {
+        expect(() => {BaseConnection.prototype.sendAudio({} as any)}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - sendJSON() throws error",
+    () => {
+        expect(() => {BaseConnection.prototype.sendJSON({} as any)}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - isProcessing() throws error",
+    () => {
+        expect(() => {BaseConnection.prototype.isProcessing()}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - validateConfig() throws error",
+    () => {
+        expect(() => {BaseConnection.validateConfig({} as any)}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+
+test(
     "BaseConnection.getSessionId() - returns session id provided in constructor",
     () => {
         let bc = new BaseConnection("12345-12345-abcde-12345");

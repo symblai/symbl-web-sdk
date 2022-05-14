@@ -208,6 +208,37 @@ test(
 );
 
 test(
+    "Symbl.createAndStartNewConnection - Calling createAndStartNewConnection with no config",
+    async () => {
+
+        const authConfig = {
+            "appId": APP_ID,
+            "appSecret": APP_SECRET
+        };
+        const symbl = new Symbl(authConfig);
+        const connection: any = await symbl.createAndStartNewConnection();
+        expect(ConnectionFactory).toHaveBeenCalledTimes(1);
+        expect(connection instanceof StreamingAPIConnection);
+        expect(startProcessingMock).toBeCalledTimes(1);
+
+    }
+);
+
+test(
+    "Symbl.createAndStartNewConnection - Calling createAndStartNewConnection with invalid config",
+    async () => {
+
+        const authConfig = {
+            "appId": APP_ID,
+            "appSecret": APP_SECRET
+        };
+        const symbl = new Symbl(authConfig);
+        await expect(async () => await symbl.createAndStartNewConnection("test" as any)).rejects.toThrow();
+
+    }
+);
+
+test(
     "Symbl.createAndStartNewConnection - Calling createAndStartNewConnection with valid config and passing in OpusAudioStream",
     async () => {
 

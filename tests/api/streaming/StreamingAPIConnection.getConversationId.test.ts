@@ -34,39 +34,11 @@ beforeAll(() => {
 
 test(
     `Get a conversation ID`,
-    (done) => {
+    () => {
         const conversationId = "1234";
         streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
-        (streamingAPIConnection as any).conversationIdPromise = Promise.resolve(conversationId);
         (streamingAPIConnection as any).conversationId = conversationId;
-        streamingAPIConnection.getConversationId().then(id => {
-            expect(id).toBe(conversationId);
-            done();
-        });
-    }
-)
-
-test(
-    `Throw an error if not processing and null conversationId`,
-    async () => {
-        const conversationId = null;
-        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
-        (streamingAPIConnection as any).conversationId = conversationId;
-        const error = new Error("You must start processing before attempting to grab a conversationId.");
-        await expect(async () => await streamingAPIConnection.getConversationId()).rejects.toThrowError(error);
-    }
-)
-
-test(
-    `Retreive conversationId successfully if not processing but conversationId is not null`,
-    (done) => {
-        const conversationId = "1234"
-        streamingAPIConnection.processingState = ConnectionProcessingState.NOT_PROCESSING;
-        (streamingAPIConnection as any).conversationId = conversationId;
-        (streamingAPIConnection as any).conversationIdPromise = Promise.resolve(conversationId);
-        streamingAPIConnection.getConversationId().then(id => {
-            expect(id).toBe(conversationId);
-            done();
-        });
+        const id = streamingAPIConnection.getConversationId();
+        expect(id).toBe(conversationId);
     }
 )

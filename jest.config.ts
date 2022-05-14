@@ -37,7 +37,8 @@ const config: Config.InitialOptions = {
     "coveragePathIgnorePatterns": [
         "/node_modules/",
         "/src/network/*",
-        "/src/logger/*"
+        "/src/logger/*",
+        "/src/error/network/http/"
     ],
 
     /*
