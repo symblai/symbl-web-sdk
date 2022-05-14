@@ -200,7 +200,7 @@ interface RealtimeInsightData {
 
 interface RealtimeTopicData {
     id: string;
-    messageRefereces: {
+    messageReferences: {
         id: string;
         relation: string;
     }[];
@@ -208,7 +208,7 @@ interface RealtimeTopicData {
     rootWords: {
         text: string;
     }[];
-    socre: number;
+    score: number;
     type: string;
 }
 
