@@ -18,7 +18,7 @@ Operating System | Chrome | Edge | Firefox | Safari |
 ---------- | ------- | ------- | ------ | ------ |
 macOS | ✅ | ✅ | ✅ | ✅ | 
 Windows | ✅ | ✅ | ✅ | - |
-Linux| ✅ | - | ✅ | - | 
+Linux| ✅ | ✅ | ✅ | - | 
 
 
 ## Prerequisites
