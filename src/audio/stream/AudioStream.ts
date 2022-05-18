@@ -344,6 +344,26 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async attachVideoSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
      * Disconnects the audio source DOM element from the websocket connection
      */
     protected detachElement (): void {
@@ -373,6 +393,26 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    detachAudioSourceElement (): void {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    detachVideoSourceElement (): void {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
      * Detaches from any currently connected DOM Audio element and attaches to provided element
      * @param sourceDomElement DOMElement
      * @param nodeName nodeName of DOMElement (either VIDEO or AUDIO)
@@ -386,6 +426,26 @@ export class AudioStream extends DelegatedEventTarget {
             nodeName
         );
         return newElement;
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async updateVideoSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        throw new TypeError("Function not implemented!");
 
     }
 
