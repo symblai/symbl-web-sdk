@@ -36,6 +36,8 @@ const config: Config.InitialOptions = {
     // An array of regexp pattern strings used to skip coverage collection
     "coveragePathIgnorePatterns": [
         "/node_modules/",
+        "/src/network/*",
+        "/src/logger/*",
         "/src/error/network/http/"
     ],
 
