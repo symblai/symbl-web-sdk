@@ -338,18 +338,6 @@ export class StreamingAPIConnection extends BaseConnection {
 
     static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
 
-        if (
-            (config) && (
-                typeof config !== "object" ||
-                Array.isArray(config) ||
-                config === null
-            )
-        ) {
-
-            throw new InvalidValueError("Please provide a valid StreamingAPIConnectionConfig.");
-
-        }
-
         const {
             id,
             insightTypes,
@@ -511,6 +499,15 @@ export class StreamingAPIConnection extends BaseConnection {
             if (!options) {
 
                 options = {};
+
+            }
+
+            if (typeof options !== "object" ||
+                        Array.isArray(options) ||
+                        options === null
+            ) {
+
+                throw new InvalidValueError("Please provide a valid StreamingAPIConnectionConfig.");
 
             }
 
