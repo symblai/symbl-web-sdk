@@ -51,6 +51,15 @@ export class BaseConnection extends DelegatedEventTarget {
          this.onDataReceived = this.onDataReceived.bind(this);
          this.getSessionId = this.getSessionId.bind(this);
 
+         this.on(
+             "conversation_created",
+             (conversationData) => {
+
+                 this.conversation = new Conversation(conversationData.data.conversationId);
+
+             }
+         );
+
      }
 
      /**
