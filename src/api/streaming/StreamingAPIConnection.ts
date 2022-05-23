@@ -396,11 +396,6 @@ export class StreamingAPIConnection extends BaseConnection {
                 copiedConfig.handlers = copiedHandlers;
                 await this.sdk.oauth2.init();
                 this.stream = await this.sdk.createStream(copiedConfig);
-                if (this.stream.conversationId) {
-
-                    this.conversation = new Conversation(this.stream.conversationId);
-
-                }
                 // Once the connection is established, set the `connectionState` to CONNECTED
                 this.connectionState = ConnectionState.CONNECTED;
                 // Set uthe value of `_isConnected` to `true` and emit the appropriate event
