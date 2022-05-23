@@ -16,6 +16,7 @@ import {
     NotSupportedSampleRateError
 } from "../../error";
 import {BaseConnection} from "../../connection";
+import {Conversation} from "../conversation";
 import {SYMBL_DEFAULTS} from "../../constants";
 import {SymblEvent} from "../../events";
 
@@ -250,11 +251,6 @@ export class StreamingAPIConnection extends BaseConnection {
     /**
      * @ignore
      */
-    private conversationId: string;
-
-    /**
-     * @ignore
-     */
     private config: StreamingAPIConnectionConfig;
 
     /**
@@ -412,6 +408,11 @@ export class StreamingAPIConnection extends BaseConnection {
                 copiedConfig.handlers = copiedHandlers;
                 await this.sdk.oauth2.init();
                 this.stream = await this.sdk.createStream(copiedConfig);
+                if (this.stream.conversationId) {
+
+                    this.conversation = new Conversation(this.stream.conversationId);
+
+                }
                 // Once the connection is established, set the `connectionState` to CONNECTED
                 this.connectionState = ConnectionState.CONNECTED;
                 // Set uthe value of `_isConnected` to `true` and emit the appropriate event
@@ -904,7 +905,7 @@ export class StreamingAPIConnection extends BaseConnection {
      */
     getConversationId (): string {
 
-        return this.conversationId;
+        return this.conversation.getConversationId();
 
     }
 

@@ -3,6 +3,7 @@ import { LINEAR16AudioStream, OpusAudioStream } from "../../../src/audio";
 import { StreamingAPIConnection } from '../../../src/api';
 import { APP_ID, APP_SECRET } from '../../constants';
 import { ConnectionState, ConnectionProcessingState } from "../../../src/types/connection"
+import { Conversation } from "../../../src/api/conversation";
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl;
 let audioStream, sourceNode;
@@ -37,7 +38,7 @@ test(
     () => {
         const conversationId = "1234";
         streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
-        (streamingAPIConnection as any).conversationId = conversationId;
+        (streamingAPIConnection as any).conversation = new Conversation(conversationId);
         const id = streamingAPIConnection.getConversationId();
         expect(id).toBe(conversationId);
     }
