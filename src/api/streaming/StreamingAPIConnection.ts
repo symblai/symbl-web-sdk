@@ -246,12 +246,6 @@ const validateSpeaker = (speaker: Speaker): boolean => {
  * Additionally, it also integrates with AudioStream to seamlessly handle the streaming of Audio, managed internally.
  */
 export class StreamingAPIConnection extends BaseConnection {
-
-    /**
-     * @ignore
-     */
-    private conversationId: string;
-
     /**
      * @ignore
      */
@@ -318,7 +312,6 @@ export class StreamingAPIConnection extends BaseConnection {
         this.attachAudioStream = this.attachAudioStream.bind(this);
         this.onAudioSourceChanged = this.onAudioSourceChanged.bind(this);
         this.on = this.on.bind(this);
-        this.getConversationId = this.getConversationId.bind(this);
 
     }
 
@@ -892,16 +885,6 @@ export class StreamingAPIConnection extends BaseConnection {
         }
         // Call the `attachAudioStream` function with the new `audioStream`
         this.attachAudioStream(audioStream);
-
-    }
-
-    /**
-     * Returns the current converation id
-     * @returns string
-     */
-    getConversationId (): string {
-
-        return this.conversationId;
 
     }
 
