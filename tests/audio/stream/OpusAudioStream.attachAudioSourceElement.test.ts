@@ -185,7 +185,7 @@ test(
     \`audioContext.createScriptProcessor\` is invoked and that 
     \`attachAudioProcessor\` is invoked`,
     async () => {
-        const videoElement = document.createElement("video");
+        const videoElement = document.createElement("audio");
         (videoElement as any).type = "audio/mp3"
         videoElement.src = "test.mp3";
         
