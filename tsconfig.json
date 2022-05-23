@@ -9,7 +9,6 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
-    "declarationDir": "./types",
     "esModuleInterop": true
   },
   "include": ["./src"],

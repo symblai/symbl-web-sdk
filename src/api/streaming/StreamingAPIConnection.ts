@@ -248,6 +248,7 @@ const validateSpeaker = (speaker: Speaker): boolean => {
  */
 export class StreamingAPIConnection extends BaseConnection {
 
+
     /**
      * @ignore
      */
@@ -314,7 +315,6 @@ export class StreamingAPIConnection extends BaseConnection {
         this.attachAudioStream = this.attachAudioStream.bind(this);
         this.onAudioSourceChanged = this.onAudioSourceChanged.bind(this);
         this.on = this.on.bind(this);
-        this.getConversationId = this.getConversationId.bind(this);
 
     }
 
@@ -333,18 +333,6 @@ export class StreamingAPIConnection extends BaseConnection {
 
 
     static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
-
-        if (
-            (config) && (
-                typeof config !== "object" ||
-                Array.isArray(config) ||
-                config === null
-            )
-        ) {
-
-            throw new InvalidValueError("Please provide a valid StreamingAPIConnectionConfig.");
-
-        }
 
         const {
             id,
@@ -512,6 +500,15 @@ export class StreamingAPIConnection extends BaseConnection {
             if (!options) {
 
                 options = {};
+
+            }
+
+            if (typeof options !== "object" ||
+                        Array.isArray(options) ||
+                        options === null
+            ) {
+
+                throw new InvalidValueError("Please provide a valid StreamingAPIConnectionConfig.");
 
             }
 
@@ -896,16 +893,6 @@ export class StreamingAPIConnection extends BaseConnection {
         }
         // Call the `attachAudioStream` function with the new `audioStream`
         this.attachAudioStream(audioStream);
-
-    }
-
-    /**
-     * Returns the current converation id
-     * @returns string
-     */
-    getConversationId (): string {
-
-        return this.conversation.getConversationId();
 
     }
 
