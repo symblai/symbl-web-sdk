@@ -44,14 +44,14 @@ beforeAll(() => {
 });
 
 test(
-    `OpusAudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `OpusAudioStream.attachVideoSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in source element with 'video' parent.`,
     async () => {
         const srcElement = document.createElement('source');
         srcElement.src = "test.mp4";
         const videoElement = document.createElement("video");
         videoElement.appendChild(srcElement);
-        await expect(async () => await audioStream.attachAudioSourceElement(srcElement)).resolves
+        await expect(async () => await audioStream.attachVideoSourceElement(srcElement)).resolves
     } 
 )
 
