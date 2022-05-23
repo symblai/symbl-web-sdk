@@ -115,7 +115,10 @@ export class OpusAudioStream extends AudioStream {
      */
     async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        const element = await super.attachAudioSourceElement(audioSourceDomElement);
+        const element = await super.attachElement(
+            audioSourceDomElement,
+            "AUDIO"
+        );
         await this.attachAudioProcessor(true);
 
         const event = new SymblEvent(
@@ -141,7 +144,7 @@ export class OpusAudioStream extends AudioStream {
      */
     detachAudioSourceElement (): void {
 
-        super.detachAudioSourceElement();
+        super.detachElement();
 
     }
 
@@ -152,7 +155,65 @@ export class OpusAudioStream extends AudioStream {
      */
     async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        const newElement = await super.updateAudioSourceElement(audioSourceDomElement);
+        const newElement = await super.updateElement(
+            audioSourceDomElement,
+            "AUDIO"
+        );
+        this.attachAudioProcessor(true);
+        return newElement;
+
+    }
+
+    /**
+     * Attaches DOM <video> element to the audio data stream
+     * @param videoSourceDomElement HTMLVideoElement
+     */
+    async attachVideoSourceElement (videoSourceDomElement: any): Promise<any> {
+
+        const element = await super.attachElement(
+            videoSourceDomElement,
+            "VIDEO"
+        );
+        await this.attachAudioProcessor(true);
+
+        const event = new SymblEvent(
+            "audio_source_connected",
+            this.audioContext.sampleRate
+        );
+
+        window.setTimeout(
+            () => {
+
+                this.dispatchEvent(event);
+
+            },
+            1
+        );
+
+        return element;
+
+    }
+
+    /**
+     * Detaches DOM <video> element from the audio data stream
+     */
+    detachVideoSourceElement (): void {
+
+        super.detachElement();
+
+    }
+
+    /**
+     * Updates the DOM <video> element by detaching from any previously connected and connecting with
+     * the provided DOM element
+     * @param videoSourceDomElement HTMLVideoElement
+     */
+    async updateVideoSourceElement (videoSourceDomElement: any): Promise<any> {
+
+        const newElement = await super.updateElement(
+            videoSourceDomElement,
+            "VIDEO"
+        );
         this.attachAudioProcessor(true);
         return newElement;
 
