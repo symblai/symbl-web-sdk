@@ -197,3 +197,32 @@ test(
     }
 )
 
+test(
+    `LINEAR16AudioStream.attachVideoSourceElement - Ensure that audiocontext is created,
+    that \`audioContext.createMediaElementSource\` is invoked, that 
+    \`audioContext.createScriptProcessor\` is invoked and that 
+    \`attachAudioProcessor\` is invoked`,
+    async () => {
+        const videoElement = document.createElement("video");
+        (videoElement as any).type = "video/mp4"
+        videoElement.src = "test.mp4";
+        
+        audioStream.audioContext = new AudioContext();
+        audioStream.audioContext.createMediaElementSource = jest.fn();
+        audioStream.audioContext.createScriptProcessor = jest.fn();
+        audioStream.sourceNode = {
+            disconnect: jest.fn()
+        }
+        const createMediaElementEventSpy = jest.spyOn(audioStream.audioContext, 'createMediaElementSource');
+        const createScriptProcessorEventSpy = jest.spyOn(audioStream.audioContext, 'createScriptProcessor');
+        const attachAudioProcessorEventSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
+
+        await audioStream.attachVideoSourceElement(videoElement);
+        expect(createMediaElementEventSpy).toBeCalledTimes(1);
+        expect(createMediaElementEventSpy).toBeCalledWith(videoElement);
+        expect(createScriptProcessorEventSpy).toBeCalledTimes(1);
+        expect(createScriptProcessorEventSpy).toBeCalledWith(1024, 1, 1);
+        expect(attachAudioProcessorEventSpy).toBeCalledTimes(1);
+        expect(audioStream.audioContext).not.toBe(null)
+    }
+)

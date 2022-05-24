@@ -50,3 +50,27 @@ test(
         expect(sourceNodeSpy).toBeCalledTimes(1);
     }
 )
+
+test(
+    `LINEAR16AudioStream.detachVideoSourceElement - Ensure that audioContext, sourceNode 
+    and processorNode are being closed`,
+    async () => {
+        // setup
+        const videoElement = document.createElement("video");
+        videoElement.src = "test.mp4";
+        audioStream.audioContext = new AudioContext();
+        audioStream.sourceNode = {
+            disconnect: jest.fn()
+        }
+        audioStream.processorNode = audioStream.audioContext.createScriptProcessor(1024, 1, 1);
+
+        audioStream.processorNode = {
+            disconnect: jest.fn()
+        }
+        const sourceNodeSpy = jest.spyOn(audioStream.sourceNode, 'disconnect');
+        const processorNodeSpy = jest.spyOn(audioStream.processorNode, 'disconnect');
+        await audioStream.detachVideoSourceElement();
+        expect(processorNodeSpy).toBeCalledTimes(1);
+        expect(sourceNodeSpy).toBeCalledTimes(1);
+    }
+)
