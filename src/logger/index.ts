@@ -1,5 +1,6 @@
 /* eslint-disable sort-keys */
 import log from "loglevel";
+import {InvalidValueError} from "../error";
 
 const LogLevel = [
     "trace",
@@ -37,6 +38,11 @@ export class Logger {
      */
     setLevel (level: string): void {
 
+        if (!LogLevel.includes(level.toLowerCase())) {
+
+            throw new InvalidValueError("Please provide a valid log level.");
+
+        }
         this.logLevel = level;
         this.logger.setLevel(level as any);
 
