@@ -149,10 +149,10 @@ test(
 )
 
 test(
-    "BaseConnection.getConversationId() - returns when it exists",
+    "BaseConnection.getConversationId() - returns null when no conversation exists.",
     () => {
         const connection = new BaseConnection("123456678");
 
-        expect(() => connection.getConversationId()).toThrow(new NullError("There is no stored conversationId."));
+        expect(connection.getConversationId()).toEqual(null);
     }
 )
