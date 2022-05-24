@@ -47,9 +47,9 @@ export class BaseConnection extends DelegatedEventTarget {
     protected logger: typeof Logger = Logger;
 
     /**
-     * @ignore
+     * Conversation object
      */
-    protected conversation: Conversation;
+    conversation: Conversation;
 
     constructor (sessionId: string) {
 
