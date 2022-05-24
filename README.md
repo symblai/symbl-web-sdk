@@ -1,5 +1,7 @@
 # Symbl Web SDK
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=symblai_symbl-web-sdk&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=symblai_symbl-web-sdk) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=symblai_symbl-web-sdk&metric=coverage)](https://sonarcloud.io/summary/new_code?id=symblai_symbl-web-sdk)
+
 You can read the docs for the Symbl Web SDK at https://docs.symbl.ai/docs/web-sdk/overview
 
 >This feature is in Beta. If you have questions or comments, email [devrelations@symbl.ai](mailto:devrelations@symbl.ai).
@@ -14,9 +16,9 @@ The following web browser supported with the Web SDK are given below:
 
 Operating System | Chrome | Edge | Firefox | Safari |
 ---------- | ------- | ------- | ------ | ------ |
-macOS | ✅ | - | ✅ | ✅ | 
-Windows | ✅ | ✅ | ✅ | ✅ |
-Linux| ✅ | - | ✅ | ✅ | 
+macOS | ✅ | ✅ | ✅ | ✅ | 
+Windows | ✅ | ✅ | ✅ | - |
+Linux| ✅ | ✅ | ✅ | - | 
 
 
 ## Prerequisites
@@ -40,7 +42,7 @@ You can also import the file into your HTML appliaction using our CDN.
 #### Versioned CDN
 
 ```html
-<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v1.0.3/symbl.min.js"></script>
+<script src="https://sdk.symbl.ai/js/beta/symbl-web-sdk/v1.0.4/symbl.min.js"></script>
 ```
 
 #### Latest CDN

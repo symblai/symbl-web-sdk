@@ -4,9 +4,6 @@ import {
     ConnectionState,
     Speaker,
     StreamingAPIConnectionConfig,
-    StreamingAPIModifyRequest,
-    StreamingAPIStartRequest,
-    StreamingAPIStopRequest,
     SymblAudioStreamType,
     SymblConnectionType,
     SymblData,
@@ -138,12 +135,12 @@ const validateEncoding = (configObj): boolean => {
     }
     if (sampleRateHertz) {
 
-        if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+        if ((!encoding || encoding?.toUpperCase() === SymblAudioStreamType.LINEAR16) && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
 
             throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
 
         }
-        if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+        if (encoding?.toUpperCase() === SymblAudioStreamType.OPUS && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
 
             throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
 
@@ -249,6 +246,7 @@ const validateSpeaker = (speaker: Speaker): boolean => {
  * Additionally, it also integrates with AudioStream to seamlessly handle the streaming of Audio, managed internally.
  */
 export class StreamingAPIConnection extends BaseConnection {
+
 
     /**
      * @ignore
@@ -499,6 +497,15 @@ export class StreamingAPIConnection extends BaseConnection {
 
             }
 
+            if (typeof options !== "object" ||
+                        Array.isArray(options) ||
+                        options === null
+            ) {
+
+                throw new InvalidValueError("Please provide a valid StreamingAPIConnectionConfig.");
+
+            }
+
             this.config = Object.assign(
                 this.config,
                 options
@@ -704,14 +711,20 @@ export class StreamingAPIConnection extends BaseConnection {
 
         const encoding = this.audioStream.type;
 
-        if ((!encoding || encoding?.toUpperCase() === "LINEAR16") && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+        if ((!encoding || encoding?.toUpperCase() === SymblAudioStreamType.LINEAR16) && !SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
 
             throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For LINEAR16 encoding, supported sample rates are ${SYMBL_DEFAULTS.LINEAR16_SAMPLE_RATE_HERTZ}.`);
 
         }
-        if (encoding?.toUpperCase() === "OPUS" && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
+        if (encoding?.toUpperCase() === SymblAudioStreamType.OPUS && !SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ.includes(sampleRateHertz)) {
 
             throw new NotSupportedSampleRateError(`StreamingAPIConnectionConfig: For Opus encoding, supported sample rates are ${SYMBL_DEFAULTS.OPUS_SAMPLE_RATE_HERTZ}.`);
+
+        }
+
+        if (this.connectionState !== ConnectionState.CONNECTED) {
+
+            throw new NoConnectionError("There is no established connection with the websocket.");
 
         }
 
@@ -831,21 +844,25 @@ export class StreamingAPIConnection extends BaseConnection {
     private attachAudioStream (audioStream: AudioStream): void {
 
         this.audioStream = audioStream;
-        try {
+        // Try {
 
-            this.audioStream.off(
-                "audio_source_changed",
-                this.onAudioSourceChanged
-            );
+        /*
+         *     This.audioStream.off(
+         *         "audio_source_changed",
+         *         this.onAudioSourceChanged
+         *     );
+         */
 
-        } catch (ex) {
+        // } catch (ex) {
 
-            this.logger.debug(
-                "Error",
-                ex
-            );
+        /*
+         *     This.logger.debug(
+         *         "Error",
+         *         ex
+         *     );
+         */
 
-        }
+        // }
         this.audioStream.on(
             "audio_source_changed",
             this.onAudioSourceChanged

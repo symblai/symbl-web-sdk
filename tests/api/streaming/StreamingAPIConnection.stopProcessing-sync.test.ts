@@ -107,6 +107,42 @@ test(
 );
 
 test(
+    "Symbl.stopProcessing - Suspend audiocontext if `disconnectOnStopRequest` is set to false",
+    (done) => {
+        const newStreamingAPIConnection = createNewConnection();
+        newStreamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        newStreamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
+        (newStreamingAPIConnection.config as any).disconnectOnStopRequest = false;
+        const suspendSpy = jest.spyOn(newStreamingAPIConnection.audioStream, 'suspendAudioContext');
+        const stopSpy = jest.spyOn(newStreamingAPIConnection.stream, 'stop');
+        newStreamingAPIConnection.stopProcessing().then(() => {
+            expect(newStreamingAPIConnection.processingState).toBe(ConnectionProcessingState.NOT_PROCESSING)
+            expect(stopSpy).toBeCalledTimes(1);
+            expect(suspendSpy).toBeCalledTimes(1);
+            done();
+        });
+    }
+);
+
+test(
+    "Symbl.stopProcessing - Stop processing for elements",
+    (done) => {
+        const newStreamingAPIConnection = createNewConnection();
+        newStreamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        newStreamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
+        (newStreamingAPIConnection.audioStream as any).deviceProcessing = false;
+        const detachAudioSourceElementSpy = jest.spyOn(newStreamingAPIConnection.audioStream, 'detachAudioSourceElement');
+        const stopSpy = jest.spyOn(newStreamingAPIConnection.stream, 'stop');
+        newStreamingAPIConnection.stopProcessing().then(() => {
+            expect(newStreamingAPIConnection.processingState).toBe(ConnectionProcessingState.NOT_PROCESSING)
+            expect(stopSpy).toBeCalledTimes(1);
+            expect(detachAudioSourceElementSpy).toBeCalledTimes(1);
+            done();
+        });
+    }
+);
+
+test(
     "Symbl.stopProcessing - Verify that `_isProcessing` value is set to `false` and the appropriate event is emitted.",
     done => {
         streamingAPIConnection.connectionState = ConnectionState.CONNECTED;

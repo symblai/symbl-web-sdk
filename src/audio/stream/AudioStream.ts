@@ -1,5 +1,5 @@
 import {DelegatedEventTarget, SymblEvent} from "../../events";
-import {InvalidAudioElementError, InvalidAudioInputDeviceError, NoAudioInputDeviceDetectedError} from "../../error";
+import {InvalidAudioElementError, InvalidAudioInputDeviceError, InvalidValueError, NoAudioInputDeviceDetectedError} from "../../error";
 import Logger from "../../logger";
 // Import { AudioContext } from "../../utils";
 
@@ -77,9 +77,9 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        this.attachAudioSourceElement = this.attachAudioSourceElement.bind(this);
-        this.detachAudioSourceElement = this.detachAudioSourceElement.bind(this);
-        this.updateAudioSourceElement = this.updateAudioSourceElement.bind(this);
+        this.attachElement = this.attachElement.bind(this);
+        this.detachElement = this.detachElement.bind(this);
+        this.updateElement = this.updateElement.bind(this);
         this.attachAudioDevice = this.attachAudioDevice.bind(this);
         this.detachAudioDevice = this.detachAudioDevice.bind(this);
         this.updateAudioDevice = this.updateAudioDevice.bind(this);
@@ -205,81 +205,17 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
-    /**
-     * Connects a DOM element with an audio source to the websocket stream
-     * @param audioSourceDomElement any
-     */
-    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
+    private async processAttachedElement (sourceDomElement: any): Promise<any> {
 
-        // Const validateElement = element => {
-
-        if (!audioSourceDomElement) {
-
-            throw new InvalidAudioElementError("Element is null. Please pass in a valid audio source dom element.");
-
-        }
-
-        if (![
-            "AUDIO",
-            "VIDEO",
-            "SOURCE"
-        ].includes(audioSourceDomElement.nodeName)) {
-
-            throw new InvalidAudioElementError("Please pass in a valid audio source dom element.");
-
-        }
-
-        if (audioSourceDomElement.nodeName === "SOURCE" && (audioSourceDomElement.parentElement && ![
-            "AUDIO",
-            "VIDEO"
-        ].includes(audioSourceDomElement.parentElement.nodeName))) {
-
-            throw new InvalidAudioElementError("Please ensure that audio and video element is the parent element of <source /> element.");
-
-        }
-        if (audioSourceDomElement.nodeName === "SOURCE" && !audioSourceDomElement.src) {
-
-            throw new InvalidAudioElementError("Element is missing its `src` property");
-
-        }
-
-
-        if ([
-            "AUDIO",
-            "VIDEO"
-        ].includes(audioSourceDomElement.nodeName)) {
-
-            const source = audioSourceDomElement.firstChild;
-            if (source && source.nodeName !== "SOURCE") {
-
-                throw new InvalidAudioElementError("Child element must be a source element.");
-
-            } else if (source && source.nodeName === "SOURCE") {
-
-
-                return this.attachAudioSourceElement(source);
-
-            }
-
-        }
-
-        let newAudioSourceDomElement = audioSourceDomElement;
-
-        if (audioSourceDomElement.nodeName === "SOURCE") {
-
-            newAudioSourceDomElement = audioSourceDomElement.parentElement;
-
-        }
-
-        const hasSourceElement = newAudioSourceDomElement.firstChild && newAudioSourceDomElement.firstChild.nodeName === "SOURCE";
+        const hasSourceElement = sourceDomElement.firstChild && sourceDomElement.firstChild.nodeName === "SOURCE";
 
         const sourceElement = hasSourceElement
-            ? newAudioSourceDomElement.firstChild
-            : newAudioSourceDomElement;
+            ? sourceDomElement.firstChild
+            : sourceDomElement;
 
         if (this.audioContext) {
 
-            this.detachAudioSourceElement();
+            this.detachElement();
 
         }
 
@@ -308,7 +244,7 @@ export class AudioStream extends DelegatedEventTarget {
 
         }
 
-        const sourceNode = this.audioContext.createMediaElementSource(newAudioSourceDomElement);
+        const sourceNode = this.audioContext.createMediaElementSource(sourceDomElement);
         const processorNode = this.audioContext.createScriptProcessor(
             1024,
             1,
@@ -318,7 +254,82 @@ export class AudioStream extends DelegatedEventTarget {
         this.processorNode = processorNode;
         this.deviceProcessing = false;
 
-        return newAudioSourceDomElement;
+        return sourceDomElement;
+
+    }
+
+    /**
+     * Attaches an audio or video dom element to the websocket connection
+     * @param sourceDomElement DOMElement
+     * @param nodeName DOMElement nodeName (AUDIO or VIDEO)
+     * @returns DOMElement
+     */
+    protected async attachElement (sourceDomElement: any, nodeName: string): Promise<any> {
+
+        nodeName = nodeName.toUpperCase();
+
+        if (!sourceDomElement) {
+
+            throw new InvalidAudioElementError("Element is null. Please pass in a valid audio source dom element.");
+
+        }
+
+        if (!nodeName || (nodeName !== "AUDIO" && nodeName !== "VIDEO")) {
+
+            throw new InvalidValueError("Please pass in the DOM element node name of either VIDEO or AUDIO.");
+
+        }
+
+        if (![
+            nodeName.toUpperCase(),
+            "SOURCE"
+        ].includes(sourceDomElement.nodeName)) {
+
+            throw new InvalidAudioElementError(`Please pass in a valid ${nodeName.toLowerCase()} source dom element.`);
+
+        }
+
+        if (sourceDomElement.nodeName === "SOURCE" && (sourceDomElement.parentElement && ![nodeName].includes(sourceDomElement.parentElement.nodeName))) {
+
+            throw new InvalidAudioElementError(`Please ensure that ${nodeName.toLowerCase()} element is the parent element of <source /> element.`);
+
+        }
+        if (sourceDomElement.nodeName === "SOURCE" && !sourceDomElement.src) {
+
+            throw new InvalidAudioElementError("Element is missing its `src` property");
+
+        }
+
+        if ([nodeName].includes(sourceDomElement.nodeName)) {
+
+            const source = sourceDomElement.firstChild;
+            if (source && source.nodeName !== "SOURCE") {
+
+                throw new InvalidAudioElementError("Child element must be a source element.");
+
+            } else if (source && source.nodeName === "SOURCE") {
+
+
+                return this.attachElement(
+                    source,
+                    nodeName
+                );
+
+            }
+
+        }
+
+        let newSourceDomElement = sourceDomElement;
+
+        if (sourceDomElement.nodeName === "SOURCE") {
+
+            newSourceDomElement = sourceDomElement.parentElement;
+
+        }
+
+        const element = await this.processAttachedElement(newSourceDomElement);
+
+        return element;
 
         /*
          * Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
@@ -333,9 +344,29 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async attachVideoSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
      * Disconnects the audio source DOM element from the websocket connection
      */
-    detachAudioSourceElement (): void {
+    protected detachElement (): void {
 
         if (this.sourceNode) {
 
@@ -362,14 +393,59 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     /**
-     * Detaches from any currently connected DOM Audio element and attaches to provided element
-     * @param audioSourceDomElement HTMLAudioElement
+     * @ignore
      */
+    // eslint-disable-next-line
+    detachAudioSourceElement (): void {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    detachVideoSourceElement (): void {
+
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
+     * Detaches from any currently connected DOM Audio element and attaches to provided element
+     * @param sourceDomElement DOMElement
+     * @param nodeName nodeName of DOMElement (either VIDEO or AUDIO)
+     * @returns DOMElement
+     */
+    protected async updateElement (sourceDomElement: any, nodeName: string): Promise<any> {
+
+        this.detachElement();
+        const newElement = await this.attachElement(
+            sourceDomElement,
+            nodeName
+        );
+        return newElement;
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
     async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        this.detachAudioSourceElement();
-        const newElement = await this.attachAudioSourceElement(audioSourceDomElement);
-        return newElement;
+        throw new TypeError("Function not implemented!");
+
+    }
+
+    /**
+     * @ignore
+     */
+    // eslint-disable-next-line
+    async updateVideoSourceElement (audioSourceDomElement: any): Promise<any> {
+
+        throw new TypeError("Function not implemented!");
 
     }
 

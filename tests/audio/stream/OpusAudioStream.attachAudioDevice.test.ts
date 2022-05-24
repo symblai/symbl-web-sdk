@@ -1,60 +1,156 @@
-import AudioContext from 'audio-context-mock';
+import { Recorder } from "symbl-opus-encdec";
+import {
+    AudioContext
+} from "standardized-audio-context-mock";
 import Symbl from "../../../src/symbl";
-import { OpusAudioStream } from '../../../src/audio';
-import { APP_ID, APP_SECRET } from '../../constants';
+// import 
+import {
+    OpusAudioStream,
+    AudioStream
+} from '../../../src/audio';
+import {
+    APP_ID,
+    APP_SECRET
+} from '../../constants';
+import {
+    InvalidAudioInputDeviceError
+} from " ../../../src/error";
+import {
+    SymblEvent
+} from "../../../src/events";
 
-let authConfig, symbl, context;
-let audioStream;
-beforeAll(() => {
-    authConfig = {
-        appId: APP_ID,
-        appSecret: APP_SECRET
-    };
-    symbl = new Symbl(authConfig);
-    const opusConfig: any = {
-        numberOfChannels: 1,
-        encoderSampleRate: 48000,
-        encoderFrameSize: 20,
-        maxFramesPerPage: 40,
-        encoderComplexity: 6,
-        streamPages: true,
-        rawOpus: true
-    };
-    context = new AudioContext();
-    const mediaStream = new MediaStream();
-    const sourceNode = context.createMediaStreamSource(mediaStream);
-    audioStream = new OpusAudioStream(sourceNode, opusConfig);
+const opusEncoderMock = {
+    "start": jest.fn(),
+    "pause": jest.fn(),
+    "close": jest.fn(),
+}
+jest.mock('symbl-opus-encdec', () => {
+    return {
+        Recorder: jest.fn().mockImplementation( () => {
+            return opusEncoderMock;
+        })
+    }
 });
 
-// Check if `audioContext`, `sourceNode` and `processorNode` exist.
-// If they do, close the `audioContext`, disconnect the `sourceNode` and `processorNode`
-// Emit `audio_source_disconnected` event
 
-test(
-    `OpusAudioStream.detachAudioDevice - Ensure that audioContext, sourceNode 
-    and processorNode are being closed`,
-    async () => {
-        const mediaStream = new MediaStream();
-        audioStream.audioContext = new AudioContext();
-        await audioStream.audioContext.resume();
-        audioStream.processorNode = audioStream.audioContext.createScriptProcessor(1024, 1, 1);
-        
-        audioStream.sourceNode = {
-            connect: jest.fn(),
-            disconnect: jest.fn()
+
+/**
+ * failure cases:
+ *  deviceId is invalid - throw InvalidAUdioINputDeviceError
+ * 
+ * success cases:
+ *  if media stream is passed in invoke createMediaStreamSource 
+ *  if media stream is not passed do not invoke - create media stream instead
+ *  if audio context is already active emit `audio_source_disconnected` and recreate topology
+ *  test with audio context not active
+ *  if successful emit audio_source_connected
+ *  
+ */
+
+// mock audio context
+// AudioContext = jest.fn().mockImplementation(() => {});
+
+
+let audioStream, authConfig;
+let symbl;
+
+describe('OpusAudioStream.attachAudioDevice tests', () => {
+    beforeAll(() => {
+
+        authConfig = {
+            appId: APP_ID,
+            appSecret: APP_SECRET
+        };
+        symbl = new Symbl(authConfig);
+        const context = new AudioContext();
+        (context as any).createScriptProcessor = jest.fn();
+        const sourceNode = ( < any > context).createMediaStreamSource(new MediaStream());
+        // sourceNode.context = context;
+        audioStream = new OpusAudioStream(sourceNode);
+
+    });
+
+    test(
+        'OpusAudioStream.attachAudioDevice -deviceId is invalid - throw InvalidAudioInputDeviceError',
+        async () => {
+            const deviceId = null;
+            await expect(async () => await audioStream.attachAudioDevice(deviceId)).rejects.toThrowError(new InvalidAudioInputDeviceError('Invalid deviceId passed as argument.'));
         }
-        audioStream.gainNode = context.createGain();
-        audioStream.sourceNode.connect(audioStream.gainNode);
-        audioStream.gainNode.connect(audioStream.processorNode);
-        audioStream.processorNode.connect(audioStream.audioContext.destination);
+    )
 
-        const sourceNodeSpy = jest.spyOn(audioStream.sourceNode, 'disconnect');
-        const processorNodeSpy = jest.spyOn(audioStream.processorNode, 'disconnect');
-        const gainNodeSpy = jest.spyOn(audioStream.gainNode, 'disconnect');
-        await audioStream.detachAudioDevice();
-        expect(processorNodeSpy).toBeCalledTimes(1);
-        expect(gainNodeSpy).toBeCalledTimes(1);
-        expect(sourceNodeSpy).toBeCalledTimes(1);
+    test(
+        `OpusAudioStream.attachAudioDevice - Verify that createMediaStreamSource is invoked 
+        when valid arguments are supplied.`,
+        async () => {
+            const mediaStream = new MediaStream();
+            audioStream.audioContext = new AudioContext();
+            (audioStream.audioContext as any).createScriptProcessor = jest.fn();
+            audioStream.sourceNode = {
+                disconnect: jest.fn()
+            }
+            const mediaStreamSpy = jest.spyOn(audioStream.audioContext, 'createMediaStreamSource');
+            await audioStream.attachAudioDevice('default', mediaStream);
+            expect(mediaStreamSpy).toBeCalledTimes(1);
+            expect(mediaStreamSpy).toBeCalledWith(mediaStream);
+        }
+    )
 
-    }
-)
+    test(
+        `OpusAudioStream.attachAudioDevice - If media stream is not passed do not 
+         invoke - create media stream instead`,
+        async () => {
+            const mediaStreamSpy = jest.spyOn(audioStream.audioContext, 'createMediaStreamSource');
+            const gumSpy = jest.spyOn(AudioStream, 'getMediaStream');
+            audioStream.mediaStream = null;
+            audioStream.sourceNode = {
+                disconnect: jest.fn()
+            }
+            await audioStream.attachAudioDevice('default');
+            // expect(testSpy).toBeCalled();
+            expect(gumSpy).toBeCalledTimes(1);
+
+            // might not work because getUserMedia returns a promise
+            // expect(gumSpy).toReturnWith(myStream);
+
+            // expect(mediaStreamSpy).toBeCalledTimes(1);
+            // expect(mediaStreamSpy).toBeCalledWith(myStream);
+        }
+    )
+
+    // /**
+    //  * if (context.state === 'running') {
+    //  *  this.detachAudioDevice()
+    //  * }
+    //  * // go on
+    //  */
+
+    // test(
+    //     `OpusAudioStream.attachAudioDevice -If audio context is already active invoke \`detachAudioDevice\``,
+    //     async () => {
+    //         const context = <any>new AudioContext();
+    //         await context.resume();
+    //         audioStream.audioContext = context;
+    //         console.log('====== AUDIO CONTEXT STATE =======', audioStream.audioContext.state);
+    //         (audioStream.audioContext as any).createScriptProcessor = jest.fn();
+    //         const detachDeviceSpy = jest.spyOn(audioStream, 'detachAudioDevice');
+    //         await audioStream.attachAudioDevice('default', new MediaStream());
+    //         expect(detachDeviceSpy).toBeCalledTimes(1);
+    //     }
+    // )
+
+    test(
+        `OpusAudioStream.attachAudioDevice -If audio context is inactive we do not invoke \`detachAudioDevice\``,
+        async () => {
+            audioStream.audioContext = null;
+
+            audioStream.sourceNode = {
+                disconnect: jest.fn()
+            }
+
+            const detachDeviceSpy = jest.spyOn(audioStream, 'detachAudioDevice');
+            await audioStream.attachAudioDevice('default', new MediaStream());
+            expect(detachDeviceSpy).toBeCalledTimes(0);
+        }
+    )
+
+});

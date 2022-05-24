@@ -1,4 +1,6 @@
+import { Conversation } from '../../src/api/conversation';
 import { BaseConnection } from '../../src/connection';
+import { NullError } from '../../src/old/core/services/ErrorHandler';
 
 test(
     "BaseConnection - connect() throws error",
@@ -20,6 +22,63 @@ test(
         expect(() => {BaseConnection.prototype.onDataReceived({} as any)}).toThrowError(new TypeError("Function not implemented!"));
     }
 );
+
+test(
+    "BaseConnection - startProcessing() throws error",
+    async () => {
+        await expect(async () => {await BaseConnection.prototype.startProcessing()}).rejects.toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - stopProcessing() throws error",
+    async () => {
+        await expect(async () => {await BaseConnection.prototype.stopProcessing()}).rejects.toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - modifySampleRate() throws error",
+    () => {
+        expect(() => {BaseConnection.prototype.modifySampleRate({} as any)}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - updateAudioStream() throws error",
+    async () => {
+        await expect(async () => {await BaseConnection.prototype.updateAudioStream({} as any)}).rejects.toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - sendAudio() throws error",
+    () => {
+        expect(() => {BaseConnection.prototype.sendAudio({} as any)}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - sendJSON() throws error",
+    () => {
+        expect(() => {BaseConnection.prototype.sendJSON({} as any)}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - isProcessing() throws error",
+    () => {
+        expect(() => {BaseConnection.prototype.isProcessing()}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
+test(
+    "BaseConnection - validateConfig() throws error",
+    () => {
+        expect(() => {BaseConnection.validateConfig({} as any)}).toThrowError(new TypeError("Function not implemented!"));
+    }
+);
+
 
 test(
     "BaseConnection.getSessionId() - returns session id provided in constructor",
@@ -78,3 +137,22 @@ test(
         expect(dispatchEvent).toHaveBeenCalled;
     }
 );
+
+test(
+    "BaseConnection.getConversationId() - returns when it exists",
+    () => {
+        const connection = new BaseConnection("123456678");
+        (connection as any).conversation = new Conversation("87654321");
+
+        expect(connection.getConversationId()).toEqual("87654321");
+    }
+)
+
+test(
+    "BaseConnection.getConversationId() - returns null when no conversation exists.",
+    () => {
+        const connection = new BaseConnection("123456678");
+
+        expect(connection.getConversationId()).toEqual(null);
+    }
+)

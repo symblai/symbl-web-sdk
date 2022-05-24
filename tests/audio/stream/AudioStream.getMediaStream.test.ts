@@ -11,15 +11,21 @@ test(
         navigator.mediaDevices.enumerateDevices = jest.fn(() => {
             return [] as any;
         });
-        expect(async () => {AudioStream.getMediaStream()}).rejects.toThrowError(new NoAudioInputDeviceDetectedError("No input devices found."));
+        expect(async () => {await AudioStream.getMediaStream()}).rejects.toThrowError(new NoAudioInputDeviceDetectedError("No input devices found."));
     }
 );
 
 test(
     `AudioStream.getMediaStream -- finds no default device and selects first available`,
-    () => {
-        expect(async () => {
-            await AudioStream.getMediaStream("123");
-        }).resolves;
+    async () => {
+        navigator.mediaDevices.enumerateDevices = jest.fn(() => {
+            return new Promise(resolve => {
+                resolve([{
+                    deviceId: "123",
+                    kind: "audioinput"
+                }] as any);
+            });
+        });
+        await expect(AudioStream.getMediaStream("123xyz")).resolves.not.toThrowError()
     }
 );

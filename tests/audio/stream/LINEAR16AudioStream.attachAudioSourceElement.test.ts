@@ -32,14 +32,14 @@ beforeAll(() => {
 });
 
 test(
-    `LINEAR16AudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `LINEAR16AudioStream.attachVideoSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in source element with 'video' parent.`,
     async () => {
         const srcElement = document.createElement('source');
         srcElement.src = "test.mp4";
         const videoElement = document.createElement("video");
         videoElement.appendChild(srcElement);
-        await expect(async () => await audioStream.attachAudioSourceElement(srcElement)).resolves
+        await expect(async () => await audioStream.attachVideoSourceElement(srcElement)).resolves
     } 
 )
 
@@ -56,14 +56,14 @@ test(
 )
 
 test(
-    `LINEAR16AudioStream.attachAudioSourceElement - Validate that element is a valid 
+    `LINEAR16AudioStream.attachVideoSourceElement - Validate that element is a valid 
     DOM element that can provide audio: Passing in video element with valid source child`,
     async () => {
         const srcElement = document.createElement('source');
         srcElement.src = "test.mp4";
         const videoElement = document.createElement("video");
         videoElement.appendChild(srcElement);
-        await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).resolves
+        await expect(async () => await audioStream.attachVideoSourceElement(videoElement)).resolves
     } 
 )
 
@@ -94,8 +94,8 @@ test(
     DOM element that can provide audio: Passing in video element with src attribute`,
     async () => {
         const videoElement = document.createElement("video");
-        videoElement.src = "test.mp3";
-        await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).resolves
+        videoElement.src = "test.mp4";
+        await expect(async () => await audioStream.attachVideoSourceElement(videoElement)).resolves
     } 
 )
 
@@ -106,7 +106,7 @@ test(
         const srcElement = document.createElement('source');
         const videoElement = document.createElement("video");
         videoElement.appendChild(srcElement);
-        await expect(async () => await audioStream.attachAudioSourceElement(videoElement)).rejects.toThrow();
+        await expect(async () => await audioStream.attachVideoSourceElement(videoElement)).rejects.toThrow();
     } 
 )
 
@@ -173,9 +173,9 @@ test(
     \`audioContext.createScriptProcessor\` is invoked and that 
     \`attachAudioProcessor\` is invoked`,
     async () => {
-        const videoElement = document.createElement("video");
-        (videoElement as any).type = "audio/mp3"
-        videoElement.src = "test.mp3";
+        const audioElement = document.createElement("audio");
+        (audioElement as any).type = "audio/mp3"
+        audioElement.src = "test.mp3";
         
         audioStream.audioContext = new AudioContext();
         audioStream.audioContext.createMediaElementSource = jest.fn();
@@ -187,7 +187,37 @@ test(
         const createScriptProcessorEventSpy = jest.spyOn(audioStream.audioContext, 'createScriptProcessor');
         const attachAudioProcessorEventSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
 
-        await audioStream.attachAudioSourceElement(videoElement);
+        await audioStream.attachAudioSourceElement(audioElement);
+        expect(createMediaElementEventSpy).toBeCalledTimes(1);
+        expect(createMediaElementEventSpy).toBeCalledWith(audioElement);
+        expect(createScriptProcessorEventSpy).toBeCalledTimes(1);
+        expect(createScriptProcessorEventSpy).toBeCalledWith(1024, 1, 1);
+        expect(attachAudioProcessorEventSpy).toBeCalledTimes(1);
+        expect(audioStream.audioContext).not.toBe(null)
+    }
+)
+
+test(
+    `LINEAR16AudioStream.attachVideoSourceElement - Ensure that audiocontext is created,
+    that \`audioContext.createMediaElementSource\` is invoked, that 
+    \`audioContext.createScriptProcessor\` is invoked and that 
+    \`attachAudioProcessor\` is invoked`,
+    async () => {
+        const videoElement = document.createElement("video");
+        (videoElement as any).type = "video/mp4"
+        videoElement.src = "test.mp4";
+        
+        audioStream.audioContext = new AudioContext();
+        audioStream.audioContext.createMediaElementSource = jest.fn();
+        audioStream.audioContext.createScriptProcessor = jest.fn();
+        audioStream.sourceNode = {
+            disconnect: jest.fn()
+        }
+        const createMediaElementEventSpy = jest.spyOn(audioStream.audioContext, 'createMediaElementSource');
+        const createScriptProcessorEventSpy = jest.spyOn(audioStream.audioContext, 'createScriptProcessor');
+        const attachAudioProcessorEventSpy = jest.spyOn(audioStream, 'attachAudioProcessor');
+
+        await audioStream.attachVideoSourceElement(videoElement);
         expect(createMediaElementEventSpy).toBeCalledTimes(1);
         expect(createMediaElementEventSpy).toBeCalledWith(videoElement);
         expect(createScriptProcessorEventSpy).toBeCalledTimes(1);
@@ -196,4 +226,3 @@ test(
         expect(audioStream.audioContext).not.toBe(null)
     }
 )
-

@@ -48,7 +48,7 @@ export class SubscribeAPIConnection extends BaseConnection {
     /**
      * Establishes a live subscriber connection to an active websocket stream
      */
-    async connect (reconnectOnError?: boolean): Promise<void> {
+    async connect (): Promise<void> {
 
         // If the `connectionState` is already CONNECTED, log at warning level that a connection attempt is being made on an already open connection.
         if (this.connectionState === ConnectionState.CONNECTED) {
@@ -68,11 +68,6 @@ export class SubscribeAPIConnection extends BaseConnection {
                         "onMessage": this.onDataReceived
                     }
                 };
-                if (reconnectOnError) {
-
-                    subscribeConfig.reconnectOnError = reconnectOnError;
-
-                }
                 this.stream = await this.sdk.subscribeToStream(
                     this.sessionId,
                     subscribeConfig

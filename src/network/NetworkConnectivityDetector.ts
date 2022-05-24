@@ -22,7 +22,7 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    private connectivityCheckIntervalRef: number;
+    private connectivityCheckIntervalRef: ReturnType<typeof setInterval>;
 
     /**
      * @ignore
@@ -37,11 +37,6 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
 
         super();
         this.sdk = jsSDK;
-
-        /*
-         * This.sdk.setNetworkConnectivityDispatcher(this);
-         * Add function bindings here
-         */
 
     }
 
@@ -69,7 +64,7 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
 
         }
 
-        const connectivityCheckIntervalRef = setInterval(
+        this.connectivityCheckIntervalRef = setInterval(
             async () => {
 
                 if (this.maxRetries > 0) {
@@ -112,9 +107,9 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
                 } else {
 
                     this.logger.warn("Max retries to check for active internet connection exceeded! Please refresh the page when the internet is back online.");
-                    if (connectivityCheckIntervalRef) {
+                    if (this.connectivityCheckIntervalRef) {
 
-                        clearInterval(connectivityCheckIntervalRef);
+                        clearInterval(this.connectivityCheckIntervalRef);
 
                     }
 

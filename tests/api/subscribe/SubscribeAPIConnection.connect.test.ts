@@ -13,7 +13,8 @@ describe('SubscribeAPIConnection.connect()', () => {
     beforeAll(() => {
         authConfig = {
             appId: APP_ID,
-            appSecret: APP_SECRET
+            appSecret: APP_SECRET,
+            reconnectOnError: true
         };
         symbl = new Symbl(authConfig);
         subscribeAPIConnection = new SubscribeAPIConnection("abc123") as any;

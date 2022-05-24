@@ -117,7 +117,7 @@ interface RealtimeInsightData {
 
 interface RealtimeTopicData {
     id: string;
-    messageRefereces: {
+    messageReferences: {
         id: string;
         relation: string;
     }[];
@@ -126,7 +126,7 @@ interface RealtimeTopicData {
         text: string;
     }[];
     score: number;
-    type: "topic";
+    type: string;
 }
 
 interface RealtimeTrackerData {
