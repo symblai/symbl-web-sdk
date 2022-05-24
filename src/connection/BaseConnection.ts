@@ -286,7 +286,7 @@ export class BaseConnection extends DelegatedEventTarget {
 
     }
 
-    getConnectionId (): string {
+    getConversationId (): string {
 
         if (!this.conversation) {
 

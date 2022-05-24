@@ -144,7 +144,7 @@ test(
         const connection = new BaseConnection("123456678");
         (connection as any).conversation = new Conversation("87654321");
 
-        expect(connection.getConnectionId()).toEqual("87654321");
+        expect(connection.getConversationId()).toEqual("87654321");
     }
 )
 
@@ -153,6 +153,6 @@ test(
     () => {
         const connection = new BaseConnection("123456678");
 
-        expect(() => connection.getConnectionId()).toThrow(new NullError("There is no stored conversationId."));
+        expect(() => connection.getConversationId()).toThrow(new NullError("There is no stored conversationId."));
     }
 )
