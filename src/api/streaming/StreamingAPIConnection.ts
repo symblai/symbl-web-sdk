@@ -246,6 +246,8 @@ const validateSpeaker = (speaker: Speaker): boolean => {
  * Additionally, it also integrates with AudioStream to seamlessly handle the streaming of Audio, managed internally.
  */
 export class StreamingAPIConnection extends BaseConnection {
+
+
     /**
      * @ignore
      */

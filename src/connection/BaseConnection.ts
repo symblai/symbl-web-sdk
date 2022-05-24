@@ -1,5 +1,10 @@
-import {DelegatedEventTarget, SymblEvent} from "../events";
-import {StreamingAPIConnection} from "../api";
+import {
+    DelegatedEventTarget,
+    SymblEvent
+} from "../events";
+import {
+    StreamingAPIConnection
+} from "../api";
 import {
     RealtimeInsightData,
     RealtimeMessageData,
@@ -8,9 +13,19 @@ import {
     StreamingAPIConnectionConfig,
     SymblData
 } from "../types";
-import {AudioStream} from "../audio";
-import {InvalidValueError} from "../error";
+import {
+    AudioStream
+} from "../audio";
+import {
+    Conversation
+} from "../api/conversation";
+import {
+    InvalidValueError
+} from "../error";
 import Logger from "../logger";
+import {
+    NullError
+} from "../old/core/services/ErrorHandler";
 const sdk = require("@symblai/symbl-js/build/client.sdk.min").sdk;
 
 
@@ -31,6 +46,11 @@ export class BaseConnection extends DelegatedEventTarget {
      */
     protected logger: typeof Logger = Logger;
 
+    /**
+     * Conversation object
+     */
+    conversation: Conversation;
+
     constructor (sessionId: string) {
 
         super();
@@ -44,6 +64,15 @@ export class BaseConnection extends DelegatedEventTarget {
         this.disconnect = this.disconnect.bind(this);
         this.onDataReceived = this.onDataReceived.bind(this);
         this.getSessionId = this.getSessionId.bind(this);
+
+        this.on(
+            "conversation_created",
+            (conversationData) => {
+
+                this.conversation = new Conversation(conversationData.data.conversationId);
+
+            }
+        );
 
     }
 
@@ -142,7 +171,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * @ignore
      */
     // eslint-disable-next-line
-    async connect (): Promise<void> {
+    async connect(): Promise < void > {
 
         throw new TypeError("Function not implemented!");
 
@@ -161,7 +190,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * @ignore
      */
     // eslint-disable-next-line
-    onDataReceived (data: SymblData): void {
+    onDataReceived(data: SymblData): void {
 
         throw new TypeError("Function not implemented!");
 
@@ -171,7 +200,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * @ignore
      */
     // eslint-disable-next-line
-    async startProcessing (options?: StreamingAPIConnectionConfig | null): Promise<StreamingAPIConnection> {
+    async startProcessing(options ? : StreamingAPIConnectionConfig | null): Promise < StreamingAPIConnection > {
 
         throw new TypeError("Function not implemented!");
 
@@ -181,7 +210,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * @ignore
      */
     // eslint-disable-next-line
-    async stopProcessing (): Promise<StreamingAPIConnection> {
+    async stopProcessing(): Promise < StreamingAPIConnection > {
 
         throw new TypeError("Function not implemented!");
 
@@ -201,7 +230,7 @@ export class BaseConnection extends DelegatedEventTarget {
      * @ignore
      */
     // eslint-disable-next-line
-    async updateAudioStream (audioStream: AudioStream): Promise<void> {
+    async updateAudioStream(audioStream: AudioStream): Promise < void > {
 
         throw new TypeError("Function not implemented!");
 
@@ -251,9 +280,21 @@ export class BaseConnection extends DelegatedEventTarget {
      * @ignore
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
+    static validateConfig (config: StreamingAPIConnectionConfig): StreamingAPIConnectionConfig {
 
         throw new TypeError("Function not implemented!");
+
+    }
+
+    getConversationId (): string {
+
+        if (!this.conversation) {
+
+            throw new NullError("There is no stored conversationId.");
+
+        }
+
+        return this.conversation.getConversationId();
 
     }
 

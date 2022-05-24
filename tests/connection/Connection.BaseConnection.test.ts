@@ -1,4 +1,6 @@
+import { Conversation } from '../../src/api/conversation';
 import { BaseConnection } from '../../src/connection';
+import { NullError } from '../../src/old/core/services/ErrorHandler';
 
 test(
     "BaseConnection - connect() throws error",
@@ -135,3 +137,22 @@ test(
         expect(dispatchEvent).toHaveBeenCalled;
     }
 );
+
+test(
+    "BaseConnection.getConversationId() - returns when it exists",
+    () => {
+        const connection = new BaseConnection("123456678");
+        (connection as any).conversation = new Conversation("87654321");
+
+        expect(connection.getConversationId()).toEqual("87654321");
+    }
+)
+
+test(
+    "BaseConnection.getConversationId() - returns when it exists",
+    () => {
+        const connection = new BaseConnection("123456678");
+
+        expect(() => connection.getConversationId()).toThrow(new NullError("There is no stored conversationId."));
+    }
+)

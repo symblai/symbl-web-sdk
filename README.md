@@ -1,6 +1,6 @@
 # Symbl Web SDK
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=symblai_symbl-web-sdk&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=symblai_symbl-web-sdk)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=symblai_symbl-web-sdk&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=symblai_symbl-web-sdk) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=symblai_symbl-web-sdk&metric=coverage)](https://sonarcloud.io/summary/new_code?id=symblai_symbl-web-sdk)
 
 You can read the docs for the Symbl Web SDK at https://docs.symbl.ai/docs/web-sdk/overview
 
