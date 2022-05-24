@@ -1,14 +1,14 @@
 /* eslint-disable sort-keys */
 import log from "loglevel";
 
-const LogLevel = {
-    "silent": 5,
-    "error": 4,
-    "warn": 3,
-    "info": 2,
-    "debug": 1,
-    "trace": 0
-};
+const LogLevel = [
+    "trace",
+    "debug",
+    "info",
+    "warn",
+    "error",
+    "silent"
+];
 
 export class Logger {
 
@@ -23,6 +23,10 @@ export class Logger {
 
             this.setLevel(logLevel);
 
+        } else {
+
+            this.logLevel = LogLevel[this.logger.getLevel()]
+
         }
 
     }
@@ -34,7 +38,7 @@ export class Logger {
     setLevel (level: string): void {
 
         this.logLevel = level;
-        this.logger.setLevel(LogLevel[level]);
+        this.logger.setLevel(level as any);
 
     }
 
@@ -43,6 +47,7 @@ export class Logger {
      * @returns {string} - logging level
      */
     getLevel (): string {
+
 
         return this.logLevel;
 
