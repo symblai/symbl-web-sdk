@@ -25,7 +25,7 @@ export class Logger {
 
         } else {
 
-            this.logLevel = LogLevel[this.logger.getLevel()]
+            this.logLevel = LogLevel[this.logger.getLevel()];
 
         }
 
