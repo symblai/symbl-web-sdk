@@ -290,7 +290,7 @@ export class BaseConnection extends DelegatedEventTarget {
 
         if (!this.conversation) {
 
-            throw new NullError("There is no stored conversationId.");
+            return null;
 
         }
 
