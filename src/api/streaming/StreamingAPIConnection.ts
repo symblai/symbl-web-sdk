@@ -16,7 +16,6 @@ import {
     NotSupportedSampleRateError
 } from "../../error";
 import {BaseConnection} from "../../connection";
-import {Conversation} from "../conversation";
 import {SYMBL_DEFAULTS} from "../../constants";
 import {SymblEvent} from "../../events";
 
