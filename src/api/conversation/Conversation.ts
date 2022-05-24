@@ -2,11 +2,15 @@ import {InvalidValueError} from "../../error";
 
 export class Conversation {
 
+
+    /**
+     * @ignore
+     */
     protected conversationId: string;
 
     constructor (conversationId: string) {
 
-        if (!conversationId) {
+        if (!conversationId || typeof conversationId !== "string") {
 
             throw new InvalidValueError("Please provide a valid conversationId.");
 
@@ -16,15 +20,13 @@ export class Conversation {
 
     }
 
+    /**
+     * Returns the stored conversationId
+     * @returns string
+     */
     getConversationId (): string {
 
         return this.conversationId;
-
-    }
-
-    setConversationId (conversationId: string): void {
-
-        this.conversationId = conversationId;
 
     }
 
