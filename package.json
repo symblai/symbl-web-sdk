@@ -1,6 +1,6 @@
 {
   "name": "@symblai/symbl-web-sdk",
-  "version": "1.0.4",
+  "version": "1.0.5-beta.2",
   "description": "Symbl.ai Web SDK for accessing Symbl.ai APIs directly from the web browser.",
   "homepage": "https://github.com/symblai/symbl-web-sdk",
   "repository": {
@@ -75,7 +75,7 @@
   "author": "",
   "license": "Apache 2.0",
   "dependencies": {
-    "@symblai/symbl-js": "^1.4.8",
+    "@symblai/symbl-js": "^1.4.9-beta.2",
     "loglevel": "^1.8.0",
     "symbl-opus-encdec": "^0.1.2",
     "uuid": "^8.3.2"
