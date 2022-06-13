@@ -6,7 +6,7 @@ import { StreamingAPIConnection } from '../../../src/api';
 import { NoConnectionError } from "../../../src/error";
 // jest.mock('../../src/connection'); // ConnectionFactory is now a mock constructor
 import { APP_ID, APP_SECRET } from '../../constants';
-import { ConnectionState } from "../../../src/types/connection"
+import { ConnectionProcessingState, ConnectionState } from "../../../src/types/connection"
 
 
 let validConnectionConfig, invalidConnectionConfig, authConfig, symbl, sourceNode, audioStream, streamingAPIConnection;
@@ -34,7 +34,17 @@ beforeAll(() => {
     audioStream = new LINEAR16AudioStream(sourceNode);
     streamingAPIConnection = new StreamingAPIConnection("abc123", audioStream);
     streamingAPIConnection.stream = {
-        close: jest.fn()
+        close: jest.fn(),
+        stop: jest.fn(() => {
+            return new Promise(res => {
+                setTimeout(res, 1000);
+            });
+        }),
+        start: jest.fn(() => {
+            return new Promise(res => {
+                setTimeout(res, 1000);
+            });
+        })
     }
 });
 
@@ -47,7 +57,7 @@ beforeAll(() => {
 // Any failure to close the connection should be handled, and logged as an error.
 
 test(
-    "StreamingAPIConnection.connect - Testing a successful disconnection attempt",
+    "StreamingAPIConnection.disconnect - Testing a successful disconnection attempt",
     async () => {
         streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
         streamingAPIConnection.disconnect()
@@ -57,7 +67,7 @@ test(
 );
 
 test(
-    "StreamingAPIConnection.connect - Testing an unsuccessful disconnection attempt",
+    "StreamingAPIConnection.disconnect - Testing an unsuccessful disconnection attempt",
     async () => {
             streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
             streamingAPIConnection.stream = {
@@ -72,7 +82,7 @@ test(
 
 
 test(
-    "StreamingAPIConnection.connect - Attempt a disconnect when connectionState is already TERMINATED",
+    "StreamingAPIConnection.disconnect - Attempt a disconnect when connectionState is already TERMINATED",
     async () => {
         streamingAPIConnection.connectionState = ConnectionState.TERMINATED;
         await streamingAPIConnection.disconnect();
@@ -83,12 +93,33 @@ test(
 
 
 test(
-    "StreamingAPIConnection.connect - Attempt a disconnect when connectionState is already DISCONNECTED",
+    "StreamingAPIConnection.disconnect - Attempt a disconnect when connectionState is already DISCONNECTED",
     async () => {
         streamingAPIConnection.connectionState = ConnectionState.DISCONNECTED;
         await streamingAPIConnection.disconnect();
         expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
         expect(streamingAPIConnection.isConnected()).toBe(false);
+    }
+);
+
+test(
+    "StreamingAPIConnection.disconnect - Successfully disconnect when stopProcessing has not been called",
+    async () => {
+        streamingAPIConnection.stream = {
+            close: jest.fn(),
+            stop: jest.fn(() => {
+                return new Promise(res => {
+                    setTimeout(res, 1000);
+                });
+            })
+        }
+        streamingAPIConnection.stopProcessing = jest.fn();
+        const stopProcessingSpy = jest.spyOn(streamingAPIConnection, "stopProcessing");
+        streamingAPIConnection.connectionState = ConnectionState.CONNECTED;
+        streamingAPIConnection.processingState = ConnectionProcessingState.PROCESSING;
+        await streamingAPIConnection.disconnect();
+        expect(streamingAPIConnection.connectionState).toBe(ConnectionState.DISCONNECTED);
+        expect(stopProcessingSpy).toBeCalled;
     }
 );
 
