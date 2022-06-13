@@ -445,6 +445,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
             try {
 
+                // If audio processing is active, call `stopProcessing` prior to disconnecting websocket
                 if (this.processingState === ConnectionProcessingState.PROCESSING ||
                     this.processingState === ConnectionProcessingState.ATTEMPTING) {
 
