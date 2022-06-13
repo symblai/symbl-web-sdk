@@ -429,7 +429,7 @@ export class StreamingAPIConnection extends BaseConnection {
     /**
      * Disconnects from streaming websocket.
      */
-    disconnect (): void {
+    async disconnect (): Promise<void> {
 
         // If the `connectionState` is already DISCONNECTED, log at warning level that a connection closure attempt is being made on an already closed connection.
         if (this.connectionState === ConnectionState.DISCONNECTED) {
@@ -444,6 +444,13 @@ export class StreamingAPIConnection extends BaseConnection {
         } else {
 
             try {
+
+                if (this.processingState === ConnectionProcessingState.PROCESSING ||
+                    this.processingState === ConnectionProcessingState.ATTEMPTING) {
+
+                    await this.stopProcessing();
+
+                }
 
                 // Else, set the `connectionState` to DISCONNECTING and call the `close` function on the `stream` created via JS SDK
                 this.connectionState = ConnectionState.DISCONNECTING;
