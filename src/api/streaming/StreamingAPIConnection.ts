@@ -246,9 +246,8 @@ const validateKeys = (configObj: any, validKeys: string[]): boolean => {
 
     const invalidKeys = [];
     const objKeys = Object.keys(configObj);
-    for (let ik = 0; ik < objKeys.length; ik++) {
+    for (const key of objKeys) {
 
-        const key = objKeys[ik];
         if (!validKeys.includes(key)) {
 
             invalidKeys.push(key);
