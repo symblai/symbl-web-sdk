@@ -236,6 +236,12 @@ const validateSpeaker = (speaker: Speaker): boolean => {
 
 };
 
+/**
+ * Checks that StreamingAPIConnectionConfig only includes valid keys during validation step
+ * @param configObj StreamingAPIConnectionConfig
+ * @param validKeys Array
+ * @returns boolean
+ */
 const validateKeys = (configObj: any, validKeys: string[]): boolean => {
 
     const invalidKeys = [];
