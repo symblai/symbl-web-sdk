@@ -237,6 +237,36 @@ const validateSpeaker = (speaker: Speaker): boolean => {
 };
 
 /**
+ * Checks that StreamingAPIConnectionConfig only includes valid keys during validation step
+ * @param configObj StreamingAPIConnectionConfig
+ * @param validKeys Array
+ * @returns boolean
+ */
+const validateKeys = (configObj: any, validKeys: string[]): boolean => {
+
+    const invalidKeys = [];
+    const objKeys = Object.keys(configObj);
+    for (const key of objKeys) {
+
+        if (!validKeys.includes(key)) {
+
+            invalidKeys.push(key);
+
+        }
+
+    }
+
+    if (invalidKeys.length > 0) {
+
+        throw new InvalidValueError(`The following keys in StreamingAPIConnectionConfig are invalid: ${invalidKeys.join(", ")}. Please try again with valid keys.`);
+
+    }
+
+    return true;
+
+};
+
+/**
  *
  * This module wraps around Symbl’s Streaming APIs and provides an interface to access the connection-specific functionalities.
  * StreamingAPIConnection
@@ -332,6 +362,11 @@ export class StreamingAPIConnection extends BaseConnection {
 
 
     static validateConfig (config: StreamingAPIConnectionConfig) : StreamingAPIConnectionConfig {
+
+        validateKeys(
+            config,
+            SYMBL_DEFAULTS.VALID_STREAMINGAPICONNECTIONCONFIG_KEYS
+        );
 
         const {
             id,
