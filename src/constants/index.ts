@@ -32,6 +32,14 @@ export const SYMBL_DEFAULTS = {
         "question",
         "follow_up"
     ],
+    "VALID_STREAMINGAPICONFIGOPTIONS_KEYS": [
+        "confidenceThreshold",
+        "meetingTitle",
+        "encoding",
+        "sampleRateHertz",
+        "languageCode",
+        "timezoneOffset"
+    ],
     "VALID_STREAMINGAPICONNECTIONCONFIG_KEYS": [
         "id",
         "insightTypes",

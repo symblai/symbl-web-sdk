@@ -242,7 +242,7 @@ const validateSpeaker = (speaker: Speaker): boolean => {
  * @param validKeys Array
  * @returns boolean
  */
-const validateKeys = (configObj: any, validKeys: string[]): boolean => {
+const validateKeys = (configObj: any, validKeys: string[], configName: string): boolean => {
 
     const invalidKeys = [];
     const objKeys = Object.keys(configObj);
@@ -258,7 +258,7 @@ const validateKeys = (configObj: any, validKeys: string[]): boolean => {
 
     if (invalidKeys.length > 0) {
 
-        throw new InvalidValueError(`The following keys in StreamingAPIConnectionConfig are invalid: ${invalidKeys.join(", ")}. Please try again with valid keys.`);
+        throw new InvalidValueError(`The following keys in ${configName} are invalid: ${invalidKeys.join(", ")}. Please try again with valid keys.`);
 
     }
 
@@ -365,7 +365,8 @@ export class StreamingAPIConnection extends BaseConnection {
 
         validateKeys(
             config,
-            SYMBL_DEFAULTS.VALID_STREAMINGAPICONNECTIONCONFIG_KEYS
+            SYMBL_DEFAULTS.VALID_STREAMINGAPICONNECTIONCONFIG_KEYS,
+            "StreamingAPIConnectionConfig"
         );
 
         const {
@@ -386,6 +387,11 @@ export class StreamingAPIConnection extends BaseConnection {
 
         if (configObj) {
 
+            validateKeys(
+                configObj,
+                SYMBL_DEFAULTS.VALID_STREAMINGAPICONFIGOPTIONS_KEYS,
+                "StreamingAPIConnectionConfig 'config' object"
+            );
             validateConfigObj(configObj);
 
         }
