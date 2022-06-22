@@ -31,5 +31,29 @@ export const SYMBL_DEFAULTS = {
         "action_item",
         "question",
         "follow_up"
+    ],
+    "VALID_STREAMINGAPICONFIGOPTIONS_KEYS": [
+        "confidenceThreshold",
+        "meetingTitle",
+        "encoding",
+        "sampleRateHertz",
+        "languageCode",
+        "timezoneOffset"
+    ],
+    "VALID_STREAMINGAPICONNECTIONCONFIG_KEYS": [
+        "id",
+        "insightTypes",
+        "config",
+        "speaker",
+        "handlers",
+        "reconnectOnError",
+        "disconnectOnStopRequest",
+        "disconnectOnStopRequestTimeout",
+        "noConnectionTimeout",
+        "trackers"
+    ],
+    "VALID_SUBSCRIPEAPICONNECTIONCONFIG_KEYS": [
+        "id",
+        "sessionId"
     ]
 };

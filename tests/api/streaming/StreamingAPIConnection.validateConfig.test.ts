@@ -480,4 +480,36 @@ describe('streamingAPIConnection.validateConfig', () => {
             );
         }
     );
+
+    test(
+        `config with invalid keys throws error`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                junkKey: "junk"
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`The following keys in StreamingAPIConnectionConfig are invalid: junkKey. Please try again with valid keys.`)
+            );
+        }
+    );
+
+    test(
+        `config with invalid keys in config object throws error`,
+        async () => {
+            const invalidConfig = {
+                ...validConfig,
+                config: {
+                    junkKey: "junk"
+                }
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError(`The following keys in StreamingAPIConnectionConfig 'config' object are invalid: junkKey. Please try again with valid keys.`)
+            );
+        }
+    );
 });
