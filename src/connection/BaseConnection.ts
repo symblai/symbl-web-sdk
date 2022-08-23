@@ -6,6 +6,7 @@ import {
     StreamingAPIConnection
 } from "../api";
 import {
+    RealtimeBookmarkData,
     RealtimeInsightData,
     RealtimeMessageData,
     RealtimeTopicData,
@@ -96,6 +97,10 @@ export class BaseConnection extends DelegatedEventTarget {
                 "recognition_stopped": "processing_stopped"
             };
             const eventNameMap = {
+                "bookmark_response": {
+                    "data": mapperData.bookmarks as RealtimeBookmarkData,
+                    "name": "bookmark"
+                },
                 "insight_response": {
                     "data": mapperData as RealtimeInsightData,
                     "name": null

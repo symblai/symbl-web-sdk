@@ -17,6 +17,7 @@ type EventTypes =
     "action_item" |
     "follow_up" |
     "question" |
+    "bookmark" |
     "audio_source_connected" |
     "audio_source_disconnected" |
     "audio_source_changed" |
@@ -143,7 +144,26 @@ interface RealtimeTrackerData {
     }[];
 }
 
-type SymblData = RealtimeSpeechData | RealtimeMessageData | RealtimeInsightData | RealtimeTopicData
+
+interface RealtimeBookmarkUserData {
+    name?: string;
+    userId?: string;
+    email?: string;
+}
+  
+interface RealtimeBookmarkData {
+    type: string;
+    operation: string;
+    id?: string;
+    label?: string;
+    description?: string;
+    user: RealtimeBookmarkUserData;
+    beginTimeOffset: number;
+    duration: number;
+}
+
+
+type SymblData = RealtimeSpeechData | RealtimeMessageData | RealtimeInsightData | RealtimeTopicData | RealtimeBookmarkData
 
 export {
     SymblData,
@@ -154,5 +174,6 @@ export {
     RealtimeInsightData,
     RealtimeTopicData,
     RealtimeTrackerData,
+    RealtimeBookmarkData,
     EventTypes
 }
