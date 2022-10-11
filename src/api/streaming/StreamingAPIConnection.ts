@@ -18,6 +18,7 @@ import {
 import {BaseConnection} from "../../connection";
 import {SYMBL_DEFAULTS} from "../../constants";
 import {SymblEvent} from "../../events";
+import logger from "../../logger";
 
 
 /**
@@ -623,7 +624,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
             }
 
-            this.attachAudioStream(audioStream);
+            await this.attachAudioStream(audioStream);
 
             if (this.audioStream.deviceProcessing) {
 
@@ -890,34 +891,43 @@ export class StreamingAPIConnection extends BaseConnection {
      * Triggers Audio Source change when connected or disconnected
      * @param audioStream AudioStream
      */
-    private attachAudioStream (audioStream: AudioStream): void {
+    private attachAudioStream (audioStream: AudioStream): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.audioStream = audioStream;
+            // Try {
 
-        this.audioStream = audioStream;
-        // Try {
+            /*
+             *     This.audioStream.off(
+             *         "audio_source_changed",
+             *         this.onAudioSourceChanged
+             *     );
+             */
 
-        /*
-         *     This.audioStream.off(
-         *         "audio_source_changed",
-         *         this.onAudioSourceChanged
-         *     );
-         */
+            // } catch (ex) {
 
-        // } catch (ex) {
+            /*
+             *     This.logger.debug(
+             *         "Error",
+             *         ex
+             *     );
+             */
 
-        /*
-         *     This.logger.debug(
-         *         "Error",
-         *         ex
-         *     );
-         */
+            // }
+            this.audioStream.on(
+                "audio_source_changed",
+                async (audioSourceChangedEvent: Event) => {
+                    try {
+                        await this.onAudioSourceChanged(audioSourceChangedEvent);
+                        resolve();
+                    } catch (e) {
+                        logger.error(`Exception caught while attaching audio stream: ${e && e.message}`);
+                        reject(e);
+                    }
+                }
+            );
 
-        // }
-        this.audioStream.on(
-            "audio_source_changed",
-            this.onAudioSourceChanged
-        );
-
-        this.registerAudioStreamCallback();
+            this.registerAudioStreamCallback();
+        });
 
     }
 
@@ -935,8 +945,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
         }
         // Call the `attachAudioStream` function with the new `audioStream`
-        this.attachAudioStream(audioStream);
-
+        return this.attachAudioStream(audioStream);
     }
 
 }

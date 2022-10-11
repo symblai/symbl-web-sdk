@@ -59,6 +59,11 @@ export class AudioStream extends DelegatedEventTarget {
     public type: string;
 
     /**
+     * @private
+     */
+    private isOnDeviceChangeCallbackRegistered: boolean;
+
+    /**
      * Creates an audio stream to be used to send audio data to the websocket connection
      * @param sourceNode MediaStreamAudioSourceNode
      */
@@ -495,35 +500,39 @@ export class AudioStream extends DelegatedEventTarget {
         await this.resumeAudioContext();
         this.deviceProcessing = true;
         // eslint-disable-next-line require-atomic-updates
-        navigator.mediaDevices.ondevicechange = async () => {
+        if (!this.isOnDeviceChangeCallbackRegistered) {
+            this.isOnDeviceChangeCallbackRegistered = true;
 
-            if (this.mediaStream) {
+            navigator.mediaDevices.ondevicechange = async () => {
 
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const tracks = this.mediaStream?.getAudioTracks();
-                if (tracks?.length) {
+                if (this.mediaStream) {
 
-                    const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
-                    if (!foundDevice && !this.recentlyDisconnectedDevice) {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const tracks = this.mediaStream?.getAudioTracks();
+                    if (tracks?.length) {
 
-                        this.recentlyDisconnectedDevice = true;
-                        this.dispatchEvent(new SymblEvent("audio_source_changed"));
-                        window.setTimeout(
-                            () => {
+                        const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
+                        if (!foundDevice && !this.recentlyDisconnectedDevice) {
 
-                                this.recentlyDisconnectedDevice = false;
+                            this.recentlyDisconnectedDevice = true;
+                            this.dispatchEvent(new SymblEvent("audio_source_changed"));
+                            window.setTimeout(
+                                () => {
 
-                            },
-                            1000
-                        );
+                                    this.recentlyDisconnectedDevice = false;
+
+                                },
+                                1000
+                            );
+
+                        }
 
                     }
 
                 }
 
-            }
-
-        };
+            };
+        }
         /* eslint: enable */
 
     }
