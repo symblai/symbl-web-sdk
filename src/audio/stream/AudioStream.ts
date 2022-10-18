@@ -450,6 +450,50 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     /**
+     * Setter for ondevicechange method. 
+     * @param onDeviceChange Function - A function which will fire on the ondevicechange event.
+     * @returns void
+     */
+    setOnDeviceChange(onDeviceChange: () => any): void {
+
+        this.onDeviceChange = onDeviceChange;
+
+    }
+
+    /**
+     * @ignore
+     */
+    private async onDeviceChange(): Promise<void> {
+
+        if (this.mediaStream) {
+
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const tracks = this.mediaStream?.getAudioTracks();
+            if (tracks?.length) {
+
+                const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
+                if (!foundDevice && !this.recentlyDisconnectedDevice) {
+
+                    this.recentlyDisconnectedDevice = true;
+                    this.dispatchEvent(new SymblEvent("audio_source_changed"));
+                    window.setTimeout(
+                        () => {
+
+                            this.recentlyDisconnectedDevice = false;
+
+                        },
+                        1000
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
      * Attaches audio device either through default browser method creating a MediaStream or via a passed in MediaStream
      * @param deviceId string
      * @param mediaStream MediaStream
@@ -495,35 +539,7 @@ export class AudioStream extends DelegatedEventTarget {
         await this.resumeAudioContext();
         this.deviceProcessing = true;
         // eslint-disable-next-line require-atomic-updates
-        navigator.mediaDevices.ondevicechange = async () => {
-
-            if (this.mediaStream) {
-
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const tracks = this.mediaStream?.getAudioTracks();
-                if (tracks?.length) {
-
-                    const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
-                    if (!foundDevice && !this.recentlyDisconnectedDevice) {
-
-                        this.recentlyDisconnectedDevice = true;
-                        this.dispatchEvent(new SymblEvent("audio_source_changed"));
-                        window.setTimeout(
-                            () => {
-
-                                this.recentlyDisconnectedDevice = false;
-
-                            },
-                            1000
-                        );
-
-                    }
-
-                }
-
-            }
-
-        };
+        navigator.mediaDevices.ondevicechange = this.onDeviceChange;
         /* eslint: enable */
 
     }
