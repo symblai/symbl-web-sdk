@@ -450,11 +450,11 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     /**
-     * Setter for ondevicechange method. 
+     * Setter for ondevicechange method.
      * @param onDeviceChange Function - A function which will fire on the ondevicechange event.
      * @returns void
      */
-    setOnDeviceChange(onDeviceChange: () => any): void {
+    setOnDeviceChange (onDeviceChange: () => any): void {
 
         this.onDeviceChange = onDeviceChange;
 
@@ -463,7 +463,7 @@ export class AudioStream extends DelegatedEventTarget {
     /**
      * @ignore
      */
-    private async onDeviceChange(): Promise<void> {
+    private async onDeviceChange (): Promise<void> {
 
         if (this.mediaStream) {
 
