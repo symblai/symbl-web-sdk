@@ -148,8 +148,6 @@ export class AudioStream extends DelegatedEventTarget {
             },
             "video": false
         });
-        console.log('stream', stream);
-        console.log('stream settings', stream.getAudioTracks()[0].getSettings());
         const devices = await navigator.mediaDevices.enumerateDevices();
         const inputDevices = devices.filter((dev) => dev.kind === "audioinput");
         if (inputDevices.length === 0) {
@@ -357,8 +355,13 @@ export class AudioStream extends DelegatedEventTarget {
 
     }
 
-    private getMediaStreamSettings(mediaStream) {
+    /**
+     * @ignore
+     */
+    private getMediaStreamSettings (mediaStream) {
+
         return mediaStream.getAudioTracks()[0].getSettings();
+
     }
 
     /**
@@ -482,16 +485,19 @@ export class AudioStream extends DelegatedEventTarget {
      * @ignore
      */
     private async onDeviceChange (): Promise<void> {
+
         if (this.mediaStream) {
+
             const devices = await navigator.mediaDevices.enumerateDevices();
             const tracks = this.mediaStream?.getAudioTracks();
             if (tracks?.length) {
+
                 let foundDevice;
                 if (this.isDefaultDevice) {
 
                     // Check if same default device is present.
                     foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
-                    
+
                 } else {
 
                     // Check if the currently active device is still present.
@@ -499,12 +505,13 @@ export class AudioStream extends DelegatedEventTarget {
 
                 }
                 if (!foundDevice) {
+
                     if (!this.recentlyDisconnectedDevice) {
 
-                        let defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default")
+                        let defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default");
                         this.groupId = defaultDevice.groupId;
                         // Grab the specific deviceId for the default device.
-                        defaultDevice = devices.find(dev => dev.kind === "audioinput" && dev.groupId === this.groupId && dev.deviceId !== "default");
+                        defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.groupId === this.groupId && dev.deviceId !== "default");
                         this.deviceId = defaultDevice.deviceId;
 
                         this.recentlyDisconnectedDevice = true;
@@ -519,10 +526,13 @@ export class AudioStream extends DelegatedEventTarget {
                         );
 
                     }
+
                 }
 
             }
+
         }
+
     }
 
     /**
@@ -565,8 +575,8 @@ export class AudioStream extends DelegatedEventTarget {
         this.deviceId = mediaStreamSettings.deviceId;
 
         // Check that the default device has the same groupId as the active device
-        const defaultDevice = devices.find(dev => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
-        this.isDefaultDevice = defaultDevice ? true : false;
+        const defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
+        this.isDefaultDevice = Boolean(defaultDevice);
 
         // Create the sourceNode, processorNode and gainNode using the Audio Context.
         this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
