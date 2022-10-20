@@ -46,6 +46,16 @@ export class AudioStream extends DelegatedEventTarget {
     /**
      * @ignore
      */
+    private groupId: string;
+
+    /**
+     * @ignore
+     */
+    private isDefaultDevice: boolean;
+
+    /**
+     * @ignore
+     */
     private recentlyDisconnectedDevice = false;
 
     /**
@@ -87,6 +97,8 @@ export class AudioStream extends DelegatedEventTarget {
         this.attachAudioProcessor = this.attachAudioProcessor.bind(this);
         this.processAudio = this.processAudio.bind(this);
         this.onProcessedAudio = this.onProcessedAudio.bind(this);
+        this.onDeviceChange = this.onDeviceChange.bind(this);
+        this.setOnDeviceChange = this.setOnDeviceChange.bind(this);
 
         /*
          * If the `AudioContext` present in the `MediaStreamAudioSourceNode` is `running` or `suspended` then re-use that instance or recreate otherwise.
@@ -346,6 +358,15 @@ export class AudioStream extends DelegatedEventTarget {
     /**
      * @ignore
      */
+    private getMediaStreamSettings (mediaStream) {
+
+        return mediaStream.getAudioTracks()[0].getSettings();
+
+    }
+
+    /**
+     * @ignore
+     */
     // eslint-disable-next-line
     async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
@@ -450,61 +471,48 @@ export class AudioStream extends DelegatedEventTarget {
     }
 
     /**
-     * Attaches audio device either through default browser method creating a MediaStream or via a passed in MediaStream
-     * @param deviceId string
-     * @param mediaStream MediaStream
+     * Setter for ondevicechange method.
+     * @param onDeviceChange Function - A function which will fire on the ondevicechange event.
+     * @returns void
      */
-    async attachAudioDevice (deviceId = "default", mediaStream?: MediaStream): Promise<void> {
+    setOnDeviceChange (onDeviceChange: () => any): void {
 
-        this.deviceId = deviceId;
+        this.onDeviceChange = onDeviceChange;
 
-        if (this.audioContext) {
+    }
 
-            this.detachAudioDevice();
+    /**
+     * @ignore
+     */
+    private async onDeviceChange (): Promise<void> {
 
-        }
+        if (this.mediaStream) {
 
-        // If a media stream is passed in attach to the AudioStream
-        if (mediaStream) {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const tracks = this.mediaStream?.getAudioTracks();
+            if (tracks?.length) {
 
-            this.mediaStream = mediaStream;
+                let foundDevice;
+                if (this.isDefaultDevice) {
 
-            // Else if a media stream is not already attached create a new one.
+                    // Check if same default device is present.
+                    foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
 
-        } else {
+                } else {
 
-            this.mediaStream = await AudioStream.getMediaStream(deviceId);
+                    // Check if the currently active device is still present.
+                    foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.groupId === this.groupId);
 
-        }
+                }
+                if (!foundDevice) {
 
-        if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed")) {
+                    if (!this.recentlyDisconnectedDevice) {
 
-            await this.createNewContext(this.mediaStream);
-
-        }
-
-
-        // Create the sourceNode, processorNode and gainNode using the Audio Context.
-        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
-        this.processorNode = this.audioContext.createScriptProcessor(
-            1024,
-            1,
-            1
-        );
-        this.gainNode = this.audioContext.createGain();
-        await this.resumeAudioContext();
-        this.deviceProcessing = true;
-        // eslint-disable-next-line require-atomic-updates
-        navigator.mediaDevices.ondevicechange = async () => {
-
-            if (this.mediaStream) {
-
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const tracks = this.mediaStream?.getAudioTracks();
-                if (tracks?.length) {
-
-                    const foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === deviceId && dev.label === tracks[0].label);
-                    if (!foundDevice && !this.recentlyDisconnectedDevice) {
+                        let defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default");
+                        this.groupId = defaultDevice.groupId;
+                        // Grab the specific deviceId for the default device.
+                        defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.groupId === this.groupId && dev.deviceId !== "default");
+                        this.deviceId = defaultDevice.deviceId;
 
                         this.recentlyDisconnectedDevice = true;
                         this.dispatchEvent(new SymblEvent("audio_source_changed"));
@@ -523,7 +531,65 @@ export class AudioStream extends DelegatedEventTarget {
 
             }
 
-        };
+        }
+
+    }
+
+    /**
+     * Attaches audio device either through default browser method creating a MediaStream or via a passed in MediaStream
+     * @param deviceId string
+     * @param mediaStream MediaStream
+     */
+    async attachAudioDevice (deviceId = "default", mediaStream?: MediaStream): Promise<void> {
+
+        if (this.audioContext) {
+
+            this.detachAudioDevice();
+
+        }
+
+        // If a media stream is passed in attach to the AudioStream
+        if (mediaStream) {
+
+            this.mediaStream = mediaStream;
+
+            // Else if a media stream is not already attached create a new one.
+
+        } else {
+
+            this.mediaStream = await AudioStream.getMediaStream(this.deviceId || deviceId);
+
+        }
+
+        if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed")) {
+
+            await this.createNewContext(this.mediaStream);
+
+        }
+
+        const mediaStreamSettings = this.getMediaStreamSettings(this.mediaStream);
+
+        // Grabbing all connected devices
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        this.groupId = mediaStreamSettings.groupId;
+        this.deviceId = mediaStreamSettings.deviceId;
+
+        // Check that the default device has the same groupId as the active device
+        const defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
+        this.isDefaultDevice = Boolean(defaultDevice);
+
+        // Create the sourceNode, processorNode and gainNode using the Audio Context.
+        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+        this.processorNode = this.audioContext.createScriptProcessor(
+            1024,
+            1,
+            1
+        );
+        this.gainNode = this.audioContext.createGain();
+        await this.resumeAudioContext();
+        this.deviceProcessing = true;
+        // eslint-disable-next-line require-atomic-updates
+        navigator.mediaDevices.ondevicechange = this.onDeviceChange;
         /* eslint: enable */
 
     }
