@@ -183,7 +183,7 @@ export class AudioStream extends DelegatedEventTarget {
      */
     getSampleRate (): number {
 
-        return this.audioContext.sampleRate;
+        return this.audioContext?.sampleRate;
 
     }
 
