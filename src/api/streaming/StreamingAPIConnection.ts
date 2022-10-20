@@ -724,10 +724,10 @@ export class StreamingAPIConnection extends BaseConnection {
             this._isProcessing = false;
 
             // If `restartProcessing` is true call `startProcessing`
-            if (this.restartProcessing) {
+            if (this.restartProcessing && this.connectionState === ConnectionState.CONNECTED) {
 
+                this.config.config.sampleRateHertz = this.audioStream.getSampleRate();
                 await this.startProcessing(this.config);
-                this.modifySampleRate(this.audioStream.getSampleRate());
                 this.restartProcessing = false;
 
             }
