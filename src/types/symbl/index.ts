@@ -7,6 +7,7 @@ interface SymblConfig {
     basePath?: string;
     logLevel?: string;
     reconnectOnError?: boolean;
+    disableOnDeviceChange?: boolean;
 }
 
 type InsightType = "action_item" | "question" | "follow_up";
