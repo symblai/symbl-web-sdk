@@ -728,7 +728,7 @@ export class StreamingAPIConnection extends BaseConnection {
 
                 if (this.config && !this.config.config) {
 
-                    this.config.config = {}
+                    this.config.config = {};
 
                 }
 
