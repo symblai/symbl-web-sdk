@@ -73,632 +73,632 @@ export class AudioStream extends DelegatedEventTarget {
      */
      public static disableOnDeviceChange: boolean;
 
-    /**
-     * Creates an audio stream to be used to send audio data to the websocket connection
-     * @param sourceNode MediaStreamAudioSourceNode
-     */
-    constructor (sourceNode?: MediaStreamAudioSourceNode) {
+     /**
+      * Creates an audio stream to be used to send audio data to the websocket connection
+      * @param sourceNode MediaStreamAudioSourceNode
+      */
+     constructor (sourceNode?: MediaStreamAudioSourceNode) {
 
-        super();
-        if (sourceNode) {
+         super();
+         if (sourceNode) {
 
-            this.sourceNode = sourceNode;
-            if (sourceNode.context?.state === "running" || sourceNode.context?.state === "suspended") {
+             this.sourceNode = sourceNode;
+             if (sourceNode.context?.state === "running" || sourceNode.context?.state === "suspended") {
 
-                this.audioContext = sourceNode.context as AudioContext;
+                 this.audioContext = sourceNode.context as AudioContext;
 
-            }
-            this.mediaStream = this.sourceNode.mediaStream;
+             }
+             this.mediaStream = this.sourceNode.mediaStream;
 
-        }
+         }
 
-        this.attachElement = this.attachElement.bind(this);
-        this.detachElement = this.detachElement.bind(this);
-        this.updateElement = this.updateElement.bind(this);
-        this.attachAudioDevice = this.attachAudioDevice.bind(this);
-        this.detachAudioDevice = this.detachAudioDevice.bind(this);
-        this.updateAudioDevice = this.updateAudioDevice.bind(this);
-        this.attachAudioCallback = this.attachAudioCallback.bind(this);
-        this.attachAudioProcessor = this.attachAudioProcessor.bind(this);
-        this.processAudio = this.processAudio.bind(this);
-        this.onProcessedAudio = this.onProcessedAudio.bind(this);
-        this.onDeviceChange = this.onDeviceChange.bind(this);
-        this.setOnDeviceChange = this.setOnDeviceChange.bind(this);
+         this.attachElement = this.attachElement.bind(this);
+         this.detachElement = this.detachElement.bind(this);
+         this.updateElement = this.updateElement.bind(this);
+         this.attachAudioDevice = this.attachAudioDevice.bind(this);
+         this.detachAudioDevice = this.detachAudioDevice.bind(this);
+         this.updateAudioDevice = this.updateAudioDevice.bind(this);
+         this.attachAudioCallback = this.attachAudioCallback.bind(this);
+         this.attachAudioProcessor = this.attachAudioProcessor.bind(this);
+         this.processAudio = this.processAudio.bind(this);
+         this.onProcessedAudio = this.onProcessedAudio.bind(this);
+         this.onDeviceChange = this.onDeviceChange.bind(this);
+         this.setOnDeviceChange = this.setOnDeviceChange.bind(this);
 
-        /*
-         * If the `AudioContext` present in the `MediaStreamAudioSourceNode` is `running` or `suspended` then re-use that instance or recreate otherwise.
-         * Add function bindings here
-         */
+         /*
+          * If the `AudioContext` present in the `MediaStreamAudioSourceNode` is `running` or `suspended` then re-use that instance or recreate otherwise.
+          * Add function bindings here
+          */
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    private async createNewContext (mediaStream?: MediaStream) {
+     /**
+      * @ignore
+      */
+     private async createNewContext (mediaStream?: MediaStream) {
 
-        if (mediaStream) {
+         if (mediaStream) {
 
-            const {sampleRate} = mediaStream.getAudioTracks()[0].getSettings();
-            const audioContextOptions = {
-                sampleRate
-            };
-            this.audioContext = new AudioContext(audioContextOptions);
+             const {sampleRate} = mediaStream.getAudioTracks()[0].getSettings();
+             const audioContextOptions = {
+                 sampleRate
+             };
+             this.audioContext = new AudioContext(audioContextOptions);
 
-        } else {
+         } else {
 
-            this.audioContext = new AudioContext();
+             this.audioContext = new AudioContext();
 
-        }
-        await this.suspendAudioContext();
+         }
+         await this.suspendAudioContext();
 
-    }
+     }
 
-    /**
-     * Accesses MediaStream from device through the browser
-     * @param deviceId string
-     * @returns MediaStream
-     */
-    static async getMediaStream (deviceId = "default"): Promise<MediaStream> {
+     /**
+      * Accesses MediaStream from device through the browser
+      * @param deviceId string
+      * @returns MediaStream
+      */
+     static async getMediaStream (deviceId = "default"): Promise<MediaStream> {
 
-        if (!deviceId) {
+         if (!deviceId) {
 
-            throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
+             throw new InvalidAudioInputDeviceError("Invalid deviceId passed as argument.");
 
-        }
+         }
 
-        let stream = await navigator.mediaDevices.getUserMedia({
-            "audio": {
-                deviceId
-            },
-            "video": false
-        });
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const inputDevices = devices.filter((dev) => dev.kind === "audioinput");
-        if (inputDevices.length === 0) {
+         let stream = await navigator.mediaDevices.getUserMedia({
+             "audio": {
+                 deviceId
+             },
+             "video": false
+         });
+         const devices = await navigator.mediaDevices.enumerateDevices();
+         const inputDevices = devices.filter((dev) => dev.kind === "audioinput");
+         if (inputDevices.length === 0) {
 
-            throw new NoAudioInputDeviceDetectedError("No input devices found.");
+             throw new NoAudioInputDeviceDetectedError("No input devices found.");
 
-        }
+         }
 
-        let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
+         let foundDevice = inputDevices.find((dev) => dev.deviceId === deviceId);
 
-        // If that device Id wasn't found, grab the first one.
-        if (!foundDevice) {
+         // If that device Id wasn't found, grab the first one.
+         if (!foundDevice) {
 
-            // Safari fix because Safari doens't always support "default" as deviceId.
-            foundDevice = inputDevices[0];
+             // Safari fix because Safari doens't always support "default" as deviceId.
+             foundDevice = inputDevices[0];
 
-            stream = await navigator.mediaDevices.getUserMedia({
-                "audio": {
-                    "groupId": foundDevice.groupId
-                },
-                "video": false
-            });
+             stream = await navigator.mediaDevices.getUserMedia({
+                 "audio": {
+                     "groupId": foundDevice.groupId
+                 },
+                 "video": false
+             });
 
-        }
+         }
 
-        return stream;
+         return stream;
 
-    }
+     }
 
-    /**
-     * Returns the current sample rate of the AudioContext
-     * @returns number
-     */
-    getSampleRate (): number {
+     /**
+      * Returns the current sample rate of the AudioContext
+      * @returns number
+      */
+     getSampleRate (): number {
 
-        return this.audioContext?.sampleRate;
+         return this.audioContext?.sampleRate;
 
-    }
+     }
 
-    /**
-     * Suspends hardware access of AudioContext if AudioContext is currently running
-     */
-    async suspendAudioContext (): Promise<void> {
+     /**
+      * Suspends hardware access of AudioContext if AudioContext is currently running
+      */
+     async suspendAudioContext (): Promise<void> {
 
-        if (this.audioContext && this.audioContext.state === "running") {
+         if (this.audioContext && this.audioContext.state === "running") {
 
-            await this.audioContext.suspend();
+             await this.audioContext.suspend();
 
-        } else {
+         } else {
 
-            this.logger.warn("Audio context is not running.");
+             this.logger.warn("Audio context is not running.");
 
-        }
+         }
 
-    }
+     }
 
-    /**
-     * Resumes a previously suspended AudioContext
-     */
-    async resumeAudioContext (): Promise<void> {
+     /**
+      * Resumes a previously suspended AudioContext
+      */
+     async resumeAudioContext (): Promise<void> {
 
-        if (this.audioContext && this.audioContext.state === "suspended") {
+         if (this.audioContext && this.audioContext.state === "suspended") {
 
-            await this.audioContext.resume();
+             await this.audioContext.resume();
 
-        }
+         }
 
-    }
+     }
 
-    private async processAttachedElement (sourceDomElement: any): Promise<any> {
+     private async processAttachedElement (sourceDomElement: any): Promise<any> {
 
-        const hasSourceElement = sourceDomElement.firstChild && sourceDomElement.firstChild.nodeName === "SOURCE";
+         const hasSourceElement = sourceDomElement.firstChild && sourceDomElement.firstChild.nodeName === "SOURCE";
 
-        const sourceElement = hasSourceElement
-            ? sourceDomElement.firstChild
-            : sourceDomElement;
+         const sourceElement = hasSourceElement
+             ? sourceDomElement.firstChild
+             : sourceDomElement;
 
-        if (this.audioContext) {
+         if (this.audioContext) {
 
-            this.detachElement();
+             this.detachElement();
 
-        }
+         }
 
-        if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed")) {
+         if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed")) {
 
-            await this.createNewContext();
+             await this.createNewContext();
 
-        }
+         }
 
-        if (sourceElement.src.indexOf("/mp4") === -1) {
+         if (sourceElement.src.indexOf("/mp4") === -1) {
 
-            if (sourceElement.src.substring(
-                0,
-                5
-            ) !== "blob:") {
+             if (sourceElement.src.substring(
+                 0,
+                 5
+             ) !== "blob:") {
 
-                const src = await fetch(sourceElement.src);
-                const data = await src.blob();
-                const file = new File(
-                    [data],
-                    "sample_audio_file.wav"
-                );
-                sourceElement.src = URL.createObjectURL(file);
+                 const src = await fetch(sourceElement.src);
+                 const data = await src.blob();
+                 const file = new File(
+                     [data],
+                     "sample_audio_file.wav"
+                 );
+                 sourceElement.src = URL.createObjectURL(file);
 
-            }
+             }
 
-        }
+         }
 
-        const sourceNode = this.audioContext.createMediaElementSource(sourceDomElement);
-        const processorNode = this.audioContext.createScriptProcessor(
-            1024,
-            1,
-            1
-        );
-        this.sourceNode = <MediaElementAudioSourceNode>sourceNode;
-        this.processorNode = processorNode;
-        this.deviceProcessing = false;
+         const sourceNode = this.audioContext.createMediaElementSource(sourceDomElement);
+         const processorNode = this.audioContext.createScriptProcessor(
+             1024,
+             1,
+             1
+         );
+         this.sourceNode = <MediaElementAudioSourceNode>sourceNode;
+         this.processorNode = processorNode;
+         this.deviceProcessing = false;
 
-        return sourceDomElement;
+         return sourceDomElement;
 
-    }
+     }
 
-    /**
-     * Attaches an audio or video dom element to the websocket connection
-     * @param sourceDomElement DOMElement
-     * @param nodeName DOMElement nodeName (AUDIO or VIDEO)
-     * @returns DOMElement
-     */
-    protected async attachElement (sourceDomElement: any, nodeName: string): Promise<any> {
+     /**
+      * Attaches an audio or video dom element to the websocket connection
+      * @param sourceDomElement DOMElement
+      * @param nodeName DOMElement nodeName (AUDIO or VIDEO)
+      * @returns DOMElement
+      */
+     protected async attachElement (sourceDomElement: any, nodeName: string): Promise<any> {
 
-        nodeName = nodeName.toUpperCase();
+         nodeName = nodeName.toUpperCase();
 
-        if (!sourceDomElement) {
+         if (!sourceDomElement) {
 
-            throw new InvalidAudioElementError("Element is null. Please pass in a valid audio source dom element.");
+             throw new InvalidAudioElementError("Element is null. Please pass in a valid audio source dom element.");
 
-        }
+         }
 
-        if (!nodeName || (nodeName !== "AUDIO" && nodeName !== "VIDEO")) {
+         if (!nodeName || (nodeName !== "AUDIO" && nodeName !== "VIDEO")) {
 
-            throw new InvalidValueError("Please pass in the DOM element node name of either VIDEO or AUDIO.");
+             throw new InvalidValueError("Please pass in the DOM element node name of either VIDEO or AUDIO.");
 
-        }
+         }
 
-        if (![
-            nodeName.toUpperCase(),
-            "SOURCE"
-        ].includes(sourceDomElement.nodeName)) {
+         if (![
+             nodeName.toUpperCase(),
+             "SOURCE"
+         ].includes(sourceDomElement.nodeName)) {
 
-            throw new InvalidAudioElementError(`Please pass in a valid ${nodeName.toLowerCase()} source dom element.`);
+             throw new InvalidAudioElementError(`Please pass in a valid ${nodeName.toLowerCase()} source dom element.`);
 
-        }
+         }
 
-        if (sourceDomElement.nodeName === "SOURCE" && (sourceDomElement.parentElement && ![nodeName].includes(sourceDomElement.parentElement.nodeName))) {
+         if (sourceDomElement.nodeName === "SOURCE" && (sourceDomElement.parentElement && ![nodeName].includes(sourceDomElement.parentElement.nodeName))) {
 
-            throw new InvalidAudioElementError(`Please ensure that ${nodeName.toLowerCase()} element is the parent element of <source /> element.`);
+             throw new InvalidAudioElementError(`Please ensure that ${nodeName.toLowerCase()} element is the parent element of <source /> element.`);
 
-        }
-        if (sourceDomElement.nodeName === "SOURCE" && !sourceDomElement.src) {
+         }
+         if (sourceDomElement.nodeName === "SOURCE" && !sourceDomElement.src) {
 
-            throw new InvalidAudioElementError("Element is missing its `src` property");
+             throw new InvalidAudioElementError("Element is missing its `src` property");
 
-        }
+         }
 
-        if ([nodeName].includes(sourceDomElement.nodeName)) {
+         if ([nodeName].includes(sourceDomElement.nodeName)) {
 
-            const source = sourceDomElement.firstChild;
-            if (source && source.nodeName !== "SOURCE") {
+             const source = sourceDomElement.firstChild;
+             if (source && source.nodeName !== "SOURCE") {
 
-                throw new InvalidAudioElementError("Child element must be a source element.");
+                 throw new InvalidAudioElementError("Child element must be a source element.");
 
-            } else if (source && source.nodeName === "SOURCE") {
+             } else if (source && source.nodeName === "SOURCE") {
 
 
-                return this.attachElement(
-                    source,
-                    nodeName
-                );
+                 return this.attachElement(
+                     source,
+                     nodeName
+                 );
 
-            }
+             }
 
-        }
+         }
 
-        let newSourceDomElement = sourceDomElement;
+         let newSourceDomElement = sourceDomElement;
 
-        if (sourceDomElement.nodeName === "SOURCE") {
+         if (sourceDomElement.nodeName === "SOURCE") {
 
-            newSourceDomElement = sourceDomElement.parentElement;
+             newSourceDomElement = sourceDomElement.parentElement;
 
-        }
+         }
 
-        const element = await this.processAttachedElement(newSourceDomElement);
+         const element = await this.processAttachedElement(newSourceDomElement);
 
-        return element;
+         return element;
 
-        /*
-         * Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
-         * Failure to do so should be handled and appropriate error should be thrown
-         * Check if the `audioContext` already exists and is `running`.
-         * If it is, emit `audio_source_disconnected` event and then close the `audioContext`
-         * Re-create AudioContext, MediaStream from the active/default audio device if available and invoke `createScriptProcessor` on the `audioContext`
-         * Re-assign the class variables
-         * Emit `audio_source_connected` event with the updated `sampleRate`
-         */
+         /*
+          * Validate if the `audioSourceDomElement` is a valid DOM Element granting access to audio data.
+          * Failure to do so should be handled and appropriate error should be thrown
+          * Check if the `audioContext` already exists and is `running`.
+          * If it is, emit `audio_source_disconnected` event and then close the `audioContext`
+          * Re-create AudioContext, MediaStream from the active/default audio device if available and invoke `createScriptProcessor` on the `audioContext`
+          * Re-assign the class variables
+          * Emit `audio_source_connected` event with the updated `sampleRate`
+          */
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    private getMediaStreamSettings (mediaStream) {
+     /**
+      * @ignore
+      */
+     private getMediaStreamSettings (mediaStream) {
 
-        return mediaStream.getAudioTracks()[0].getSettings();
+         return mediaStream.getAudioTracks()[0].getSettings();
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    // eslint-disable-next-line
+     /**
+      * @ignore
+      */
+     // eslint-disable-next-line
     async attachAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        throw new TypeError("Function not implemented!");
+         throw new TypeError("Function not implemented!");
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    // eslint-disable-next-line
+     /**
+      * @ignore
+      */
+     // eslint-disable-next-line
     async attachVideoSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        throw new TypeError("Function not implemented!");
+         throw new TypeError("Function not implemented!");
 
-    }
+     }
 
-    /**
-     * Disconnects the audio source DOM element from the websocket connection
-     */
-    protected detachElement (): void {
+     /**
+      * Disconnects the audio source DOM element from the websocket connection
+      */
+     protected detachElement (): void {
 
-        if (this.sourceNode) {
+         if (this.sourceNode) {
 
-            this.sourceNode.disconnect();
-            this.sourceNode = null;
+             this.sourceNode.disconnect();
+             this.sourceNode = null;
 
-        }
-        if (this.processorNode) {
+         }
+         if (this.processorNode) {
 
-            this.processorNode.disconnect();
-            this.processorNode = null;
+             this.processorNode.disconnect();
+             this.processorNode = null;
 
-        }
+         }
 
-        window.setTimeout(
-            () => {
+         window.setTimeout(
+             () => {
 
-                this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+                 this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
 
-            },
-            1
-        );
+             },
+             1
+         );
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    // eslint-disable-next-line
+     /**
+      * @ignore
+      */
+     // eslint-disable-next-line
     detachAudioSourceElement (): void {
 
-        throw new TypeError("Function not implemented!");
+         throw new TypeError("Function not implemented!");
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    // eslint-disable-next-line
+     /**
+      * @ignore
+      */
+     // eslint-disable-next-line
     detachVideoSourceElement (): void {
 
-        throw new TypeError("Function not implemented!");
+         throw new TypeError("Function not implemented!");
 
-    }
+     }
 
-    /**
-     * Detaches from any currently connected DOM Audio element and attaches to provided element
-     * @param sourceDomElement DOMElement
-     * @param nodeName nodeName of DOMElement (either VIDEO or AUDIO)
-     * @returns DOMElement
-     */
-    protected async updateElement (sourceDomElement: any, nodeName: string): Promise<any> {
+     /**
+      * Detaches from any currently connected DOM Audio element and attaches to provided element
+      * @param sourceDomElement DOMElement
+      * @param nodeName nodeName of DOMElement (either VIDEO or AUDIO)
+      * @returns DOMElement
+      */
+     protected async updateElement (sourceDomElement: any, nodeName: string): Promise<any> {
 
-        this.detachElement();
-        const newElement = await this.attachElement(
-            sourceDomElement,
-            nodeName
-        );
-        return newElement;
+         this.detachElement();
+         const newElement = await this.attachElement(
+             sourceDomElement,
+             nodeName
+         );
+         return newElement;
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    // eslint-disable-next-line
+     /**
+      * @ignore
+      */
+     // eslint-disable-next-line
     async updateAudioSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        throw new TypeError("Function not implemented!");
+         throw new TypeError("Function not implemented!");
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    // eslint-disable-next-line
+     /**
+      * @ignore
+      */
+     // eslint-disable-next-line
     async updateVideoSourceElement (audioSourceDomElement: any): Promise<any> {
 
-        throw new TypeError("Function not implemented!");
+         throw new TypeError("Function not implemented!");
 
-    }
+     }
 
-    /**
-     * Setter for ondevicechange method.
-     * @param onDeviceChange Function - A function which will fire on the ondevicechange event.
-     * @returns void
-     */
-    setOnDeviceChange (onDeviceChange: () => any): void {
+     /**
+      * Setter for ondevicechange method.
+      * @param onDeviceChange Function - A function which will fire on the ondevicechange event.
+      * @returns void
+      */
+     setOnDeviceChange (onDeviceChange: () => any): void {
 
-        this.onDeviceChange = onDeviceChange;
+         this.onDeviceChange = onDeviceChange;
 
-    }
+     }
 
-    /**
-     * @ignore
-     */
-    private async onDeviceChange (): Promise<void> {
+     /**
+      * @ignore
+      */
+     private async onDeviceChange (): Promise<void> {
 
-        if (this.mediaStream) {
+         if (this.mediaStream) {
 
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const tracks = this.mediaStream?.getAudioTracks();
-            if (tracks?.length) {
+             const devices = await navigator.mediaDevices.enumerateDevices();
+             const tracks = this.mediaStream?.getAudioTracks();
+             if (tracks?.length) {
 
-                let foundDevice;
-                if (this.isDefaultDevice) {
+                 let foundDevice;
+                 if (this.isDefaultDevice) {
 
-                    // Check if same default device is present.
-                    foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
+                     // Check if same default device is present.
+                     foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
 
-                } else {
+                 } else {
 
-                    // Check if the currently active device is still present.
-                    foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.groupId === this.groupId);
+                     // Check if the currently active device is still present.
+                     foundDevice = devices.find((dev) => dev.kind === "audioinput" && dev.groupId === this.groupId);
 
-                }
-                if (!foundDevice) {
+                 }
+                 if (!foundDevice) {
 
-                    if (!this.recentlyDisconnectedDevice) {
+                     if (!this.recentlyDisconnectedDevice) {
 
-                        let defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default");
-                        this.groupId = defaultDevice.groupId;
-                        // Grab the specific deviceId for the default device.
-                        defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.groupId === this.groupId && dev.deviceId !== "default");
-                        this.deviceId = defaultDevice.deviceId;
+                         let defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default");
+                         this.groupId = defaultDevice.groupId;
+                         // Grab the specific deviceId for the default device.
+                         defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.groupId === this.groupId && dev.deviceId !== "default");
+                         this.deviceId = defaultDevice.deviceId;
 
-                        this.recentlyDisconnectedDevice = true;
-                        this.dispatchEvent(new SymblEvent("audio_source_changed"));
-                        window.setTimeout(
-                            () => {
+                         this.recentlyDisconnectedDevice = true;
+                         this.dispatchEvent(new SymblEvent("audio_source_changed"));
+                         window.setTimeout(
+                             () => {
 
-                                this.recentlyDisconnectedDevice = false;
+                                 this.recentlyDisconnectedDevice = false;
 
-                            },
-                            1000
-                        );
+                             },
+                             1000
+                         );
 
-                    }
+                     }
 
-                }
+                 }
 
-            }
+             }
 
-        }
+         }
 
-    }
+     }
 
-    /**
-     * Attaches audio device either through default browser method creating a MediaStream or via a passed in MediaStream
-     * @param deviceId string
-     * @param mediaStream MediaStream
-     */
-    async attachAudioDevice (deviceId = "default", mediaStream?: MediaStream): Promise<void> {
+     /**
+      * Attaches audio device either through default browser method creating a MediaStream or via a passed in MediaStream
+      * @param deviceId string
+      * @param mediaStream MediaStream
+      */
+     async attachAudioDevice (deviceId = "default", mediaStream?: MediaStream): Promise<void> {
 
-        if (this.audioContext) {
+         if (this.audioContext) {
 
-            this.detachAudioDevice();
+             this.detachAudioDevice();
 
-        }
+         }
 
-        // If a media stream is passed in attach to the AudioStream
-        if (mediaStream) {
+         // If a media stream is passed in attach to the AudioStream
+         if (mediaStream) {
 
-            this.mediaStream = mediaStream;
+             this.mediaStream = mediaStream;
 
-            // Else if a media stream is not already attached create a new one.
+             // Else if a media stream is not already attached create a new one.
 
-        } else {
+         } else {
 
-            this.mediaStream = await AudioStream.getMediaStream(this.deviceId || deviceId);
+             this.mediaStream = await AudioStream.getMediaStream(this.deviceId || deviceId);
 
-        }
+         }
 
-        if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed")) {
+         if (!this.audioContext || (this.audioContext && this.audioContext.state === "closed")) {
 
-            await this.createNewContext(this.mediaStream);
+             await this.createNewContext(this.mediaStream);
 
-        }
+         }
 
-        const mediaStreamSettings = this.getMediaStreamSettings(this.mediaStream);
+         const mediaStreamSettings = this.getMediaStreamSettings(this.mediaStream);
 
-        // Grabbing all connected devices
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        this.groupId = mediaStreamSettings.groupId;
-        this.deviceId = mediaStreamSettings.deviceId;
+         // Grabbing all connected devices
+         const devices = await navigator.mediaDevices.enumerateDevices();
+         this.groupId = mediaStreamSettings.groupId;
+         this.deviceId = mediaStreamSettings.deviceId;
 
-        // Check that the default device has the same groupId as the active device
-        const defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
-        this.isDefaultDevice = Boolean(defaultDevice);
+         // Check that the default device has the same groupId as the active device
+         const defaultDevice = devices.find((dev) => dev.kind === "audioinput" && dev.deviceId === "default" && dev.groupId === this.groupId);
+         this.isDefaultDevice = Boolean(defaultDevice);
 
-        // Create the sourceNode, processorNode and gainNode using the Audio Context.
-        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
-        this.processorNode = this.audioContext.createScriptProcessor(
-            1024,
-            1,
-            1
-        );
-        this.gainNode = this.audioContext.createGain();
-        await this.resumeAudioContext();
-        this.deviceProcessing = true;
-        // eslint-disable-next-line require-atomic-updates
-        if (AudioStream.disableOnDeviceChange) {
+         // Create the sourceNode, processorNode and gainNode using the Audio Context.
+         this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+         this.processorNode = this.audioContext.createScriptProcessor(
+             1024,
+             1,
+             1
+         );
+         this.gainNode = this.audioContext.createGain();
+         await this.resumeAudioContext();
+         this.deviceProcessing = true;
+         // eslint-disable-next-line require-atomic-updates
+         if (!AudioStream.disableOnDeviceChange) {
 
-            navigator.mediaDevices.ondevicechange = this.onDeviceChange;
+             navigator.mediaDevices.ondevicechange = this.onDeviceChange;
 
-        }
-        /* eslint: enable */
+         }
+         /* eslint: enable */
 
-    }
+     }
 
-    /**
-     * Closes AudioContext, removes MediaStream and disconnects processor to cleanly
-     * detach the audio input device
-     */
-    detachAudioDevice (): void {
+     /**
+      * Closes AudioContext, removes MediaStream and disconnects processor to cleanly
+      * detach the audio input device
+      */
+     detachAudioDevice (): void {
 
-        if (this.sourceNode) {
+         if (this.sourceNode) {
 
-            this.sourceNode.disconnect();
-            this.sourceNode = null;
+             this.sourceNode.disconnect();
+             this.sourceNode = null;
 
-        }
-        if (this.gainNode) {
+         }
+         if (this.gainNode) {
 
-            this.gainNode.disconnect();
-            this.gainNode = null;
+             this.gainNode.disconnect();
+             this.gainNode = null;
 
-        }
-        if (this.processorNode) {
+         }
+         if (this.processorNode) {
 
-            this.processorNode.disconnect();
-            this.processorNode = null;
+             this.processorNode.disconnect();
+             this.processorNode = null;
 
-        }
+         }
 
-        window.setTimeout(
-            () => {
+         window.setTimeout(
+             () => {
 
-                this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
+                 this.dispatchEvent(new SymblEvent("audio_source_disconnected"));
 
-            },
-            1
-        );
+             },
+             1
+         );
 
-    }
+     }
 
-    /**
-     * Detaches MediaStream audio device and attaches a new one in order to update the device on device change
-     * @param deviceId string
-     * @param mediaStream MediaStream
-     */
-    async updateAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
+     /**
+      * Detaches MediaStream audio device and attaches a new one in order to update the device on device change
+      * @param deviceId string
+      * @param mediaStream MediaStream
+      */
+     async updateAudioDevice (deviceId: string, mediaStream?: MediaStream): Promise<void> {
 
-        // Invoke `detachAudioDevice` function
-        this.detachAudioDevice();
+         // Invoke `detachAudioDevice` function
+         this.detachAudioDevice();
 
-        // Invoke `attachAudioDevice` function with the new `deviceId` and optional `mediaStream`
-        await this.attachAudioDevice(
-            deviceId,
-            mediaStream
-        );
+         // Invoke `attachAudioDevice` function with the new `deviceId` and optional `mediaStream`
+         await this.attachAudioDevice(
+             deviceId,
+             mediaStream
+         );
 
-    }
+     }
 
-    /**
-     * Attaches a callback function to the audio stream
-     * @param audioCallback function
-     */
-    attachAudioCallback (audioCallback: (audioData) => void): void {
+     /**
+      * Attaches a callback function to the audio stream
+      * @param audioCallback function
+      */
+     attachAudioCallback (audioCallback: (audioData) => void): void {
 
-        this.audioCallback = audioCallback;
+         this.audioCallback = audioCallback;
 
-    }
+     }
 
-    /**
-     * Attaches an alternate audio processor node
-     */
-    protected attachAudioProcessor (): void {
+     /**
+      * Attaches an alternate audio processor node
+      */
+     protected attachAudioProcessor (): void {
 
-        throw new TypeError("Not implemented!");
+         throw new TypeError("Not implemented!");
 
-    }
+     }
 
-    /**
-     * Processes audio through custom processor node
-     * @param audioEvent
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected processAudio (audioEvent: unknown): void {
+     /**
+      * Processes audio through custom processor node
+      * @param audioEvent
+      */
+     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     protected processAudio (audioEvent: unknown): void {
 
-        throw new TypeError("Not implemented!");
+         throw new TypeError("Not implemented!");
 
-    }
+     }
 
-    /**
-     * Applies the audioCallback function on any processed audio data
-     * @param audioData
-     */
-    onProcessedAudio (audioData: unknown): void {
+     /**
+      * Applies the audioCallback function on any processed audio data
+      * @param audioData
+      */
+     onProcessedAudio (audioData: unknown): void {
 
-        if (this.audioCallback) {
+         if (this.audioCallback) {
 
-            this.audioCallback(audioData);
+             this.audioCallback(audioData);
 
-        }
+         }
 
-    }
+     }
 
 }
