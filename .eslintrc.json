@@ -198,7 +198,7 @@
         "quote-props": "error",
         "quotes": "error",
         "radix": "error",
-        "require-atomic-updates": "error",
+        "require-atomic-updates": "off",
         "require-await": "error",
         "require-unicode-regexp": "off",
         "rest-spread-spacing": "error",

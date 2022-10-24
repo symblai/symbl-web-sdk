@@ -69,6 +69,11 @@ export class AudioStream extends DelegatedEventTarget {
     public type: string;
 
     /**
+     * Setting for disabling default onDeviceChange function
+     */
+    public static disableOnDeviceChange: boolean;
+
+    /**
      * Creates an audio stream to be used to send audio data to the websocket connection
      * @param sourceNode MediaStreamAudioSourceNode
      */
@@ -183,7 +188,7 @@ export class AudioStream extends DelegatedEventTarget {
      */
     getSampleRate (): number {
 
-        return this.audioContext.sampleRate;
+        return this.audioContext?.sampleRate;
 
     }
 
@@ -589,7 +594,11 @@ export class AudioStream extends DelegatedEventTarget {
         await this.resumeAudioContext();
         this.deviceProcessing = true;
         // eslint-disable-next-line require-atomic-updates
-        navigator.mediaDevices.ondevicechange = this.onDeviceChange;
+        if (!AudioStream.disableOnDeviceChange) {
+
+            navigator.mediaDevices.ondevicechange = this.onDeviceChange;
+
+        }
         /* eslint: enable */
 
     }

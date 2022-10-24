@@ -97,7 +97,7 @@ export default class Symbl {
 
         if (symblConfig) {
 
-            const {logLevel, reconnectOnError} = symblConfig;
+            const {logLevel, reconnectOnError, disableOnDeviceChange} = symblConfig;
 
             if (logLevel) {
 
@@ -114,6 +114,12 @@ export default class Symbl {
             if (reconnectOnError) {
 
                 this.sdk.setReconnectOnError(true);
+
+            }
+
+            if (disableOnDeviceChange) {
+
+                AudioStream.disableOnDeviceChange = disableOnDeviceChange;
 
             }
 
