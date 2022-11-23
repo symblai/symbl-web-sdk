@@ -6,7 +6,6 @@ import {
     StreamingAPIConnectionConfig,
     SymblAudioStreamType,
     SymblConnectionType,
-    SymblData,
     SymblStreamingAPIConnection
 } from "../../types";
 import {
@@ -852,7 +851,10 @@ export class StreamingAPIConnection extends BaseConnection {
      * Emits events based on data received from websocket
      * @param data SymblData
      */
-    onDataReceived (data: SymblData): void {
+    onDataReceived (data: any): void {
+        if (data && data.type === 'message' && data.message && data.message.type === 'processing_terminated') {
+            this.processingState = ConnectionProcessingState.NOT_PROCESSING;
+        }
 
         super.emitEvents(data);
 
