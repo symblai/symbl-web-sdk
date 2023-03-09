@@ -38,7 +38,9 @@ export const SYMBL_DEFAULTS = {
         "encoding",
         "sampleRateHertz",
         "languageCode",
-        "timezoneOffset"
+        "timezoneOffset",
+        "sentiment",
+        "trackers"
     ],
     "VALID_STREAMINGAPICONNECTIONCONFIG_KEYS": [
         "id",
