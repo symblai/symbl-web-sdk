@@ -36,6 +36,11 @@ interface SymblTrackersConfig {
     vocabulary: string[];
 }
 
+interface TrackersStreamingConfig {
+    interimResults?: boolean;
+    enableAllTrackers?: boolean;
+}
+
 interface StreamingAPIConnectionConfig {
 
     /**
@@ -58,6 +63,8 @@ interface StreamingAPIConnectionConfig {
         sampleRateHertz?: number;
         languageCode?: string;
         timezoneOffset?: number;
+        sentiment?: boolean;
+        trackers?: TrackersStreamingConfig;
     };
 
     /**
@@ -119,5 +126,6 @@ export {
     ConnectionProcessingState,
     ConnectionConfig,
     StreamingAPIConnectionConfig,
-    SubscribeAPIConnectionConfig
+    SubscribeAPIConnectionConfig,
+    TrackersStreamingConfig
 };

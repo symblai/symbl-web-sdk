@@ -1,4 +1,6 @@
-
+import {
+    TrackersStreamingConfig
+} from "../connection"
 
 interface SymblConfig {
     appId?: string;
@@ -43,6 +45,8 @@ interface Config {
     confidenceThreshold?: number;
     speechRecognition?: SpeechRecognition;
     meetingTitle?: string;
+    trackers?: TrackersStreamingConfig;
+    sentiment?: boolean;
 }
 
 type Encoding = 'LINEAR16' | 'FLAC' | 'MULAW' | 'Opus';
