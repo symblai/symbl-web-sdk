@@ -52,7 +52,8 @@ export const SYMBL_DEFAULTS = {
         "disconnectOnStopRequest",
         "disconnectOnStopRequestTimeout",
         "noConnectionTimeout",
-        "trackers"
+        "trackers",
+        "customVocabulary"
     ],
     "VALID_SUBSCRIPEAPICONNECTIONCONFIG_KEYS": [
         "id",

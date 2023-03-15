@@ -214,6 +214,39 @@ const validateConfigObj = (configObj): boolean => {
 };
 
 /**
+ * Checks individual properties of customVocabulary object
+ * @returns boolean
+ * @param customVocabulary
+ */
+const validateCustomVocabulary = (customVocabulary: Array<string>): boolean => {
+
+    if (!Array.isArray(customVocabulary)) {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'customVocabulary' should be an array of strings.");
+
+    }
+
+    if (customVocabulary.length < 1) {
+
+        throw new InvalidValueError("StreamingAPIConnectionConfig: 'customVocabulary' should contain at least 1 element.");
+
+    }
+
+    customVocabulary.forEach((element) => {
+
+        if (typeof element !== "string") {
+
+            throw new InvalidValueError(`StreamingAPIConnectionConfig: 'customVocabulary' should be an array of strings, but found ${element} is not a string.`);
+
+        }
+
+    });
+
+    return true;
+
+};
+
+/**
  * Checks individual properties of Speaker object
  * @param speaker Speaker
  * @returns boolean
@@ -373,6 +406,7 @@ export class StreamingAPIConnection extends BaseConnection {
             id,
             insightTypes,
             "config": configObj,
+            customVocabulary,
             speaker,
             reconnectOnError
         } = config;
@@ -393,6 +427,12 @@ export class StreamingAPIConnection extends BaseConnection {
                 "StreamingAPIConnectionConfig 'config' object"
             );
             validateConfigObj(configObj);
+
+        }
+
+        if (customVocabulary) {
+
+            validateCustomVocabulary(customVocabulary);
 
         }
 
