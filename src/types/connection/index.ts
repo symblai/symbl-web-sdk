@@ -68,6 +68,11 @@ interface StreamingAPIConnectionConfig {
     };
 
     /**
+     * Customer-identified strings to detect in transcription.
+     */
+    customVocabulary?: string[];
+
+    /**
      * Speaker identity to use for audio in this WebSocket connection. If omitted,
      * no speaker identification will be used for process
      */

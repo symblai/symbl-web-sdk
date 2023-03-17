@@ -17,6 +17,7 @@ const validConfig = {
             encoding: 'LINEAR16',
             sampleRateHertz: 16000,
         },
+        customVocabulary: ["hello", "world"],
         speaker: {
             userId: 'valid-user-id',
             name: 'valid-name'
@@ -477,6 +478,47 @@ describe('streamingAPIConnection.validateConfig', () => {
                 await StreamingAPIConnection.validateConfig(invalidConfig as any)
             }).rejects.toThrow(
                 new InvalidValueError(`StreamingAPIConnectionConfig: Please specify 'noConnectionTimeout' field with a positive integer between 0 and 1800.`)
+            );
+        }
+    );
+
+    test(
+        `config with only id and customVocabulary`,
+        async () => {
+            const validConnectionConfig = {
+                id: "sidfj8dj9d8f",
+                customVocabulary: ["word", "phrase"]
+            }
+            expect(() => StreamingAPIConnection.validateConfig(validConnectionConfig)).not.toThrow();
+        }
+    );
+
+    test(
+        `config with only id and invalid customVocabulary throws error`,
+        async () => {
+            const invalidConfig = {
+                id: "sj4kj8dj9d8f",
+                customVocabulary: [50, "phrase"]
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError("StreamingAPIConnectionConfig: 'customVocabulary' should be an array of strings, but found 50 is not a string.")
+            );
+        }
+    );
+
+    test(
+        `config with only id and empty customVocabulary throws error`,
+        async () => {
+            const invalidConfig = {
+                id: "sj4kj8dmdh8f",
+                customVocabulary: []
+            }
+            await expect(async () => {
+                await StreamingAPIConnection.validateConfig(invalidConfig as any)
+            }).rejects.toThrow(
+                new InvalidValueError("StreamingAPIConnectionConfig: 'customVocabulary' should contain at least 1 element.")
             );
         }
     );
