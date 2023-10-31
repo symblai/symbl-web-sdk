@@ -71,7 +71,7 @@ export class NetworkConnectivityDetector extends DelegatedEventTarget {
 
                     try {
 
-                        const response = await fetch("https://symbl-sdk-cdn-bucket.storage.googleapis.com");
+                        const response = await fetch("https://sdk.symbl.ai");
                         if (response.ok) {
 
                             this.dispatchEvent(new NetworkEvent(
