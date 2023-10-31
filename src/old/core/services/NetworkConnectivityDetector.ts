@@ -12,7 +12,7 @@ const onlineDetector = async (jsSDK, e) => {
     connectivityCheckIntervalRef = setInterval(async () => {
         if (maxRetries > 0) {
             try {
-                const response = await fetch('https://symbl-sdk-cdn-bucket.storage.googleapis.com');
+                const response = await fetch('https://sdk.symbl.ai');
                 if (response.ok) {
                     jsSDK.setOffline(false);
                     if (connectivityCheckIntervalRef)
