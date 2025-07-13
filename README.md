@@ -37,7 +37,7 @@ npm i  @symblai/symbl-web-sdk
 
 ### CDN
 
-You can also import the file into your HTML appliaction using our CDN.
+You can also import the file into your HTML application using our CDN.
 
 #### Versioned CDN
 
